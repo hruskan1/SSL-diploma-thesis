@@ -8,16 +8,20 @@ import torchvision.transforms as tv_trans
 import torchvision.transforms.functional as TF
 import random
 import torch 
-from typing import List,Tuple,Union
+import torch.nn as nn
+import kornia as K
+from typing import List,Tuple,Union,Optional
+from easydict import EasyDict
 
 
 # List of transformations:
     # Gaussian Blur
     # Random Affine transform
     # Random Perspective
-    # Random Normalized Perturbations
+    # Gaussian Noise Channelwise
+    # RandomApply
 
-class GaussianBlur(tv_trans.GaussianBlur):
+class RandomGaussianBlur(tv_trans.GaussianBlur):
     """Wrapper around GaussianBlur on multiple inputs:
         https://pytorch.org/vision/stable/generated/torchvision.transforms.GaussianBlur.html#torchvision.transforms.GaussianBlur
         https://pytorch.org/vision/stable/_modules/torchvision/transforms/transforms.html#GaussianBlur
@@ -28,20 +32,16 @@ class GaussianBlur(tv_trans.GaussianBlur):
         outputs = [TF.gaussian_blur(x, self.kernel_size, [sigma, sigma]) for x in args]
         return outputs
 
-
 class RandomAffine(tv_trans.RandomAffine):
     """Wrapper around RandomAffine on multiple inputs sharing same width and height (last two dims):
         https://pytorch.org/vision/stable/generated/torchvision.transforms.RandomAffine.html#torchvision.transforms.RandomAffine
     """
 
     def forward(self,*args:List[torch.Tensor])->Tuple[torch.Tensor]:
-        
-
         img = args[0]
         _, height, width = TF.get_dimensions(img)
         img_size = [width, height]  # flip for keeping BC on get_params call
         ret = self.get_params(self.degrees, self.translate, self.scale, self.shear, img_size)
-        
         outputs = []
         for img in args:
             channels, _, _ = TF.get_dimensions(img)
@@ -56,6 +56,22 @@ class RandomAffine(tv_trans.RandomAffine):
 
         
         return outputs 
+
+class RandomAffineKornia(K.augmentation.RandomAffine):
+    """Wrapper around RandomAffine on multiple inputs sharing same width and height (last two dims):
+        https://kornia.readthedocs.io/en/v0.2.0/augmentation.html#kornia.augmentation.RandomAffine
+        https://kornia.readthedocs.io/en/v0.2.0/_modules/kornia/augmentation/augmentation.html#RandomAffine
+    """
+
+    def forward(self,*args:List[torch.Tensor]):
+        # create random transformation for the first time
+        outputs = []
+        outputs.append(super(RandomAffineKornia,self).forward(args[0]))
+        params = self._params
+        for i in range(1,len(args)):
+            outputs.append(super(RandomAffineKornia,self).forward(args[i],params))
+        
+        return outputs
 
 class RandomPerspective(tv_trans.RandomPerspective):
     """Wrapper around RandomPerspective on multiple inputs
@@ -89,7 +105,6 @@ class RandomPerspective(tv_trans.RandomPerspective):
         
         return outputs
     
-
 class GaussianNoiseChannelwise(torch.nn.Module):
     """GaussianNoiseChannelwise transformation 
         This transformation adds a Gaussian Noise (\mu = 0) to each element of image 
@@ -105,30 +120,49 @@ class GaussianNoiseChannelwise(torch.nn.Module):
     
         super().__init__()
         self.sigma = sigma
+        self.noise = None
+    
+    def get_params(self):
+        return self.sigma,self.noise
 
-    def forward(self, *args:List[torch.Tensor]) -> Tuple[torch.Tensor]:
+    def forward(self, *args:List[torch.Tensor]) -> Union[torch.Tensor,Tuple[torch.Tensor,torch.Tensor]]:
         
-        if len(args) != 2:
-            raise ValueError(f'Inputs should be image and mask instead of {args}')
+        if len(args) > 2:
+            raise ValueError(f'Inputs should be image and/or mask instead of {args}')
         
-        img,mask = args
-        channels, height, width = TF.get_dimensions(img)
+        img = args[0]
+        mask = args[1] if len(args) == 2 else None
+        
+        C = img.shape[1]
         sigma = self.sigma
         if isinstance(sigma,(int,float)):
-            sigma = [float(sigma)] * channels
+            sigma = [float(sigma)] * C
         else:
             sigma = [float(s) for s in sigma]
-        
-
         sigma = torch.Tensor(sigma)
-        noise = torch.rand(channels, height, width)
-        noise = torch.einsum('i,ijk->ijk',sigma,noise)
+
+        noise = torch.rand(img.shape)
+        noise = torch.einsum('i,aijk->aijk',sigma,noise)
         
+        self.noise = noise
 
-        return img + noise, mask
+        if mask is None:
+            return img + noise
+        else:
+            return img + noise, mask
 
+class Compose(tv_trans.Compose):
+    """Wrapper around Compose on multiple inputs
+        https://pytorch.org/vision/main/generated/torchvision.transforms.Compose.html
+        https://pytorch.org/vision/main/_modules/torchvision/transforms/transforms.html#Compose
+    """
 
-class RandomApply(torch.nn.Module):
+    def __call__(self, *args):
+        for t in self.transforms:
+            args = t(*args)
+        return args
+
+class RandomApply(nn.Module):
     """Apply randomly a list of transformations with a given probability.
 
     Copied (and alternated!) from https://pytorch.org/vision/0.14/_modules/torchvision/transforms/transforms.html#RandomApply
@@ -174,8 +208,54 @@ class RandomApply(torch.nn.Module):
         return format_string
 
 
+# custom transformations 
 
+class MyAugmentation(nn.Module):
+  def __init__(self):
+    super(MyAugmentation, self).__init__()
+
+    # we define and cache our transformations:
+    self.k1 = GaussianNoiseChannelwise((0.15, 0.25, 0.25))
+    self.k2 = K.augmentation.RandomGaussianBlur((3,3),sigma=(5.,1.),p=0.75)
+    self.k3 = K.augmentation.RandomHorizontalFlip(p=0.75)
+    self.k4 = K.augmentation.RandomAffine([-45., 45.], [0., 0.15], [0.5, 1.5], [0., 0.15])
+
+    # we create lists designating the usage 
+    self.apply_on_mask = nn.ModuleList([self.k2,self.k3,self.k4]) 
+    self.apply_on_images = nn.ModuleList([self.k1,self.k2,self.k3,self.k4])
+    self.to_be_inversed  = nn.ModuleList([self.k3,self.k4])
+  
+  def forward(self, img: torch.Tensor, mask: Optional[torch.Tensor]) -> Tuple[torch.Tensor,Optional[torch.Tensor]]:
+    # 1. apply transformations on img
+    for t in self.apply_on_images:
+        img = t(img)
+
+    # 2. apply transformations on mask if not None
+    if mask is None:
+        return img,None
+        
+    for t in self.apply_on_mask:
+        mask = t(mask,t._params) # keep same params
     
-
-
+    return img, mask
+  
+  def inverse_last_transformation(self,input: torch.Tensor):
+    """Retrive transformations from last forward apply and create inverse transformations"""
     
+    transform_matrix = None
+    for t in self.to_be_inversed:
+        
+        if transform_matrix is not None:
+            transform_matrix = torch.einsum('ijk,ikl->ijl',t.transform_matrix,transform_matrix) # Socks'n'Shoes
+        else:
+            transform_matrix = t.transform_matrix
+     
+    inverse_transform_matrix = K.geometry.transform.invert_affine_transform(transform_matrix[:,:-1,:]) # B x 2 x 3 (drop last row) 
+    inverse_input = K.geometry.transform.warp_affine(input,inverse_transform_matrix,input.shape[-2:])
+
+    # print(transform_matrix)
+    # print(inverse_transform_matrix)
+    # print(torch.einsum('ijk,ilk->ijl',inverse_transform_matrix,transform_matrix[:,:-1,:]))
+
+    return inverse_input
+
