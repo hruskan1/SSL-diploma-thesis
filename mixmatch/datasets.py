@@ -43,8 +43,7 @@ class SegmentationDatasetUnlabeled(data.Dataset):
     def __getitem__(self, index)->torch.Tensor:
         img_name = self.img_names[index]
         img = default_loader(os.path.join(self.dir_images, img_name))
-
-        img = self.transform(TF.to_tesnor(img)) if self.transform else TF.to_tesnor(img)
+        img = self.transform(TF.to_tensor(img)) if self.transform is not None else TF.to_tensor(img)
 
         return img
 
