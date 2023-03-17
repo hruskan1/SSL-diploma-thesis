@@ -119,8 +119,9 @@ class GaussianNoiseChannelwise(torch.nn.Module):
         """
     
         super().__init__()
-        self.sigma = sigma
-        self.noise = None
+        self._params = EasyDict()
+        self._params.sigma = sigma
+        self._params.noise = None
     
     def get_params(self):
         return self.sigma,self.noise
@@ -134,7 +135,7 @@ class GaussianNoiseChannelwise(torch.nn.Module):
         mask = args[1] if len(args) == 2 else None
         
         C = img.shape[1]
-        sigma = self.sigma
+        sigma = self._params.sigma
         if isinstance(sigma,(int,float)):
             sigma = [float(sigma)] * C
         else:
@@ -144,7 +145,7 @@ class GaussianNoiseChannelwise(torch.nn.Module):
         noise = torch.rand(img.shape)
         noise = torch.einsum('i,aijk->aijk',sigma,noise)
         
-        self.noise = noise
+        self._params.noise = noise
 
         if mask is None:
             return img + noise
@@ -232,30 +233,34 @@ class MyAugmentation(nn.Module):
     # self.apply_on_images = nn.ModuleList([k1,k2,k3,k4])
     # self.to_be_inverted  = nn.ModuleList([k3,k4])
 
-    self.apply_on_images = img_transforms
-    self.apply_on_masks = mask_transforms
-    self.to_be_inverted = invertible_transforms
+    self.img_transforms = img_transforms
+    self.mask_transforms = mask_transforms
+    self.invertible_transforms = invertible_transforms
     
 
-  def forward(self, img: torch.Tensor, mask: Optional[torch.Tensor]) -> Tuple[torch.Tensor,Optional[torch.Tensor]]:
+  def forward(self, img: torch.Tensor, mask: Optional[torch.Tensor]) -> Tuple[Optional[torch.Tensor],Optional[torch.Tensor]]:
+    """Apply random transformations with parameters sampled from transformations arguments. Each run generates new outputs"""
     # 1. apply transformations on img
-    for t in self.apply_on_images:
-        img = t(img)
+    if img is not None:
+        for t in self.img_transforms:
+            img = t(img)
 
     # 2. apply transformations on mask if not None
-    if mask is None:
-        return img,None
-        
-    for t in self.apply_on_masks:
-        mask = t(mask,t._params) # keep same params
+    if mask is not None:
+        for t in self.mask_transforms:
+            mask = t(mask,t._params) # keep same params
+
     return img, mask
   
+
+  def apply_last_transformation(self,img: torch.Tensor,mask: Optional[torch.Tensor]) -> Tuple[Optional[torch.Tensor],Optional[torch.Tensor]]
+      """Apply last transformation. Assumes that forward call was already made and ._params are not empty."""
   
   def inverse_last_transformation(self,input: torch.Tensor):
     """Retrive transformations from last forward apply and create inverse transformations"""
     
     transform_matrix = None
-    for t in self.to_be_inverted:
+    for t in self.invertible_transforms:
         
         if transform_matrix is not None:
             transform_matrix = torch.einsum('ijk,ikl->ijl',t.transform_matrix,transform_matrix) # Socks'n'Shoes
