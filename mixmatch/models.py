@@ -47,9 +47,12 @@ class Mean_Teacher(nn.Module):
             student_model (nn.Module): Student model instance (used for initialization)
             alpha (float): ewa weight (used for updating the model weights)
         """
+        super().__init__()
         self.model = copy.deepcopy(student_model)
         self.alpha = alpha
         self.step = 1
+        for param in self.model.parameters():
+            param.requires_grad = False
 
     
     def forward(self,x):
@@ -57,7 +60,7 @@ class Mean_Teacher(nn.Module):
 
     def update_weights(self,student_model:nn.Module):
         """https://github.com/CuriousAI/mean-teacher/blob/master/pytorch/main.py line 189"""
-        
+        alpha = self.alpha
         alpha = min(1 - 1 / (self.step + 1), alpha)
         self.step += 1
         for teacher_param,student_param in zip(self.model.parameters(),student_model.parameters()):
