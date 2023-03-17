@@ -211,20 +211,32 @@ class RandomApply(nn.Module):
 # custom transformations 
 
 class MyAugmentation(nn.Module):
-  def __init__(self):
+  def __init__(self,img_transforms:nn.ModuleList,mask_transforms:nn.ModuleList,invertible_transforms:nn.ModuleList):
+    """
+    Accepts transformations which shall be applied on image & mask. The transformations **must share memory** (be same instances)
+    
+    Args:
+        img_transforms (nn.ModuleList): Any transformations (no restrictions)
+        mask_transforms (nn.ModuleList): Subset of img_transforms, need to support t._params to recreate same effect on mask as on images
+        invertible_transforms(nn.ModuleList): Subset of mask_transforms, which have inverse operation to retransform the labels back.
+    """
     super(MyAugmentation, self).__init__()
 
-    # we define and cache our transformations:
-    self.k1 = GaussianNoiseChannelwise((0.15, 0.25, 0.25))
-    self.k2 = K.augmentation.RandomGaussianBlur((3,3),sigma=(5.,1.),p=0.75)
-    self.k3 = K.augmentation.RandomHorizontalFlip(p=0.75)
-    self.k4 = K.augmentation.RandomAffine([-45., 45.], [0., 0.15], [0.5, 1.5], [0., 0.15])
+    # Can be defined directly here:
 
-    # we create lists designating the usage 
-    self.apply_on_mask = nn.ModuleList([self.k2,self.k3,self.k4]) 
-    self.apply_on_images = nn.ModuleList([self.k1,self.k2,self.k3,self.k4])
-    self.to_be_inversed  = nn.ModuleList([self.k3,self.k4])
-  
+    # k1 = GaussianNoiseChannelwise((0.15, 0.25, 0.25))
+    # k2 = K.augmentation.RandomGaussianBlur((3,3),sigma=(5.,1.),p=0.75)
+    # k3 = K.augmentation.RandomHorizontalFlip(p=0.75)
+    # k4 = K.augmentation.RandomAffine([-45., 45.], [0., 0.15], [0.5, 1.5], [0., 0.15])
+    # self.apply_on_masks = nn.ModuleList([k2,k3,k4]) 
+    # self.apply_on_images = nn.ModuleList([k1,k2,k3,k4])
+    # self.to_be_inverted  = nn.ModuleList([k3,k4])
+
+    self.apply_on_images = img_transforms
+    self.apply_on_masks = mask_transforms
+    self.to_be_inverted = invertible_transforms
+    
+
   def forward(self, img: torch.Tensor, mask: Optional[torch.Tensor]) -> Tuple[torch.Tensor,Optional[torch.Tensor]]:
     # 1. apply transformations on img
     for t in self.apply_on_images:
@@ -234,16 +246,16 @@ class MyAugmentation(nn.Module):
     if mask is None:
         return img,None
         
-    for t in self.apply_on_mask:
+    for t in self.apply_on_masks:
         mask = t(mask,t._params) # keep same params
-    
     return img, mask
+  
   
   def inverse_last_transformation(self,input: torch.Tensor):
     """Retrive transformations from last forward apply and create inverse transformations"""
     
     transform_matrix = None
-    for t in self.to_be_inversed:
+    for t in self.to_be_inverted:
         
         if transform_matrix is not None:
             transform_matrix = torch.einsum('ijk,ikl->ijl',t.transform_matrix,transform_matrix) # Socks'n'Shoes
