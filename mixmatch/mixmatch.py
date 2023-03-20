@@ -18,32 +18,32 @@ def train():
     pass
 
 
-
 def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torch.Tensor,clf:nn.Module,
-            augumentation:custom_transforms.MyAugmentation,K:int,T:float,alpha:float,device:torch.device=torch.device('cpu'))->Tuple[torch.Tensor,torch.Tensor]:
+                augumentation:custom_transforms.MyAugmentation,K:int,T:float,alpha:float,
+                device:torch.device=torch.device('cpu'),eps:float=1e-4)->Tuple[torch.Tensor,torch.Tensor]:
     """MixMatch algorithm implementation of https://arxiv.org/abs/1905.02249
     
     Args: 
-        labeled_batch (torch.Tensor): feature batch [N,...] containing N features (coresponding to known labels)
-        labels(torch.Tensor): labels (in form of one hot vectors) [N,C,...]
+        labeled_batch (torch.Tensor):   feature batch [N,...] containing N features (coresponding to known labels)
+        labels(torch.Tensor):           labels (in form of one hot vectors) [N,C,...]
         unlabeled_batch (torch.Tensor): feature batch [N,...] containing N unlabeled features
-        clf (nn.Module): classifier to predict label distribution
-        augumentation (nn.Module): augumentation appliable on features 
-        K (int): number of applications of augumentation to unlabeled features
-        T (float >0): hyperparameter for sharpening the distribution (T->0 forces q->dirac)
-        alpha (float>0) : hyperparameter of Beta distribution 
+        clf (nn.Module):                classifier to predict label distribution
+        augumentation (nn.Module):      augumentation appliable on features 
+        K (int):                        number of applications of augumentation to unlabeled features
+        T (float >0):                   hyperparameter for sharpening the distribution (T->0 forces q->dirac)
+        alpha (float>0):                hyperparameter of Beta distribution 
+        eps (float>0):                  epsilon to detremine if element in the input is valid. (Sum across dim 1 
+        (colors in images) should be at least eps)
 
     Returns:
         tuple(alternated_labeled_batch,alternated_unlabeled_batch), 
     """
-    eps=10**(-4) # change later 
-
-
+     # change later 
     # 1) Augumentation and Data Guessing
 
     # 1a) One augumentation for each image in labeled batch
 
-    if labels.shape == labeled_batch.shape:
+    if labels.ndim == labeled_batch.ndim and labels.shape[-2:] == labeled_batch.shape[-2:]:
         # Segmentation -> Do transformation on both images and labels
         aug_labeled_batch,aug_labels = augumentation(labeled_batch,labels)
         
@@ -60,16 +60,11 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     batch_repeated = unlabeled_batch.repeat(1, K, 1, 1).reshape(N*K,C,H,W)
     aug_unlabeled_batch,_ = augumentation(batch_repeated,None) 
 
-    ### until we do not have clf
-    _l = labels.repeat(1, K, 1, 1).reshape(N*K,C,H,W)
-    _,predictions = augumentation.apply_last_transformation(None,_l)
-    # aug_predictions = clf(aug_unlabeled_batch) 
-    ### 
-    
+    predictions = clf(aug_unlabeled_batch)    
     validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
     predictions = predictions * validity_mask
 
-    if aug_labels.shape[-2] == aug_unlabeled_batch.shape[-2]:
+    if predictions.ndim == aug_unlabeled_batch.ndim and predictions.shape[-2] == aug_unlabeled_batch.shape[-2]:
         # Segmentation -> Invert the labels, average them and transform them once again
         base_predictions = augumentation.inverse_last_transformation(predictions)
         base_averages = average_labels(base_predictions.reshape(N,K,C,H,W),keepshape=True).reshape(N*K,C,H,W)
@@ -79,7 +74,6 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
         # Classification -> Simple average
         avg_predictions = average_labels(predictions.reshape(N,K, *predictions.shape[1:])).reshape(N*K,*predictions.shape[1:])
     
-
     # 2) Sharpen distribution with temperature T
     sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)
 
@@ -87,57 +81,19 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     
     # 3) Concat and Shuffle 
     W = concatenate_and_shuffle(X_hat,U_hat)
-
-    print(f"{X_hat[0].shape=},{X_hat[1].shape=}")
-    print(f"{U_hat[0].shape=},{U_hat[1].shape=}")
-    print(f"{W[0].shape},{W[0].shape}")
     
     # split W into two
     W_1 = (W[0][:N],W[1][:N])
     W_2 = (W[0][N:],W[1][N:])
 
-    print(f"{W_1[0].shape},{W_1[0].shape}")
-    print(f"{W_2[0].shape},{W_2[0].shape}")
-
-    X_prime = mixup(X_hat,W_1,alpha=alpha,device=device)
-    U_prime = mixup(U_hat,W_2,alpha=alpha,device=device)
-
-
-    utils.plot_batch(torch.cat(X_hat,dim=0))
-    utils.plot_batch(torch.cat(W_1,dim=0))
-    utils.plot_batch(torch.cat(X_prime,dim=0))
-
-    utils.plot_batch(torch.cat(U_hat,dim=0))
-    utils.plot_batch(torch.cat(W_2,dim=0))
-    utils.plot_batch(torch.cat(U_prime,dim=0))
+    # 4) Mix Up
+    X_prime,x_lam = mixup(X_hat,W_1,alpha=alpha,device=device,eps=eps)
+    U_prime,u_lam = mixup(U_hat,W_2,alpha=alpha,device=device,eps=eps)
 
     return X_prime, U_prime
-    
-    #inverse_unlabeled_batch = augumentation.inverse_last_transformation(aug_unlabeled_batch) # for debug
-    # print("Valid region masks")
-    # utils.plot_batch(valid_region_mask)
-    # print(f"aug_unlabeled_batch,{aug_unlabeled_batch.shape}")
-    # utils.plot_batch(aug_unlabeled_batch)
-    # print(f"aug_predictions,{aug_predictions.shape}")
-    # utils.plot_batch(aug_predictions)
-    # print(f"inverse_aug_predictions,{inverse_aug_predictions.shape}")
-    # utils.plot_batch(inverse_aug_predictions)
-    # print(f"average_inverse_aug_predictions,{avreage_inverse_aug_predictions.shape}")
-    # utils.plot_batch(avreage_inverse_aug_predictions)
-    # print(f"final_predictions,{avg_predictions.shape}")
-    # utils.plot_batch(avg_predictions)
-    # print(f"inverse_unlabeled_batch, {inverse_unlabeled_batch.shape}")
-    # utils.plot_batch(inverse_unlabeled_batch)
-    # print(f"first img in batch:")
-    # utils.plot_batch(inverse_unlabeled_batch.reshape(K,N,C,H,W)[0].reshape(N,C,H,W))
-
-    # Compute average
 
 
-
-
-
-def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor], alpha=1.0, device:torch.device=torch.device('cpu')):
+def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor], alpha=1.0, device:torch.device=torch.device('cpu'),eps=1e-3):
     """
     Mixes up the input data and labels using the MixUp method.
 
@@ -146,11 +102,14 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
         B (tuple): Input data and label tensor tuple of shape (N, ...) and (N,C,), respectively.
         alpha (float): MixUp hyperparameter.
         device (torch.device): Device to use (default: 'cpu').
+        eps (float): Epsilon to detremine if element in the input is valid.
+        (Sum across dim 1 (colors in images) should be at least eps)
 
         Remark: As we use  lam = max(lam,1-lam), the ordering matters! Do (X,W) or (U,W) not otherwise 
 
     Returns:
-        A tuple of mixed-up data and labels, and the mixing coefficients:
+        A tuple of tuples (mixed_x,mixed_y),lam
+          mixed-up data and labels, and the mixing coefficients:
         - mixed_x: Mixed-up data tensor.
         - mixed_y: Mixed-up label tensor.
     """
@@ -159,18 +118,35 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
     x2, y2 = B
 
     # Compute mixing coefficients
-    N = x1.shape[0]
+    N,C = x1.shape[:2]
     lam = torch.Tensor(np.random.beta(alpha, alpha, N)).to(device)
     lam = torch.max(lam,1-lam) 
+    lams = torch.ones(x1.shape) * lam.view(N,*( [1]*(x1.ndim-1))) 
+
+
+    # Due to the affine transformations, part of the image can be empty:
+    # TODO QESTION: If view in seond pic is zero (due to transformation), do not apply weightening (Should it be important?)
+    
+    x1_mask = (x1.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+    x2_mask = (x2.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+
+    # If only x1 valid -> alpha = 1, if only x2 valid -> alpha = 0 
+    lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
+    lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
 
     # Mix up the input data and labels
-
-    # TODO: If segmentation (decide if last two shapes of data and labels are same?)
-    #       If view in seond pic is zero (due to transformation), do not apply weightening (Should it be important?)
-    mixed_x = lam.view(N, *( [1]*(x1.ndim-1)) ) * x1 + (1 - lam.view(N,*( [1]*(x2.ndim-1))) ) * x2
-    mixed_y = lam.view(N, *( [1]*(y1.ndim-1)) ) * y1 + (1 - lam.view(N, *([1]*(y2.ndim-1)) )) * y2
-
-    return mixed_x, mixed_y
+    mixed_x = lams * x1 + (1 - lams) * x2
+    
+    if x1.ndim == y1.ndim and x1.shape[-2:] == y1.shape[-2:]: 
+        # Segmetation -> mix with same lams as on image (each pixel)
+        _lams = lams
+    else:
+        # Classification -> mix with lams for each sample (do not use image shapes logic)
+        _lams = torch.ones(y1.shape) * lam.view(N, *([1]* (y1.dims-1)))
+    
+    mixed_y = _lams * y1 + (1 - _lams) * y2
+        
+    return (mixed_x, mixed_y),lam
 
 
 def sharpen(p, T, dim=1):
@@ -243,7 +219,7 @@ def average_labels(labels:torch.Tensor,keepshape=False,eps=0.5)->torch.Tensor:
                 where K are number of label instances for each image, N is number of images in batch
                 and C is number of segmentation classes
             keepshape (bool): See 'Returns'
-            eps(float): epsilon to determine valid elements of segmentation (sum across C should yield 1-eps)
+            eps(float): epsilon to determine valid elements of segmentation (sum across C should yield at least 1-eps)
         Returns:
             averaged batch [N,C,...] Avreage is computed only from those labels, which are valid 
             if keepshape:
