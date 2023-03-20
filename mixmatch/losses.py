@@ -5,11 +5,12 @@
 # http://creativecommons.org/licenses/by-nc/4.0/ or send a letter to
 # Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
+# Copyright is valid only for first three losses 
+
 """Custom loss functions"""
 
 import torch
 from torch.nn import functional as F
-from torch.autograd import Variable
 
 
 def softmax_mse_loss(input_logits, target_logits):
@@ -49,3 +50,30 @@ def symmetric_mse_loss(input1, input2):
     assert input1.size() == input2.size()
     num_classes = input1.size()[1]
     return torch.sum((input1 - input2)**2) / num_classes
+
+# Not under original license:
+def soft_cross_entropy(input, target,weight: torch.Tensor,reduction:str = 'none'):
+    """
+    Computes soft-CrossEntropy loss (inspired from pytorch code)
+    """
+    assert input.shape == target.shape
+
+    logprobs = torch.nn.functional.log_softmax(input, dim = 1)
+    
+    if weight is None:
+            weight = 1
+    if reduction == 'none':
+        return  -(weight * target * logprobs)
+    elif reduction == 'sum':
+        return  -(weight * target * logprobs).sum()
+    elif reduction == 'mean':
+        return  -(weight * target * logprobs).sum() / ( torch.numel(input) /input.size(dim=1) ) # all other dim
+
+
+def mse_softmax(input,target,reduction='none'):
+    """
+    Computes mse of softmax of input with target 
+    """
+    assert input.shape == target.shape
+
+    return F.mse_loss(F.softmax(input,dim=1),reduction=reduction)
