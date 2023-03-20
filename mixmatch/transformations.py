@@ -9,6 +9,7 @@ import torchvision.transforms.functional as TF
 import random
 import torch 
 import torch.nn as nn
+import torch.nn.functional as F
 import kornia as K
 from typing import List,Tuple,Union,Optional
 from easydict import EasyDict
@@ -204,7 +205,6 @@ class RandomApply(nn.Module):
         format_string += "\n)"
         return format_string
 
-
 # custom transformations 
 
 class MyAugmentation(nn.Module):
@@ -295,4 +295,17 @@ class MyAugmentation(nn.Module):
     # print(torch.einsum('ijk,ilk->ijl',inverse_transform_matrix,transform_matrix[:,:-1,:]))
 
     return inverse_input
+
+
+class ToOneHot(nn.Module):
+    def __init__(self,num_classes=-1):
+        """Transformation taking Tensor of shape (*) or int and parsing it into Tensor (*,num_classes) creating one-hot encoding"""
+        super(ToOneHot, self).__init__()
+        self.num_classes = num_classes
+        
+    def foward(self,x):
+        # Force long format
+        x = x.long(torch.round(x))
+        return F.one_hot(x,num_classes=self.num_classes)
+        
 
