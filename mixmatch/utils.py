@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 from typing import Union
 import os
+from easydict import EasyDict
+import numpy as np
 
 # Loading and Saving of NN
 def save_checkpoint(epoch:int, metrics:dict ,net:nn.Module,opt:torch.optim.Optimizer,args:EasyDict, filename):
