@@ -60,23 +60,25 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     batch_repeated = unlabeled_batch.repeat(1, K, 1, 1).reshape(N*K,C,H,W)
     aug_unlabeled_batch,_ = augumentation(batch_repeated,None) 
 
-    predictions = clf(aug_unlabeled_batch)    
-    validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
-    predictions = predictions * validity_mask
-
+    predictions = nn.functional.softmax(clf(aug_unlabeled_batch),dim=1)    
+    
     if predictions.ndim == aug_unlabeled_batch.ndim and predictions.shape[-2] == aug_unlabeled_batch.shape[-2]:
-        # Segmentation -> Invert the labels, average them and transform them once again
+        # Segmentation -> Validate predictions, invert them,then average them and transform them once again
+        validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
+        predictions = predictions * validity_mask
+
         base_predictions = augumentation.inverse_last_transformation(predictions)
         base_averages = average_labels(base_predictions.reshape(N,K,C,H,W),keepshape=True).reshape(N*K,C,H,W)
         _,avg_predictions = augumentation.apply_last_transformation(mask=base_averages) 
 
     else:
         # Classification -> Simple average
-        avg_predictions = average_labels(predictions.reshape(N,K, *predictions.shape[1:])).reshape(N*K,*predictions.shape[1:])
-    
+        avg_predictions = average_labels(predictions.reshape(N,K, *predictions.shape[1:]),
+                                         keepshape=True
+                                         ).reshape(N*K,*predictions.shape[1:])
+
     # 2) Sharpen distribution with temperature T
     sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)
-
     U_hat = (aug_unlabeled_batch,sharp_avg_predictions)
     
     # 3) Concat and Shuffle 
@@ -85,10 +87,10 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     # split W into two
     W_1 = (W[0][:N],W[1][:N])
     W_2 = (W[0][N:],W[1][N:])
-
+    
     # 4) Mix Up
-    X_prime,x_lam = mixup(X_hat,W_1,alpha=alpha,device=device,eps=eps)
-    U_prime,u_lam = mixup(U_hat,W_2,alpha=alpha,device=device,eps=eps)
+    X_prime, x_lam = mixup(X_hat,W_1,alpha=alpha,device=device,eps=eps)
+    U_prime, u_lam = mixup(U_hat,W_2,alpha=alpha,device=device,eps=eps)
 
     return X_prime, U_prime
 
@@ -116,12 +118,12 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
     # Unpack the input tuples
     x1, y1 = A
     x2, y2 = B
-
+    
     # Compute mixing coefficients
     N,C = x1.shape[:2]
     lam = torch.Tensor(np.random.beta(alpha, alpha, N)).to(device)
     lam = torch.max(lam,1-lam) 
-    lams = torch.ones(x1.shape) * lam.view(N,*( [1]*(x1.ndim-1))) 
+    lams = torch.ones(x1.shape).to(device) * lam.view(N,*( [1]*(x1.ndim-1)))
 
 
     # Due to the affine transformations, part of the image can be empty:
@@ -142,7 +144,7 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
         _lams = lams
     else:
         # Classification -> mix with lams for each sample (do not use image shapes logic)
-        _lams = torch.ones(y1.shape) * lam.view(N, *([1]* (y1.dims-1)))
+        _lams = torch.ones(y1.shape).to(device) * lam.view(N, *([1]* (y1.ndim-1)))
     
     mixed_y = _lams * y1 + (1 - _lams) * y2
         
@@ -238,3 +240,55 @@ def average_labels(labels:torch.Tensor,keepshape=False,eps=0.5)->torch.Tensor:
         avgs = avgs[:,0]
 
     return avgs
+
+
+
+# MIT License
+
+# Copyright (c) 2019 Qing Yu
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+def interleave_offsets(batch, nu):
+    groups = [batch // (nu + 1)] * (nu + 1)
+    for x in range(batch - sum(groups)):
+        groups[-x - 1] += 1
+    offsets = [0]
+    for g in groups:
+        offsets.append(offsets[-1] + g)
+    assert offsets[-1] == batch
+    return offsets
+
+
+def interleave(xy, batch):
+    nu = len(xy) - 1
+    offsets = interleave_offsets(batch, nu)
+    xy = [[v[offsets[p]:offsets[p + 1]] for p in range(nu + 1)] for v in xy]
+    
+    for i in range(1, nu + 1):
+        xy[0][i], xy[i][i] = xy[i][i], xy[0][i]
+    return [torch.cat(v, dim=0) for v in xy]
+
+# print(f"{len(xy)=}")
+# print(f"{xy[0].shape=}")
+# print(f"{nu=}")
+# print(f"{offsets=}")
+# print(f"{len(xy)=}")
+# print(f"{len(xy[0])}")
+# print(f"{xy[0][0].shape=}")
