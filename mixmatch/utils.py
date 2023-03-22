@@ -3,6 +3,66 @@
 import kornia 
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
+from typing import Union
+import os
+
+# Loading and Saving of NN
+def save_checkpoint(epoch:int, metrics:dict ,net:nn.Module,opt:torch.optim.Optimizer,args:EasyDict, filename):
+    """Save (whole) Pytorch checkpoint (for continued learning or inference)"""
+    torch.save({
+            'str_info': f"Epoch: {epoch} \nOptimizer name:  {str(opt)}\n Model architecture\n{str(net)}",
+            'iter': epoch,
+            'model_state_dict': net.state_dict(),
+            'optimizer_state_dict': opt.state_dict(),
+            'config_dict':args,
+            'metrics' : metrics
+            }, filename)
+
+
+def load_checkpoint(device,net:Union[nn.Module,type],opt=None,filename=''):
+    """Load Pytorch checkpoint (Net and optimizer architecture must be as in saved files)"""
+    state = torch.load(filename)
+    args = state['config_dict']
+
+    if type(net) is type: # if architecture not specified, try saved args 
+        net = net(args)
+        device = args.device
+    
+    
+    if net is not None:
+        net.load_state_dict(state['model_state_dict'])
+
+        if device is not None:
+            net.to(device)
+    
+    if opt is not None:
+        opt.load_state_dict(state['optimizer_state_dict'])
+    
+    epoch = state['iter']
+    metrics = state['metrics']
+    
+    return epoch,metrics,net,opt,args
+
+
+def get_device(gpu=3):   # Manually specify gpu
+    if torch.cuda.is_available():
+        device = torch.device(gpu)
+
+    else:
+        device='cpu'
+    #print(f"Device loaded >> {device}")
+    return device
+
+
+def get_free_gpu():
+    os.system('nvidia-smi -q -d Memory |grep -A4 GPU|grep Free >tmp')
+    memory_available = [int(x.split()[2]) for x in open('tmp', 'r').readlines()]
+    index = np.argmax(memory_available[:-1])  # Skip the 7th card --- it is reserved for evaluation!!!
+ 
+    return index   # Returns index of the gpu with the most memory available
+
+
 
 def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2)):
     """Plots batch [N,C,H,W] in separate N imgs,implicitly clips values (without warning)"""
@@ -27,11 +87,6 @@ def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2)):
 
 def _is_torch_float(dtype):
     return dtype == torch.float or dtype == torch.float16 or dtype == torch.float32 or dtype == torch.float64
-
-
-import torch
-
-import torch
 
 def set_channel(batch, value, channel):
     """
