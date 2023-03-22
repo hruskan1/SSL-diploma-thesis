@@ -303,9 +303,9 @@ class ToOneHot(nn.Module):
         super(ToOneHot, self).__init__()
         self.num_classes = num_classes
         
-    def foward(self,x):
+    def forward(self,x):
         # Force long format
-        x = x.long(torch.round(x))
+        x = x.round().long()
         return F.one_hot(x,num_classes=self.num_classes)
         
 
