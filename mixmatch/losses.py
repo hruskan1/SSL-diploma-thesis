@@ -52,7 +52,7 @@ def symmetric_mse_loss(input1, input2):
     return torch.sum((input1 - input2)**2) / num_classes
 
 # Not under original license:
-def soft_cross_entropy(input, target,weight: torch.Tensor,reduction:str = 'none'):
+def soft_cross_entropy(input, target,weight: torch.Tensor = None,reduction:str = 'none'):
     """
     Computes soft-CrossEntropy loss (inspired from pytorch code)
     """
@@ -76,4 +76,4 @@ def mse_softmax(input,target,reduction='none'):
     """
     assert input.shape == target.shape
 
-    return F.mse_loss(F.softmax(input,dim=1),reduction=reduction)
+    return F.mse_loss(F.softmax(input,dim=1),target,reduction=reduction)
