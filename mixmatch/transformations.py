@@ -131,21 +131,30 @@ class GaussianNoiseChannelwise(torch.nn.Module):
         
 
     def forward(self,x,params={}) -> torch.Tensor:
-        
-        self._update_params(params)
+        # Might be buggy
         
         C = x.shape[1]
-        sigma = self._params.sigma 
+        sigma = params.get('sigma',self._params.sigma)
+
         if isinstance(sigma,(int,float)):
             sigma = [float(sigma)] * C
         else:
             sigma = [float(s) for s in sigma]
         sigma = torch.Tensor(sigma)
 
-        noise = torch.rand(x.shape)
-        noise = torch.einsum('i,aijk->aijk',sigma,noise)
+        if params.get('noise',None) is None:
+            # Generate new output parameters
+            self._params.noise = torch.rand(x.shape)
+        else:
+            # Use given
+            noise = params.get('noise')
+    
+        noise = torch.einsum('i,aijk->aijk',sigma,self._params.noise)
         
-        self._params.noise = noise
+        # Get same device as input
+        noise = noise.to(x.device)
+
+        self._update_params(params)
 
         return x + noise
 
