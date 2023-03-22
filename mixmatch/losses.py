@@ -52,16 +52,27 @@ def symmetric_mse_loss(input1, input2):
     return torch.sum((input1 - input2)**2) / num_classes
 
 # Not under original license:
-def soft_cross_entropy(input, target,weight: torch.Tensor = None,reduction:str = 'none'):
+def soft_cross_entropy(input:torch.Tensor, target:torch.Tensor,weight: torch.Tensor = None,reduction:str = 'none'):
     """
     Computes soft-CrossEntropy loss (inspired from pytorch code)
+
+    Args: 
+        input (torch.Tensor): [N,C] logits for classication task produced by model 
+        target (torch.Tensor): [N,C] desired probability distribution 
+        weight (torch.Tensor): [C,] desired weights for each class 
+
+    Returns:
+        Cross entropy loss 
     """
     assert input.shape == target.shape
 
     logprobs = torch.nn.functional.log_softmax(input, dim = 1)
     
     if weight is None:
-            weight = 1
+            weight = torch.ones(input.shape[1])
+
+    weight = weight.view(1,input.shape[1])
+
     if reduction == 'none':
         return  -(weight * target * logprobs)
     elif reduction == 'sum':
@@ -69,6 +80,22 @@ def soft_cross_entropy(input, target,weight: torch.Tensor = None,reduction:str =
     elif reduction == 'mean':
         return  -(weight * target * logprobs).sum() / ( torch.numel(input) /input.size(dim=1) ) # all other dim
 
+def kl_divergence(input:torch.Tensor,target:torch.Tensor,reduction:str='batchmean'):
+    """
+    Computes KL div loss (inspired from pytorch code)
+
+    Args: 
+        input (torch.Tensor): [*] logits for classication task produced by model 
+        target (torch.Tensor): [*] desired probability distribution 
+        reduction (str): Please see documentation for your Torch version 
+    Returns:
+        KL divergence: scalar by default, [*] if reduction is 'none'.
+    """
+    assert input.shape == target.shape
+
+    logprobs = torch.nn.functional.log_softmax(input, dim = 1)
+
+    return torch.nn.functional.kl_div(input=logprobs, target=target, reduction=reduction)
 
 def mse_softmax(input,target,reduction='none'):
     """
