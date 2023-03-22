@@ -305,7 +305,8 @@ class ToOneHot(nn.Module):
         
     def forward(self,x):
         # Force long format
+        dtype = x.dtype
         x = x.round().long()
-        return F.one_hot(x,num_classes=self.num_classes)
+        return F.one_hot(x,num_classes=self.num_classes).to(dtype)
         
 
