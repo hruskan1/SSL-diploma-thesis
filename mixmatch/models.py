@@ -37,7 +37,7 @@ class MLP(nn.Module):
 
 
 class Mean_Teacher(nn.Module):
-    def __init__(self, student_model:nn.Module,alpha:float=0.995):
+    def __init__(self, student_model:nn.Module,alpha:float=0.995,weight_decay:float=0.999992):
         """Mean Teacher model implementation of
         
         arxiv.org/abs/1703.01780
@@ -46,11 +46,13 @@ class Mean_Teacher(nn.Module):
         Args:
             student_model (nn.Module): Student model instance (used for initialization)
             alpha (float): ewa weight (used for updating the model weights)
+            weight_decay(float): weight decay applied on the student model instance 
         """
         super().__init__()
         self.model = copy.deepcopy(student_model)
         self.alpha = alpha
         self.step = 1
+        self.wd  = weight_decay
         for param in self.model.parameters():
             param.requires_grad = False
 
@@ -61,9 +63,15 @@ class Mean_Teacher(nn.Module):
     def update_weights(self,student_model:nn.Module):
         """https://github.com/CuriousAI/mean-teacher/blob/master/pytorch/main.py line 189"""
         alpha = self.alpha
-        alpha = min(1 - 1 / (self.step + 1), alpha)
+    
         self.step += 1
-        for teacher_param,student_param in zip(self.model.parameters(),student_model.parameters()):
-            teacher_param.data.mul_(self.alpha).add_(student_param * (1 - alpha))
+        model_params = list(self.model.state_dict().values())
+        student_params = list(student_model.state_dict().values())
+        for teacher_param,student_param in zip(model_params,student_params): # not working with model.parameters() method
+            if teacher_param.dtype == torch.float32:
+                teacher_param.mul_(self.alpha).add_( (1 - alpha) * student_param)
+                # customized weight decay
+                student_param.mul_(self.wd)
+
 
 
