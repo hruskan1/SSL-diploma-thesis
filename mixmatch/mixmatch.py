@@ -13,6 +13,7 @@ import transformations as custom_transforms
 import utils
 import copy
 import numpy as np
+from typing import Optional, Union
 
 def train():
     pass
@@ -20,7 +21,7 @@ def train():
 
 def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torch.Tensor,clf:nn.Module,
                 augumentation:custom_transforms.MyAugmentation,K:int,T:float,alpha:float,
-                device:torch.device=torch.device('cpu'),eps:float=1e-4)->Tuple[torch.Tensor,torch.Tensor]:
+                eps:float=1e-4)->Tuple[torch.Tensor,torch.Tensor]:
     """MixMatch algorithm implementation of https://arxiv.org/abs/1905.02249
     
     Args: 
@@ -52,13 +53,21 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
         aug_labeled_batch,_ = augumentation(labeled_batch,None)
         aug_labels = labels 
     
+    
+    
     X_hat = (aug_labeled_batch,aug_labels)
     
     # 1b) K augumentations for each image in unlabeled batch
 
     N,C,H,W = unlabeled_batch.shape
-    batch_repeated = unlabeled_batch.repeat(1, K, 1, 1).reshape(N*K,C,H,W)
-    aug_unlabeled_batch,_ = augumentation(batch_repeated,None) 
+    batch_repeated = unlabeled_batch.repeat(1, K, 1, 1).reshape(N,K,C,H,W)
+    #aug_labeled_batch = augumentation(unlabeled_batch)
+     # apply iteratively if augumentation does not support different augmentation for each image
+    aug_labeled_batch = []
+    for i in range(K):
+        ith_augmented_batch,_ = augumentation(batch_repeated[:,i],None)
+        aug_labeled_batch.append(ith_augmented_batch.unsqueeze(1))
+    aug_unlabeled_batch = torch.cat(aug_labeled_batch,dim=1).reshape(N*K,C,H,W)
 
     predictions = nn.functional.softmax(clf(aug_unlabeled_batch),dim=1)    
     
@@ -76,6 +85,7 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
         avg_predictions = average_labels(predictions.reshape(N,K, *predictions.shape[1:]),
                                          keepshape=True
                                          ).reshape(N*K,*predictions.shape[1:])
+    
 
     # 2) Sharpen distribution with temperature T
     sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)
@@ -89,13 +99,13 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     W_2 = (W[0][N:],W[1][N:])
     
     # 4) Mix Up
-    X_prime, x_lam = mixup(X_hat,W_1,alpha=alpha,device=device,eps=eps)
-    U_prime, u_lam = mixup(U_hat,W_2,alpha=alpha,device=device,eps=eps)
+    X_prime, x_lam = mixup(X_hat,W_1,alpha=alpha,eps=eps)
+    U_prime, u_lam = mixup(U_hat,W_2,alpha=alpha,eps=eps)
 
     return X_prime, U_prime
 
 
-def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor], alpha=1.0, device:torch.device=torch.device('cpu'),eps=1e-3):
+def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor], alpha=1.0,eps=1e-3,lam:Optional[torch.Tensor] = None):
     """
     Mixes up the input data and labels using the MixUp method.
 
@@ -105,7 +115,8 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
         alpha (float): MixUp hyperparameter.
         device (torch.device): Device to use (default: 'cpu').
         eps (float): Epsilon to detremine if element in the input is valid.
-        (Sum across dim 1 (colors in images) should be at least eps)
+            (Sum across dim 1 (colors in images) should be at least eps)
+        lam (Optional[torch.Tensor]): Lambda (mixing coeficient) [N], mainly for debugging purposes
 
         Remark: As we use  lam = max(lam,1-lam), the ordering matters! Do (X,W) or (U,W) not otherwise 
 
@@ -118,25 +129,28 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
     # Unpack the input tuples
     x1, y1 = A
     x2, y2 = B
-    
+
     # Compute mixing coefficients
     N,C = x1.shape[:2]
-    lam = torch.Tensor(np.random.beta(alpha, alpha, N)).to(device)
-    lam = torch.max(lam,1-lam) 
-    lams = torch.ones(x1.shape).to(device) * lam.view(N,*( [1]*(x1.ndim-1)))
+    if lam is None:
+        lam = torch.Tensor(np.random.beta(alpha, alpha, N))
+    
+    lam = torch.max(lam,1-lam).to(x1.device)
+    lams = torch.ones(x1.shape).to(x1.device) * lam.view(N,*( [1]*(x1.ndim-1)))
+        
 
 
     # Due to the affine transformations, part of the image can be empty:
     # TODO QESTION: If view in seond pic is zero (due to transformation), do not apply weightening (Should it be important?)
     
-    x1_mask = (x1.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
-    x2_mask = (x2.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
-
     # If only x1 valid -> alpha = 1, if only x2 valid -> alpha = 0 
-    lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
-    lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
+    # x1_mask = (x1.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+    # x2_mask = (x2.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+    # lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
+    # lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
 
     # Mix up the input data and labels
+    
     mixed_x = lams * x1 + (1 - lams) * x2
     
     if x1.ndim == y1.ndim and x1.shape[-2:] == y1.shape[-2:]: 
@@ -144,7 +158,7 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
         _lams = lams
     else:
         # Classification -> mix with lams for each sample (do not use image shapes logic)
-        _lams = torch.ones(y1.shape).to(device) * lam.view(N, *([1]* (y1.ndim-1)))
+        _lams = torch.ones(y1.shape).to(y1.device) * lam.view(N, *([1]* (y1.ndim-1)))
     
     mixed_y = _lams * y1 + (1 - _lams) * y2
         
@@ -165,7 +179,7 @@ def sharpen(p, T, dim=1):
     return p_sharp
 
 
-def concatenate_and_shuffle(X_hat:tuple[torch.Tensor,torch.Tensor], U_hat:tuple[torch.Tensor,torch.Tensor]):
+def concatenate_and_shuffle(X_hat:tuple[torch.Tensor,torch.Tensor], U_hat:tuple[torch.Tensor,torch.Tensor],shuffle_indices:Optional[torch.Tensor]=None):
     """
     Concatenates and shuffles two PyTorch tuples `X_hat` and `U_hat`.
 
@@ -173,6 +187,7 @@ def concatenate_and_shuffle(X_hat:tuple[torch.Tensor,torch.Tensor], U_hat:tuple[
         X_hat (tuple): Tuple of two PyTorch tensors of shapes (N, ...) and (N,), representing input data and labels.
         U_hat (tuple): Tuple of two PyTorch tensors of shapes (N, ...) and (N,), representing input data and labels.
         Data and labels should have same size (across datasets X_hat,U_hat)
+        shuffle_indicies Optional(torch.Tensor): Tensor of permuting indicies for debugging purposes
 
     Returns:
         Tuple of two PyTorch tensors of shuffled data and labels W:
@@ -182,28 +197,29 @@ def concatenate_and_shuffle(X_hat:tuple[torch.Tensor,torch.Tensor], U_hat:tuple[
     # Concatenate X_hat and U_hat components
     data = torch.cat([X_hat[0],U_hat[0]], dim=0)
     labels = torch.cat([X_hat[1],U_hat[1]], dim=0)
+    
+    return shuffle(data,labels,shuffle_indices=shuffle_indices)
 
-    return shuffle(data,labels)
 
-
-def shuffle(data:torch.Tensor, labels:torch.Tensor):
+def shuffle(data:torch.Tensor, labels:torch.Tensor,shuffle_indices:Optional[torch.Tensor]=None):
     """
     Shuffles two PyTorch tensors `data` and `labels` with the same permutation.
     
     Args:
         data (torch.Tensor): Input tensor of shape (N, ...).
         labels (torch.Tensor): Tensor of labels of shape (N,).
+        shuffle_indicies Optional(torch.Tensor): Tensor of permuting indicies for debugging purposes.
 
     Returns:
         Tuple of two torch.Tensors:
         - data_shuffled: Shuffled tensor with the same shape as `data`.
-        - labels_shuffled: Shuffled tensor of labels with the same shape as `labels`.
+        - labels_shuffled: Shuffled tensor of labels with the same shape as `labels`. Mainly for debugging purposes
     """
     
     assert data.shape[0] == labels.shape[0], "Data and labels must have the same number of samples."
-
+    
     # Generate a random permutation of the indices of the tensors
-    indices = torch.randperm(data.size(0))
+    indices = torch.randperm(data.size(0)) if shuffle_indices is None else shuffle_indices.long()
 
     # Apply the permutation to both tensors
     data_shuffled = data[indices]
@@ -228,7 +244,7 @@ def average_labels(labels:torch.Tensor,keepshape=False,eps=0.5)->torch.Tensor:
                 averaged batch [N,K,C,..], where average is populated across first dim  
     """
     N,K = labels.shape[:2]
-
+    
     label_sums = labels.sum(dim=1,keepdim=True)
     valid_elements = (labels.sum(dim=2,keepdim=True) >= 1-eps).to(torch.float32)
     ns = valid_elements.sum(dim=1,keepdim=True) 
