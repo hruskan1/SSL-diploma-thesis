@@ -27,6 +27,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Callable
 
 
 class BasicBlock(nn.Module):
@@ -111,16 +112,16 @@ class WideResNet(nn.Module):
         out = out.view(-1, self.nChannels)
         return self.fc(out)
 
-def evaluate(m:nn.Module,loss_fn,dl,device:torch.device=torch.device('cpu')):
+def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('cpu')):
     """
     The function evaluates the neural network model m on the data in the data loader dl using the provided loss function loss_fn. 
     The evaluation is performed with torch.no_grad() to disable gradient computation and speed up computation. 
     The final returned value is the average loss per data item (picture).
     
     :param m: a PyTorch module (a neural network model)
-    :param args: an instance of the EasyDict class that contains runtime arguments 
     :param loss_fn: a loss function that takes two inputs and returns a value or values of the loss between the two inputs
     :param dl: a PyTorch DataLoader that yields mini-batches of features and targets for evaluation
+    :param device: a pytorch device instance which specifies the gpu number or cpu device on which the evalutaion is running. 
     
     :returns: Tuple of (avreage loss,accuracy) (Average is compute across items in dataloder dl)
     """
@@ -148,3 +149,18 @@ def evaluate(m:nn.Module,loss_fn,dl,device:torch.device=torch.device('cpu')):
             numel += targets_hat.shape[0]
 
     return loss / numel, accuracy / numel
+
+
+def train_one_epoch(m:nn.Module,opt,loss_fn:Callable,dl,device:torch.device=torch.device('cpu')):
+    """
+    The functions trains the neural network model 'm' for one epoch of dataloader 'dl' using the provided optimizer 'opt' 
+    and loss function 'loss_fn'.
+
+    :param m: a PyTorch module (a neural network model)
+    :param opt: a Pytorch Optimizer
+    :param loss_fn: a loss function that takes two inputs and returns a value or values of the loss between the two inputs
+    :param dl: a PyTorch DataLoader that yields mini-batches of features and targets for evaluation
+    :param device: a pytorch device instance which specifies the gpu number or cpu device on which the evalutaion is running. 
+    """
+    #TODO: Write a standard (supervised) training loop
+    pass
