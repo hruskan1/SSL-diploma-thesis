@@ -5,6 +5,7 @@ from typing import Callable,Union
 from easydict import EasyDict
 import yaml
 import kornia as K
+import matplotlib.pyplot as plt
 
 import numpy as np
 import torch
@@ -25,6 +26,9 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 from typing import Optional
 from progress.bar import Bar as Bar
+
+import ref
+
 
 
 
@@ -86,7 +90,7 @@ def train_one_epoch(model:nn.Module,
             l_batch,u_batch = mixmatch.mixmatch(labeled_batch=data_l,
                                                     labels=labels,
                                                     unlabeled_batch=data_u,
-                                                    clf=ewa_model,
+                                                    clf=model,
                                                     augumentation=transform,
                                                     K=args.K,
                                                     T=args.temperature,
@@ -95,6 +99,7 @@ def train_one_epoch(model:nn.Module,
             
         x = torch.cat([l_batch[0],u_batch[0]],dim=0)
         targets_l,targets_u = l_batch[1],u_batch[1] 
+
 
         # Interleave labeled and unlabeled samples between batches to obtain correct batchnorm calculation
         x_splitted = list(torch.split(x, current_batch_size))
@@ -124,6 +129,7 @@ def train_one_epoch(model:nn.Module,
         opt.step()
         if lr_scheduler is not None:
             lr_scheduler.step()
+
         if args.mean_teacher_coef: 
             ewa_model.update_weights(model)
 
@@ -144,7 +150,7 @@ def train_one_epoch(model:nn.Module,
 
        
         bar.suffix  = f"#({k}/{args.kimg})#({args.current_count}/{args.epochs})|{bar.elapsed_td}|ETA:{bar.eta_td}|"+\
-                      f"L:{ewa_loss:.4f}|Lx:{loss_supervised:.4f}|Lu:{loss_unsupervised:.4f}|lam: {lam_u:.4f}" +\
+                      f"L_ewa:{ewa_loss:.4f}|L:{loss:.4f}|Lx:{loss_supervised:.4f}|Lu:{loss_unsupervised:.4f}|lam: {lam_u:.4f}" +\
                       f""             
         bar.next()
     bar.finish()
@@ -195,8 +201,10 @@ def train(model:nn.Module,
     model = model.to(args.device)
     # Use Teacher if desired
     if args.mean_teacher_coef:
-        ewa_model = models.Mean_Teacher(model,args.mean_teacher_coef)
+        ewa_model = models.Mean_Teacher(model,args.mean_teacher_coef,weight_decay=args.weight_decay)
         ewa_model = ewa_model.to(args.device)
+
+
 
     
     best_val_acc = 0 
@@ -205,7 +213,7 @@ def train(model:nn.Module,
     while args.current_count < args.epochs:
 
         
-        if args.current_count == 0: # Rewrite into the tensorboardx ?
+        if args.current_count == 0: 
             inner_compute_metrics(m,metrics,writer,args.current_count)
 
         metrics = train_one_epoch(model,m,opt,lr_scheduler,labeled_dataloader,unlabeled_dataloader,transform,args,metrics,writer)
@@ -229,9 +237,13 @@ def train(model:nn.Module,
             
             if args.debug:
                 d_ls,d_acc = wide_resnet.evaluate(m, eval_loss_fn, unlabeled_dataloader, args.device)
-                strtoprint += f"D: unlabeled loss: {d_ls:.4f} " + \
-                                f"D: unlabeled acc: {d_acc*100:2.4f}"
-                
+                strtoprint += f"unlabeled loss: {d_ls:.4f} " + \
+                                f"unlabeled acc: {d_acc*100:2.4f}"
+                print("M METRICS:")
+                _, train_acc = ref.validate(labeled_dataloader, m, eval_loss_fn, args.device, mode='Train Stats')
+                val_loss, val_acc = ref.validate(validation_dataloader, m, eval_loss_fn,args.device,  mode='Valid Stats')
+                test_loss, test_acc = ref.validate(test_dataloader, m, eval_loss_fn, args.device, mode='Test Stats ')
+                                
             print(strtoprint, file=open(args.logpath, 'a'), flush=True)
             print(strtoprint)
 
@@ -241,16 +253,13 @@ def train(model:nn.Module,
 
             m_path = args.modelpath + f"-e{str(args.current_count)}" + f"-a{current_val_acc:.2f}" + '-m.pt'
             print(f'# Saving Model : {m_path}', file=open(args.logpath, 'a'), flush=True)
-            utils.save_checkpoint(args.current_count,metrics,m,opt,args,m_path)
+            model_to_save = m.model if isinstance(m,models.Mean_Teacher) else m
+            utils.save_checkpoint(args.current_count,metrics,model_to_save,opt,args,m_path)
 
             if best_val_acc < current_val_acc:
                 best_val_acc = current_val_acc
                
     return metrics
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -264,16 +273,16 @@ if __name__ == '__main__':
     parser.add_argument('-T','--temperature', default = 0.5, type=float, help='Temperature T for sharpening the distribution, T > 0')
     parser.add_argument('-a','--alpha',default=0.75, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
     parser.add_argument('-lam','--lambda_u',default=75, type = float, help='Weight for loss corresponding to unlabeled data')
-    parser.add_argument('-rampup','--rampup_length',default=512, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
+    parser.add_argument('-rampup','--rampup_length',default=50, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
     parser.add_argument('-nx','--n_labeled',default=250,type=int,help='Number of labeled samples (Rest is unlabeled)')
     parser.add_argument('-nv','--n_val',default = 500,type=int, help='Number of samples used in validation dataset (the dataset is split into labeled,unlabeled,validation and test if test exists)')
     parser.add_argument('-BS','--batch_size',default=64,type = int,help='mini batch size')
-    parser.add_argument('-lr','--learning_rate',default=1e-3,type=float,help='learning rate of Adam Optimizer')
+    parser.add_argument('-lr','--learning_rate',default=2e-3,type=float,help='learning rate of Adam Optimizer')
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=float, help='weight for exponential weighted average of training loss')
     parser.add_argument('--device',default=1, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
     parser.add_argument('--dataset_path',default='./CIFAR10', type=str, help='Root directory for dataset') 
-    parser.add_argument('-ewa', '--mean_teacher_coef', default = None, type=float, help='weight for exponential average of mean teacher model. Default is None and Mean teach is not used')
+    parser.add_argument('-ewa', '--mean_teacher_coef', default = 0.999, type=float, help='weight for exponential average of mean teacher model. Default is None and Mean teach is not used')
     parser.add_argument('--out', '--output_directory', default=f'./run_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
     parser.add_argument('--resume', default=None, type=str, help='Path to model which is to be used to resume training')
     parser.add_argument('--from_yml', default=None, type=str, help ='Path to file where the arguments are specified (as a dictionary)')
@@ -281,13 +290,12 @@ if __name__ == '__main__':
     parser.add_argument('--save_period',default=0,type=int, help = 'Epoch period for saving the model,the model with best val acc is implicitly saved')
     parser.add_argument('--debug',default=False,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
+    parser.add_argument('--weight_decay',default=0.0004,type=float, help ="Weight decay (applied at each step), Applied only if  'mean_teacher_coef' is not None")
 
-    
     
     ### Parse the command-line arguments ###
     parsed_args = parser.parse_args()
 
-    
 
     # Parse from file
     if parsed_args.from_yml:
@@ -296,6 +304,7 @@ if __name__ == '__main__':
             args = EasyDict(cfg)
     else:
         args = EasyDict()
+
 
     # Import and override with parameters provided on command line
     for k,v in parsed_args._get_kwargs():
@@ -325,7 +334,7 @@ if __name__ == '__main__':
     if args.resume is not None:
         print(f"resume_with model: {args.resume}",file=open(args.logpath,'a'),flush=True)
     else:
-        print(f"No resume point found, will start from scratch!",file=open(args.logpath,'a'),flush=True)
+        print(f"No resume point provided, will start from scratch!",file=open(args.logpath,'a'),flush=True)
 
 
     print(f"# Starting at {datetime.now()}")
@@ -352,15 +361,13 @@ if __name__ == '__main__':
     # k2 = transforms.Pad(padding=4, padding_mode='reflect')
     # k3 = transforms.RandomCrop(size=32)
 
-    
-
     img_trans = nn.ModuleList([k1,k2,k3])
     mask_trans = nn.ModuleList() # only for segmentation 
     invert_trans  = nn.ModuleList() # only for segmentation 
     transform = custom_transforms.MyAugmentation(img_trans,mask_trans,invert_trans)
 
 
-    ### Model and optimizer ###
+    ### Model,optimizer, LR scheduler, Eval function ###
     model = wide_resnet.WideResNet(num_classes)
     opt = torch.optim.Adam(params=model.parameters(),lr = args.learning_rate)
 
@@ -372,7 +379,8 @@ if __name__ == '__main__':
     else:
         lr_scheduler = None
 
-    eval_loss_fn = losses.kl_divergence
+    # eval_loss_fn = losses.kl_divergence
+    eval_loss_fn = nn.CrossEntropyLoss()
 
     # Load previous checkpoint
     if args.resume is not None and os.path.isfile(args.resume):
@@ -400,7 +408,7 @@ if __name__ == '__main__':
     metrics = train(model=model,
                     opt = opt,
                     lr_scheduler = lr_scheduler,
-                    eval_loss_fn=losses.kl_divergence,
+                    eval_loss_fn = eval_loss_fn,
                     labeled_dataloader=labeled_dataloader,
                     unlabeled_dataloader=unlabeled_dataloader,
                     validation_dataloader=validation_dataloader,
