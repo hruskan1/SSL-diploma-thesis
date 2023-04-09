@@ -66,7 +66,7 @@ def get_free_gpu():
 
 
 
-def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2)):
+def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2))->plt.Figure:
     """Plots batch [N,C,H,W] in separate N imgs,implicitly clips values (without warning)"""
     
     # Implicitly clip
@@ -86,6 +86,8 @@ def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2)):
         ax[row, col].axis("off")
     plt.tight_layout()
     plt.show()
+
+    return fig
 
 def _is_torch_float(dtype):
     return dtype == torch.float or dtype == torch.float16 or dtype == torch.float32 or dtype == torch.float64
