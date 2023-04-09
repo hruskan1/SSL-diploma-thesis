@@ -124,6 +124,10 @@ class SegmentationDatasetLabeled(SegmentationDatasetUnlabeled):
 
 
 class CIFAR10Labeled(torchvision.datasets.CIFAR10):
+
+    mean = torch.Tensor([0.4914, 0.4822, 0.4465]) 
+    std = torch.Tensor([0.2471, 0.2435, 0.2616])
+
     def __init__(self, 
                 root:str,
                 indicies:Optional[torch.Tensor]=None,
@@ -235,7 +239,12 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
     ]
 
     id2trainid = {label.id: label.train_id for label in classes}
-    trainid2color = {label.train_id : label.color for label in classes}
+    trainid2color = {label.train_id : label.color for label in reversed(classes)}
+    trainid2names = {label.train_id : label.name for label in reversed(classes)}
+
+
+    mean = torch.Tensor([0.485, 0.456, 0.406]) 
+    std = torch.Tensor([0.229, 0.224, 0.225])
 
     def __init__( 
         self,
@@ -294,18 +303,21 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
         return super(CityScapeDataset,self).__getitem__(index)
     
     @staticmethod
-    def color_segmentation(self,segmentation:torch.Tensor):
+    def color_segmentation(segmentation:torch.Tensor,opacity:Optional[int]=None):
         """
         Parse a segmentation tensor into a color image tensor.
 
         Args:
             segmentation (torch.Tensor): a tensor of shape (N, 1, H, W) or (1, H, W)
                 containing the segmentation labels.
+            opacity: unsigned int [0,255]  seting the opacity of colors. 
         Uses:
             trainid2color (dict): a dictionary mapping train IDs (int) to color tuples (R, G, B).
 
         Returns:
-            A tensor of shape (N, 4, H, W) or (4, H, W) containing the color image.
+            A tensor of shape (N, 3, H, W) or (3, H, W) containing the color image.
+            If opacity is not None:
+                A tensor of shape (N, 4, H, W) or (4, H, W) containing the color image.
         """
 
         # Get dimensions
@@ -315,17 +327,23 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
             segmentation = segmentation.unsqueeze(0)
         
         N, _, H, W = segmentation.shape
-
+        C = 4 if opacity is not None else 3
         # Create empty color image tensor
-        color_img = torch.zeros((N, 4, H, W), dtype=torch.float32)
+        
+        color_img = torch.zeros((N, C, H, W), dtype=torch.float32).to(segmentation.device)
+        
 
         # Loop over train IDs and fill color image tensor
         for trainid, color in CityScapeDataset.trainid2color.items():
             mask = (segmentation == trainid)
             if mask.any():
-                color_tensor = torch.tensor(color + (255,), dtype=torch.float32) / 255.0
-                color_tensor = color_tensor.view(1, 4, 1, 1).expand(N, -1, H, W)
-                mask = mask.expand(-1, 4, -1, -1)
+                if opacity is not None:
+                    color_tensor = torch.tensor(color + (opacity,), dtype=torch.float32) / 255.0
+                else:
+                    color_tensor = torch.tensor(color, dtype=torch.float32) / 255.0
+                    
+                color_tensor = color_tensor.view(1, C, 1, 1).expand(N, -1, H, W).to(segmentation.device)
+                mask = mask.expand(-1, C, -1, -1)
                 color_img[mask] = color_tensor[mask]
 
         # Reshape to input shape 
@@ -334,6 +352,23 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
 
         return color_img
             
+    @staticmethod
+    def remove_normalization(normalized_inputs:torch.Tensor)->torch.Tensor:
+        """
+        Remove normalization (mean,std). Assumes torchvision.Normalization(std,mean) was applied.
+        
+        Args:
+            normalized_inputs(torch.Tensor): batched images (N,C,H,W) 
+        Returns
+            original_inputs (torch.Tensor) (N,C,H,W)
+        """
+        
+        N,C,H,W = normalized_inputs.shape
+        std = CityScapeDataset.std.view(1, C, 1, 1).expand(N, -1, H, W).to(normalized_inputs.device)
+        mean = CityScapeDataset.mean.view(1, C, 1, 1).expand(N, -1, H, W).to(normalized_inputs.device)
+        original_inputs = (normalized_inputs * std) + mean 
+        return original_inputs
+
 
 class CityScapeLabeled(CityScapeDataset):
     """
@@ -435,8 +470,8 @@ def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,ve
 
     # base_dataloader = data.DataLoader(base_dataset,batch_size,shuffle=True,num_workers=num_workers)
     # mean, std  = compute_mean_std(base_dataloader)
-    mean = torch.Tensor([0.4914, 0.4822, 0.4465]) 
-    std = torch.Tensor([0.2471, 0.2435, 0.2616])
+    mean = CIFAR10Labeled.mean
+    std = CIFAR10Labeled.std
     
     num_classes = 10
     
