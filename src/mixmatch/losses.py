@@ -57,8 +57,8 @@ def soft_cross_entropy(input:torch.Tensor, target:torch.Tensor,weight: torch.Ten
     Computes soft-CrossEntropy loss (inspired from pytorch code)
 
     Args: 
-        input (torch.Tensor): [N,C] logits for classication task produced by model 
-        target (torch.Tensor): [N,C] desired probability distribution 
+        input (torch.Tensor): [N,C,..] logits for classication task produced by model 
+        target (torch.Tensor): [N,C,..] desired probability distribution 
         weight (torch.Tensor): [C,] desired weights for each class 
 
     Returns:
