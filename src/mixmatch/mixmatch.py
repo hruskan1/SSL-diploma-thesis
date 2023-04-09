@@ -8,15 +8,13 @@ import torch
 import torch.nn as nn
 import torchvision.transforms as transforms 
 from typing import Tuple
-import matplotlib.pyplot as plt
-import transformations as custom_transforms
-import utils
 import copy
 import numpy as np
 from typing import Optional, Union
+import matplotlib.pyplot as plt
+from . import transformations as custom_transforms
+from . import utils
 
-def train():
-    pass
 
 
 def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torch.Tensor,clf:nn.Module,
@@ -42,57 +40,71 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
      # change later 
     # 1) Augumentation and Data Guessing
 
-    # 1a) One augumentation for each image in labeled batch
-
-    if labels.ndim == labeled_batch.ndim and labels.shape[-2:] == labeled_batch.shape[-2:]:
-        # Segmentation -> Do transformation on both images and labels
-        aug_labeled_batch,aug_labels = augumentation(labeled_batch,labels)
-        
-    else:
-        # Classification -> Do transformation only on images
-        aug_labeled_batch,_ = augumentation(labeled_batch,None)
-        aug_labels = labels 
-    
-    
-    
+    aug_labeled_batch,aug_labels = utils.apply_transformation(augumentation,labeled_batch,labels)
     X_hat = (aug_labeled_batch,aug_labels)
     
     # 1b) K augumentations for each image in unlabeled batch
 
     N,C,H,W = unlabeled_batch.shape
-    batch_repeated = unlabeled_batch.repeat(1, K, 1, 1).reshape(N,K,C,H,W)
-    #aug_labeled_batch = augumentation(unlabeled_batch)
-     # apply iteratively if augumentation does not support different augmentation for each image
-    aug_labeled_batch = []
-    for i in range(K):
-        ith_augmented_batch,_ = augumentation(batch_repeated[:,i],None)
-        aug_labeled_batch.append(ith_augmented_batch.unsqueeze(1))
-    aug_unlabeled_batch = torch.cat(aug_labeled_batch,dim=1).reshape(N*K,C,H,W)
-
-    predictions = nn.functional.softmax(clf(aug_unlabeled_batch),dim=1)    
     
-    if predictions.ndim == aug_unlabeled_batch.ndim and predictions.shape[-2] == aug_unlabeled_batch.shape[-2]:
+    if utils._is_task_segmentation(labeled_batch,labels):
         # Segmentation -> Validate predictions, invert them,then average them and transform them once again
+
+        # Augumentation must be per image (use Kornia)
+        batch_repeated = unlabeled_batch.repeat(K,1,1,1).reshape(K,N,C,H,W)
+        aug_unlabeled_batch,_ = augumentation(batch_repeated,None)  
+
+
+        # Do prediction per batch to obtain correct batchnorm calculation
+        batch_splitted = list(torch.split(aug_unlabeled_batch, N))
+    
+        # Forward 
+        logits = [clf(batch_splitted[0])]
+        for x in batch_splitted[1:]:
+            logits.append(clf(x))
+        logits = torch.cat(logits,dim=0)
+
+        predictions = torch.softmax(logits,dim=1) 
+
+        
         validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
         predictions = predictions * validity_mask
 
         base_predictions = augumentation.inverse_last_transformation(predictions)
-        base_averages = average_labels(base_predictions.reshape(N,K,C,H,W),keepshape=True).reshape(N*K,C,H,W)
+        base_averages = average_labels(base_predictions.reshape(K,N,C,H,W),keepshape=True).reshape(N*K,C,H,W)
         _,avg_predictions = augumentation.apply_last_transformation(mask=base_averages) 
-
-    else:
+    else:    
         # Classification -> Simple average
-        avg_predictions = average_labels(predictions.reshape(N,K, *predictions.shape[1:]),
+
+        # apply iteratively if augumentation does not support different augmentation for each image
+        aug_unlabeled_batch = []
+        predictions = []
+        for i in range(K): 
+            if isinstance(augumentation,custom_transforms.MyAugmentation):
+                ith_augumented_batch,_ = augumentation(unlabeled_batch,None)  
+            else:
+                ith_augumented_batch = augumentation(unlabeled_batch)
+            predictions.append(torch.softmax(clf(ith_augumented_batch),dim=1).unsqueeze(0))
+            aug_unlabeled_batch.append(ith_augumented_batch.unsqueeze(0))
+
+        aug_unlabeled_batch = torch.cat(aug_unlabeled_batch,dim=0).reshape(K*N,C,H,W)
+
+        predictions = torch.cat(predictions,dim=0).reshape(N*K,*predictions[0].shape[2:])
+
+        avg_predictions = average_labels(predictions.reshape(K,N, *predictions.shape[1:]),
                                          keepshape=True
-                                         ).reshape(N*K,*predictions.shape[1:])
-    
+                                         ).reshape(K*N,*predictions.shape[1:])
+        
 
     # 2) Sharpen distribution with temperature T
     sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)
     U_hat = (aug_unlabeled_batch,sharp_avg_predictions)
     
+   
     # 3) Concat and Shuffle 
+
     W = concatenate_and_shuffle(X_hat,U_hat)
+    
     
     # split W into two
     W_1 = (W[0][:N],W[1][:N])
@@ -101,6 +113,18 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     # 4) Mix Up
     X_prime, x_lam = mixup(X_hat,W_1,alpha=alpha,eps=eps)
     U_prime, u_lam = mixup(U_hat,W_2,alpha=alpha,eps=eps)
+
+    # print(f"{W[0].shape=}")
+    # utils.plot_batch(W[0],num_rows=12)
+    # plt.savefig("W.jpg")
+
+    # print(f"{X_prime[0].shape=}")
+    # utils.plot_batch(X_prime[0],num_rows=4)
+    # plt.savefig("X_prime.jpg")
+
+    # print(f"{U_prime[0].shape=}")
+    # utils.plot_batch(U_prime[0],num_rows=8)
+    # plt.savefig("U_prime.jpg")
 
     return X_prime, U_prime
 
@@ -233,7 +257,7 @@ def average_labels(labels:torch.Tensor,keepshape=False,eps=0.5)->torch.Tensor:
     """Augument the batches and provide the labels for unlabeled_batch
     
        Args:
-            labeled_batch (torch.Tensor): feature batch [N,K,C,..],
+            labeled_batch (torch.Tensor): feature batch [K,N,C,..],
                 where K are number of label instances for each image, N is number of images in batch
                 and C is number of segmentation classes
             keepshape (bool): See 'Returns'
@@ -241,19 +265,19 @@ def average_labels(labels:torch.Tensor,keepshape=False,eps=0.5)->torch.Tensor:
         Returns:
             averaged batch [N,C,...] Avreage is computed only from those labels, which are valid 
             if keepshape:
-                averaged batch [N,K,C,..], where average is populated across first dim  
+                averaged batch [K,N,C,..], where average is populated across first dim  
     """
-    N,K = labels.shape[:2]
+    K,N = labels.shape[:2]
     
-    label_sums = labels.sum(dim=1,keepdim=True)
+    label_sums = labels.sum(dim=0,keepdim=True)
     valid_elements = (labels.sum(dim=2,keepdim=True) >= 1-eps).to(torch.float32)
-    ns = valid_elements.sum(dim=1,keepdim=True) 
+    ns = valid_elements.sum(dim=0,keepdim=True) 
     avgs = label_sums / ns
 
     if keepshape: 
-        avgs = avgs.repeat(1,K,*([1] * (labels.ndim-2))).reshape(N,K,*labels.shape[2:])
+        avgs = avgs.repeat(K,*([1] * (labels.ndim-1))).reshape(K,N,*labels.shape[2:])
     else:
-        avgs = avgs[:,0]
+        avgs = avgs[0]
 
     return avgs
 
