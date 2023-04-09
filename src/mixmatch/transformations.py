@@ -223,7 +223,7 @@ class MyAugmentation(nn.Module):
     
     Args:
         img_transforms (nn.ModuleList): Any transformations (no restrictions)
-        mask_transforms (nn.ModuleList): Subset of img_transforms, need to support t._params to recreate same effect on mask as on images
+        mask_transforms (nn.ModuleList): Subset of img_transforms, need to support t._params to recreate same effect on mask as on images or they are deterministic
         invertible_transforms(nn.ModuleList): Subset of mask_transforms, which have inverse operation to retransform the labels back.
     """
     super(MyAugmentation, self).__init__()
@@ -259,7 +259,10 @@ class MyAugmentation(nn.Module):
     if mask is not None:
         for t in self.mask_transforms:
             if img is not None:
-                mask = t(mask,t._params) # keep same params
+                try:
+                    mask = t(mask,t._params) # keep same params
+                except AttributeError:
+                    mask = t(mask) # Assumes it is deterministic
             else:
                 mask = t(mask)
 
@@ -313,9 +316,8 @@ class ToOneHot(nn.Module):
         self.num_classes = num_classes
         
     def forward(self,x):
-        # Force long format
-        dtype = x.dtype
+        # Force float 32 vector 
         x = x.round().long()
-        return F.one_hot(x,num_classes=self.num_classes).to(dtype)
+        return F.one_hot(x,num_classes=self.num_classes).to(torch.float32)
         
 
