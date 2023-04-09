@@ -1,5 +1,17 @@
 /latex
-/mixmatch/examples/CIFAR10/
+/src/mixmatch/examples/*
+!/src/mixmatch/examples/*.ipynb
+
+/cifar10@*/*
+!/cifar10*/log.txt
+
+//*.pt
+nohup.out
+/CIFAR10
+
+/cityscape*/
+
+*.zip
 
 
 # Python generic gitignore
