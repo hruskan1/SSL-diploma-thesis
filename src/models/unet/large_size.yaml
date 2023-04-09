@@ -1,0 +1,59 @@
+
+# Architecture of network
+blocks: [
+        {type: encoder,
+        # Scaling down parameters
+        use_kornia: True, scale : 0.5, interpolation : 'bilinear',
+        # Convolutional block parameters
+        niters : 2,
+        in_ch : 3, mid_ch : 64, out_ch : 64, conv_kernel : [3,3], 
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type : 'batch'},  #normalization_type: 'group',group_size : 32
+
+        {type: encoder,
+        niters : 2,
+        use_kornia: True, scale : 0.5, interpolation : 'bilinear',
+        in_ch : 64, mid_ch : 128, out_ch : 128, conv_kernel : [3,3], 
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type: 'batch'}, 
+
+        {type: encoder,
+        niters : 2,
+        use_kornia: True, scale : 0.5, interpolation : 'bilinear',
+        in_ch : 128, mid_ch : 256, out_ch : 256, conv_kernel : [3,3], 
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type: 'batch'}, 
+        
+        {type: bottleneck,
+        niters : 3,
+        in_ch : 256, mid_ch : 512, out_ch : 256, conv_kernel : [3,3],  
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type : 'batch'},  
+
+        {type: decoder,
+        niters : 3,
+        use_kornia: True, scale : 2., interpolation : 'bilinear',
+        in_ch : 512, mid_ch : 256, out_ch : 128, conv_kernel : [3,3],  # in_ch incorporates skip connection (sum of previous and encoder out_ch)
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type : 'batch'},  
+
+        {type: decoder,
+        niters : 3,
+        use_kornia: True, scale : 2., interpolation : 'bilinear',
+        in_ch : 256, mid_ch : 128, out_ch : 64, conv_kernel : [3,3],  
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type : 'batch'}, 
+
+        {type: decoder,
+        niters : 2,
+        use_kornia: True, scale : 2., interpolation : 'bilinear',
+        in_ch : 128, mid_ch : 64, out_ch : 64, conv_kernel : [3,3],  
+        conv_stride : [1,1], conv_paddings: [1,1],
+        normalization_type : 'batch'},  
+
+        {type: classifier, #simple convolutional layer
+        in_ch : 64, out_ch : 20, conv_kernel : [1,1],normalization_type : 'batch'
+        } 
+]     
+
+
