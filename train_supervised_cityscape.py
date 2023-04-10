@@ -1,11 +1,9 @@
 """train_cityscape.py Implementation of the training process for supervised scenario. Executable from the command line"""
 import argparse
 import os
-from typing import Callable,Union
 from easydict import EasyDict
 import yaml
 import kornia as K
-import matplotlib.pyplot as plt
 
 import numpy as np
 import torch
@@ -20,7 +18,6 @@ from torch.utils import data
 from datetime import datetime
 import time 
 from torch.utils.tensorboard import SummaryWriter
-from typing import Optional
 from progress.bar import Bar as Bar
 from src.mixmatch import utils
 from src.mixmatch import losses
@@ -29,7 +26,6 @@ from src.mixmatch.transformations import MyAugmentation
 from src.mixmatch import datasets as my_datasets
 from src.supervised.train import train
 
-from src.models.misc import visulize_batch
 
 if __name__ == '__main__':
 
