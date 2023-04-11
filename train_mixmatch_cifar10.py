@@ -14,6 +14,7 @@ import src.mixmatch.datasets as datasets
 import src.mixmatch.train as train
 from src.mixmatch.mean_teacher import MeanTeacher
 from src.models.wide_resnet import wide_resnet
+from src.mixmatch import losses
 import src.mixmatch.transformations as custom_transforms
 from datetime import datetime
 
@@ -140,7 +141,7 @@ if __name__ == '__main__':
         ewa_model = None
 
     # eval_loss_fn = losses.kl_divergence
-    eval_loss_fn = nn.CrossEntropyLoss()
+    eval_loss_fn = losses.soft_cross_entropy
 
     # Load previous checkpoint
     if args.resume is not None and os.path.isfile(args.resume):
