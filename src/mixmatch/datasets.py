@@ -15,6 +15,7 @@ from sklearn.model_selection import train_test_split
 
 import torchvision
 from torchvision import transforms
+from torchvision.transforms import InterpolationMode
 from torchvision.transforms import functional as TF
 from torchvision.datasets.folder import (
     IMG_EXTENSIONS,
@@ -22,6 +23,7 @@ from torchvision.datasets.folder import (
     has_file_allowed_extension,
 )
 
+from torch.utils.data.dataset import Dataset
 from typing import Tuple,Optional,Callable,Any,Union,List
 from PIL import Image
 from . import transformations as custom_transforms
@@ -30,7 +32,7 @@ from . import transformations as custom_transforms
 # Code retaken from  https://github.com/Jonas1312/pytorch-segmentation-dataset and 
 # adapted according to https://pytorch.org/vision/stable/transforms.html#functional-transforms guide
 
-class SegmentationDatasetUnlabeled(data.Dataset):
+class SegmentationDatasetUnlabeled(Dataset):
     def __init__(self, dir_images, transform=None, extensions=None):
         """A dataloader for unlabeled (non-segmented) datasets.
         Args:
@@ -241,8 +243,9 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
     id2trainid = {label.id: label.train_id for label in classes}
     trainid2color = {label.train_id : label.color for label in reversed(classes)}
     trainid2names = {label.train_id : label.name for label in reversed(classes)}
+    num_classes = len(trainid2color.keys()) - 1 #remove one if license_plate has '-1' (not valid class)
 
-
+    # for mode == fine 
     mean = torch.Tensor([0.485, 0.456, 0.406]) 
     std = torch.Tensor([0.229, 0.224, 0.225])
 
@@ -370,35 +373,31 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
         return original_inputs
 
 
-class CityScapeLabeled(CityScapeDataset):
-    """
-        Module based on CityScapeDataset
-        
-        Args:
-            indicies (Optional[torch.Tensor]): Indicies, which selects the subset of the original CityScapeDataset dataset 
-                (if None, the whole dataset is taken)
-            rest: see original documentation
-    """
-    def __init__(self, root: str,indicies: Optional[torch.Tensor] = None, split: str = "train", mode: str = "fine", target_type: Union[List[str], str] = "instance", transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, transforms: Optional[Callable] = None) -> None:
-        super().__init__(root, split, mode, target_type, transform, target_transform, transforms)
-        
-        if indicies is not None:
-            indicies = indicies.round().to(torch.long)
-            self.images = self.images[indicies]
-            self.targets = self.targets[indicies]
+class UnlabeledDataset(Dataset):
+    
+    def __init__(self,dataset):
+        self.dataset = dataset
 
-class CityScapeUnlabeled(CityScapeDataset):
-    
-    def __init__(self, root: str,indicies: Optional[torch.Tensor] = None, split: str = "train", mode: str = "fine", target_type: Union[List[str], str] = "instance", transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, transforms: Optional[Callable] = None) -> None:
-        super(CityScapeLabeled,self).__init__(root, split, indicies, mode, target_type, transform, target_transform, transforms)
-    
     def __getitem__(self, index: int) -> Any:
         """Returns transofrmed image"""
-        img,batched_output = super().__getitem__(index)
+        img,batched_output = self.dataset.__getitem__(index)
         return img, None * len(batched_output)
+    
+    def __len__(self):
+        len(self.dataset)
 
 
-
+def get_base_dataset(dl:data.DataLoader):
+    """Gets base dataset from dataloader (if Subsey or ConcatDataset or others)"""
+    
+    # get original dataset
+    dataset = dl.dataset
+    while any(k == 'dataset' or k =='datasets' for k,v in dataset.__dict__.items()):
+        try:
+            dataset = dataset.dataset 
+        except KeyError:
+            dataset = dataset.datasets[0]
+    return dataset
 
 def train_test_val_split(arrays:list[Union[list,np.ndarray]],split:Tuple[float,float]=(0.2, 0.1), shuffle=True,random_state=None,stratify_index:Optional[int]=None):
     """Split each of arrays (dataset,labels) with ratio of  (1-split[0]-split[1]) / split[0] /split[1] 
@@ -439,7 +438,7 @@ def train_test_val_split(arrays:list[Union[list,np.ndarray]],split:Tuple[float,f
     return *train_, *test_, *val_ 
 
     
-def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,verbose:bool=False,onehot_flag=True)->Tuple[data.DataLoader,data.DataLoader,data.DataLoader,data.DataLoader]:
+def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,verbose:bool=False,onehot_flag=True)->Tuple[data.DataLoader,data.DataLoader,Optional[data.DataLoader],data.DataLoader]:
     """
     Creates dataloaders of CIFAR10 dataset with given parameters
 
@@ -547,6 +546,125 @@ def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,ve
             print(len(labeled_cifar),len(unlabeled_cifar),len(val_cifar),len(test_cifar))
         else:
             print(len(labeled_cifar),len(unlabeled_cifar),len(test_cifar))
+
+    return labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader
+
+
+def get_CityScape(root:str,n_labeled:int,n_val:int,batch_size:int,mode:str='fine',size:Tuple[int,int]=(128,256),target_type:str='semantic',verbose:bool=False,onehot_flag:bool=True):
+    """
+    Creates dataloaders of CityScapes dataset with given parameters. The normalization and rescaling 
+    is applied so the final image has 'size' in spatial dimesions. The outputs are torch.Tenors. 
+
+    Args: 
+        root (str): name of root directory of dataset
+        n_labeled (int): Number of labeled examples to be extracted 
+        n_val (int): Number of validation examples to be extracted (rest will be unlabeled)
+        batch_size (int): Number of examples in one mini batch
+        mode(str): 'fine' or 'coarse' or 'all_coarse' if 'all_coarse', it merges 'train' and 'train_extra'. For else see
+            https://www.cityscapes-dataset.com/examples/
+        size(tuple(int,int)): Size of resized images
+        target_type(str): 'instance', 'semantic', 'polygon', 'color', see 
+            https://pytorch.org/vision/main/generated/torchvision.datasets.Cityscapes.html
+        verbose (bool): If true print simple information about the splits of datasets
+        one_hot_flag (bool): If true, apply onehot on the targets (THIS IS FOR DEBUGGING, REMOVE LATER)
+    Returns:
+        Tuple of (labeled_dataloader,unlabeled_dataloader,validation_dataloder,test_dataloder)
+            validation_dataloder and test_dataloader is also labeled, if n_val == 0, validation_dataloder is None
+            The features are transformed into the torch.Tensors and normalized
+            The targets are one-hot encoded if onehot_flag == True and returned as torch.Tensors(dtype=long)
+    """
+    # Taken from here https://stackoverflow.com/a/58748125/1983544
+    import os
+    num_workers = os.cpu_count() 
+    if 'sched_getaffinity' in dir(os):
+        num_workers = len(os.sched_getaffinity(0)) - 2
+    num_workers = 0 # if on servers
+    
+    # Mean and standard deviation for CityScapes
+    mean = CityScapeDataset.mean
+    std = CityScapeDataset.std
+    num_classes = CityScapeDataset.num_classes 
+    
+    _trans = transforms.Compose([transforms.ToTensor(),
+                             transforms.Normalize(mean,std),
+                             transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
+    
+    
+    if onehot_flag:
+        _target_trans =transforms.Compose([transforms.ToTensor(),
+                                           transforms.Resize(size,interpolation=InterpolationMode.NEAREST),
+                                           custom_transforms.ToOneHot(num_classes)])
+    else:
+        _target_trans = transforms.Compose([transforms.ToTensor(), 
+                                            transforms.Resize(size,interpolation=InterpolationMode.NEAREST)])
+
+    if mode == 'all_coarse':
+        datasets = []
+        for split in ['train','train_extra']:
+            datasets.append(CityScapeDataset(root = root,
+                                            split = split,
+                                            mode = mode,
+                                            target_type = target_type,
+                                            transform = _trans,
+                                            target_transform = _target_trans)
+                            )
+                        
+        base_dataset = data.ConcatDataset(datasets)
+    else:
+        base_dataset = CityScapeDataset(root,
+                                        split = 'train',
+                                        mode = mode,
+                                        target_type = target_type,
+                                        transform = _trans,
+                                        target_transform = _target_trans)
+
+    # if mode == 'fine', then sizes of  train/val/test is 2975/500/1525
+    # if mode == 'corse' then sizes of train/val/train_extra is 2975/500/19998 
+    num_examples = len(base_dataset)
+   
+
+    if n_val > 0:
+        indicies_unlabeled,indicies_labeled,indicies_val = train_test_val_split([range(num_examples)],
+                                                                                        split = (n_labeled/num_examples,n_val/num_examples),
+                                                                                        shuffle=True,
+                                                                                        random_state=None,
+                                                                                        stratify_index=None)
+        
+        val_ = data.Subset(base_dataset,indicies_val)
+    
+        validation_dataloader = data.DataLoader(val_,batch_size,shuffle=False,num_workers=num_workers,)
+
+    else: # n_val == 0
+        indicies_unlabeled,indicies_labeled  = train_test_split(range(num_examples), 
+                                                        test_size=n_labeled/num_examples,
+                                                        shuffle=True,
+                                                        random_state=None,
+                                                        stratify=None)
+        validation_dataloader,val_ = None,None
+        
+    unlabeled_ = data.Subset(base_dataset,indicies_unlabeled) # TODO: DEBUG PURPOSES PUT IT BACK TO UNLABELED LATER
+     #unlabeled_ = UnlabeledDataset(data.Subset(base_dataset,indicies_unlabeled))
+    labeled_ = data.Subset(base_dataset,indicies_labeled)
+
+    test_ = CityScapeDataset(root,
+                             split='val',
+                             mode=mode,
+                             target_type=target_type,
+                             transform = _trans,
+                             target_transform = _target_trans)
+    
+    unlabeled_dataloader = data.DataLoader(unlabeled_,batch_size,shuffle=True,num_workers=num_workers,drop_last=True)
+    labeled_dataloader = data.DataLoader(labeled_,batch_size,shuffle=True,num_workers=num_workers,drop_last=True)
+    test_dataloader = data.DataLoader(test_,batch_size,shuffle=False,num_workers=num_workers)
+
+    if verbose:
+        
+        print("Datasets sizes: (respectively)")
+        if val_ is not None:
+            print(len(labeled_),len(unlabeled_),len(val_),len(test_))
+        else:
+            print(len(labeled_),len(unlabeled_),len(test_))
+        print(f"With num classes: {num_classes}")
 
     return labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader
 
