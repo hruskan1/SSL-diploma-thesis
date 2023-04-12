@@ -278,12 +278,18 @@ class MyAugmentation(nn.Module):
       
     if img is not None:
         for t in self.img_transforms:
-            img = t(img,t._params)
+            try:
+                img = t(img,t._params)
+            except AttributeError:
+                mask = t(mask) # Assumes it is deterministic
 
 
     if mask is not None:
         for t in self.mask_transforms:
-            mask = t(mask,t._params)
+            try:
+                mask = t(mask,t._params) # keep same params
+            except AttributeError:
+                mask = t(mask) # Assumes it is deterministic
     
     return img, mask
 
@@ -311,13 +317,23 @@ class MyAugmentation(nn.Module):
 
 class ToOneHot(nn.Module):
     def __init__(self,num_classes=-1):
-        """Transformation taking Tensor of shape (*) or int and parsing it into Tensor (*,num_classes) creating one-hot encoding"""
+        """Transformation taking Tensor of shape (N,*) or int and parsing it into Tensor (N,num_classes,*) creating one-hot encoding"""
         super(ToOneHot, self).__init__()
         self.num_classes = num_classes
         
     def forward(self,x):
         # Force float 32 vector 
+       
         x = x.round().long()
-        return F.one_hot(x,num_classes=self.num_classes).to(torch.float32)
+        one_hot = F.one_hot(x,num_classes=self.num_classes)
+        
+        if one_hot.ndim > 2:
+            one_hot = one_hot.permute(0,one_hot.ndim-1,*list(range(1,x.ndim))).to(torch.float32) # one_hot has one more dim
+        
+        if one_hot.shape[0] == 1: # squeeze if necessary
+            one_hot = one_hot.squeeze(0)
+
+        return one_hot
+    
         
 
