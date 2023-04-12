@@ -6,14 +6,13 @@ https://arxiv.org/abs/1905.02249
 
 import torch
 import torch.nn as nn
-import torchvision.transforms as transforms 
 from typing import Tuple
-import copy
 import numpy as np
-from typing import Optional, Union
+from typing import Optional
 import matplotlib.pyplot as plt
 from . import transformations as custom_transforms
 from . import utils
+from . import datasets 
 
 
 
@@ -46,14 +45,12 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     # 1b) K augumentations for each image in unlabeled batch
 
     N,C,H,W = unlabeled_batch.shape
-    
     if utils._is_task_segmentation(labeled_batch,labels):
         # Segmentation -> Validate predictions, invert them,then average them and transform them once again
-
+    
         # Augumentation must be per image (use Kornia)
-        batch_repeated = unlabeled_batch.repeat(K,1,1,1).reshape(K,N,C,H,W)
+        batch_repeated = unlabeled_batch.repeat(K,1,1,1).reshape(K*N,C,H,W)
         aug_unlabeled_batch,_ = augumentation(batch_repeated,None)  
-
 
         # Do prediction per batch to obtain correct batchnorm calculation
         batch_splitted = list(torch.split(aug_unlabeled_batch, N))
@@ -65,17 +62,18 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
         logits = torch.cat(logits,dim=0)
 
         predictions = torch.softmax(logits,dim=1) 
-
         
-        validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
-        predictions = predictions * validity_mask
+        #validity_mask = (torch.sum(aug_unlabeled_batch,dim=1,keepdim=True) > eps).to(torch.float32)
+        #predictions = predictions * validity_mask
+        # has to be solved as images are centered around zero, if transformation introduce empty spaces, the fill value should be unambiguous.
 
         base_predictions = augumentation.inverse_last_transformation(predictions)
-        base_averages = average_labels(base_predictions.reshape(K,N,C,H,W),keepshape=True).reshape(N*K,C,H,W)
+        base_averages = average_labels(base_predictions.reshape(K,N,*base_predictions.shape[1:]),keepshape=True).reshape(K*N,*base_predictions.shape[1:])
         _,avg_predictions = augumentation.apply_last_transformation(mask=base_averages) 
+        
     else:    
         # Classification -> Simple average
-
+        
         # apply iteratively if augumentation does not support different augmentation for each image
         aug_unlabeled_batch = []
         predictions = []
@@ -95,14 +93,11 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
                                          keepshape=True
                                          ).reshape(K*N,*predictions.shape[1:])
         
-
     # 2) Sharpen distribution with temperature T
-    sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)
+    sharp_avg_predictions = sharpen(avg_predictions,T=T,dim=1)  
     U_hat = (aug_unlabeled_batch,sharp_avg_predictions)
     
-   
     # 3) Concat and Shuffle 
-
     W = concatenate_and_shuffle(X_hat,U_hat)
     
     
@@ -115,16 +110,33 @@ def mixmatch(labeled_batch:torch.Tensor,labels:torch.Tensor,unlabeled_batch:torc
     U_prime, u_lam = mixup(U_hat,W_2,alpha=alpha,eps=eps)
 
     # print(f"{W[0].shape=}")
-    # utils.plot_batch(W[0],num_rows=12)
+    # utils.plot_batch(datasets.CityScapeDataset.remove_normalization(W[0]),num_rows=K)
     # plt.savefig("W.jpg")
 
     # print(f"{X_prime[0].shape=}")
-    # utils.plot_batch(X_prime[0],num_rows=4)
+    # utils.plot_batch(datasets.CityScapeDataset.remove_normalization(X_prime[0]),num_rows=K)
     # plt.savefig("X_prime.jpg")
 
     # print(f"{U_prime[0].shape=}")
-    # utils.plot_batch(U_prime[0],num_rows=8)
+    # utils.plot_batch(datasets.CityScapeDataset.remove_normalization(U_prime[0]),num_rows=K)
     # plt.savefig("U_prime.jpg")
+
+    #utils.plot_batch(datasets.CityScapeDataset.remove_normalization(batch_repeated),num_rows=K)
+    # plt.savefig('./batch_repeated.png')
+    # utils.plot_batch(datasets.CityScapeDataset.remove_normalization(aug_unlabeled_batch),num_rows=K)
+    # plt.savefig('./aug_unlabeled_batch.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(predictions,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('./predictions.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(predictions,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('./predictions_masked.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(base_predictions,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('./base_predictions.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(base_averages,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('./base_averages.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(avg_predictions,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('./avg_predictions.png')
+    # utils.plot_batch(datasets.CityScapeDataset.color_segmentation(torch.argmax(sharp_avg_predictions,dim=1,keepdim=True)),num_rows=K)
+    # plt.savefig('sharp_avg_predictions.png')
 
     return X_prime, U_prime
 
@@ -177,13 +189,7 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
     
     mixed_x = lams * x1 + (1 - lams) * x2
     
-    if x1.ndim == y1.ndim and x1.shape[-2:] == y1.shape[-2:]: 
-        # Segmetation -> mix with same lams as on image (each pixel)
-        _lams = lams
-    else:
-        # Classification -> mix with lams for each sample (do not use image shapes logic)
-        _lams = torch.ones(y1.shape).to(y1.device) * lam.view(N, *([1]* (y1.ndim-1)))
-    
+    _lams = torch.ones(y1.shape).to(y1.device) * lam.view(N, *([1]* (y1.ndim-1)))
     mixed_y = _lams * y1 + (1 - _lams) * y2
         
     return (mixed_x, mixed_y),lam
