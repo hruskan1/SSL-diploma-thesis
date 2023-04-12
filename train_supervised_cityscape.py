@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--from_yml', default=None, type=utils._str, help ='Path to file where the arguments are specified (as a dictionary)')
     parser.add_argument('--log_period', default=1, type=int, help = 'Epoch period for logging the prcoess')
     parser.add_argument('--save_period',default=0,type=int, help = 'Epoch period for saving the model,the model with best val acc is implicitly saved')
-    parser.add_argument('--debug',default=False,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
+    parser.add_argument('--debug',default=True,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
     parser.add_argument('--model_architecture', default='./src/models/unet/large_size.yaml', type=str, help = 'Path to the model architecture (yaml)')
 
