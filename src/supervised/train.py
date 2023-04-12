@@ -13,7 +13,7 @@ from typing import Callable,Tuple,Optional
 from ..models.misc import evaluate,evaluate_IoU,ensure_onehot,visulize_batch
 from ..mixmatch import utils
 from ..models.unet.unet import Unet
-from ..mixmatch.datasets import CityScapeDataset
+from ..mixmatch.datasets import CityScapeDataset,get_base_dataset
 
 def train(model:nn.Module,
           opt:torch.optim.Optimizer,
@@ -85,10 +85,10 @@ def train(model:nn.Module,
                 writer.add_scalars('average IoU',{  'trn': trn_avg_iou,
                                                     'tst': tst_avg_iou,
                                                     'val': val_avg_iou},step)
-                if isinstance(train_dataloader.dataset,CityScapeDataset):
+                if isinstance(get_base_dataset(train_dataloader),CityScapeDataset):
                     tags = [CityScapeDataset.trainid2names[trainid] for trainid in range(trn_class_iou.shape[0])]
                 else: 
-                    tags = list(range(trn_class_iou.shape[0]))
+                    tags = [str(i) for i in range(trn_class_iou.shape[0])]
 
                 writer.add_scalars('train class IoU',{tags[i]: trn_class_iou[i] for i in range(trn_class_iou.shape[0])},step)
                 writer.add_scalars('val class IoU',{tags[i]: val_class_iou[i] for i in range(val_class_iou.shape[0])},step)
