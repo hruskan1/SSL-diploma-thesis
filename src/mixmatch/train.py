@@ -1,6 +1,7 @@
 """train.py Implementation of learning process for MixMatch algorithm. The high-level functions to run the process."""
 from typing import Callable
 from easydict import EasyDict
+import os
 import numpy as np
 import torch
 import torch.nn as nn
@@ -14,7 +15,11 @@ from .mean_teacher import MeanTeacher
 from torch.utils.tensorboard import SummaryWriter
 from typing import Optional
 from progress.bar import Bar 
-from ..models.misc import evaluate
+from ..models.misc import evaluate,evaluate_IoU,visulize_batch
+from ..models.unet.unet import Unet
+from ..mixmatch.datasets import CityScapeDataset,get_base_dataset
+
+
 
 
 def train_one_epoch(model:nn.Module,
@@ -213,9 +218,37 @@ def train(model:nn.Module,
                                                 'trn': ls_trn,
                                                 'tst': ls_tst},step)
             
+            # Compute IoU 
+            model_to_eval = model.model if isinstance(m,MeanTeacher) else model
+            if isinstance(model_to_eval,Unet):
+                trn_avg_iou,trn_class_iou = evaluate_IoU(model,labeled_dataloader)
+
+                if validation_dataloader is not None:
+                    val_avg_iou,val_class_iou = evaluate_IoU(model_to_eval,validation_dataloader)
+                else:
+                    val_avg_iou,val_class_iou = trn_avg_iou * 0, trn_class_iou * 0
+
+                tst_avg_iou,tst_class_iou = evaluate_IoU(model_to_eval,test_dataloader)
+
+                writer.add_scalars('average IoU',{  'trn': trn_avg_iou,
+                                                    'tst': tst_avg_iou,
+                                                    'val': val_avg_iou},step)
+                
+                
+                if isinstance(get_base_dataset(labeled_dataloader),CityScapeDataset):
+                    tags = [CityScapeDataset.trainid2names[trainid] for trainid in range(trn_class_iou.shape[0])]
+                else: 
+                    tags = [str(i) for i in range(trn_class_iou.shape[0])]
+                
+                writer.add_scalars('train class IoU',{tags[i]: trn_class_iou[i] for i in range(trn_class_iou.shape[0])},step)
+                writer.add_scalars('val class IoU',{tags[i]: val_class_iou[i] for i in range(val_class_iou.shape[0])},step)
+                writer.add_scalars('test class IoU',{tags[i]: tst_class_iou[i] for i in range(tst_class_iou.shape[0])},step)
+                
+
+            
             return metrics
     
-    
+
     model = model.to(args.device)
     if ewa_model is not None:
         ewa_model = ewa_model.to(args.device)
@@ -248,7 +281,11 @@ def train(model:nn.Module,
                         f"lam_u {metrics['lambda_u'][-1]:.4f} "  
             
             if args.debug:
-                last_lr = opt.param_groups[0]['lr'][-1] if lr_scheduler is None else lr_scheduler.get_last_lr()[-1]
+                try:
+                    last_lr = opt.param_groups[0]['lr'][-1] if lr_scheduler is None else lr_scheduler.get_last_lr()[-1]
+                except TypeError:
+                    last_lr = opt.param_groups[0]['lr'] if lr_scheduler is None else lr_scheduler.get_last_lr()
+            
                 d_ls,d_acc = evaluate(m, eval_loss_fn, unlabeled_dataloader, args.device)
                 strtoprint += f"unlab loss: {d_ls:.4f} " + \
                               f"unlab acc: {d_acc*100:2.4f}" +\
@@ -259,14 +296,22 @@ def train(model:nn.Module,
 
         # Save checkpoint if save_period or best so far
         current_val_acc = metrics['test_acc'][-1]
-        if args.save_period and ((args.current_count % args.save_period == args.save_period - 1) or (args.current_count == (args.epochs-1))) or current_val_acc >= best_val_acc:
+        if args.save_period and ((args.current_count % args.save_period == args.save_period - 1) or (args.current_count == (args.epochs-1))) or current_val_acc > best_val_acc:
 
             m_path = args.modelpath + f"-e{str(args.current_count)}" + f"-a{current_val_acc*100:2.0f}" + '-m.pt'
             print(f'# Saving Model : {m_path}', file=open(args.logpath, 'a'), flush=True)
             model_to_save = m.model if isinstance(m,MeanTeacher) else m
             utils.save_checkpoint(args.current_count,metrics,model_to_save,opt,args,m_path)
 
-            if best_val_acc < current_val_acc:
-                best_val_acc = current_val_acc
-               
+            best_val_acc = current_val_acc
+
+            # Make visualization if debug and 
+            if args.debug and isinstance(model,Unet):
+                viz_folder = os.path.join(args.out,'figs')
+                visulize_batch(model,labeled_dataloader,transform,writer,viz_folder,f"trn-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                if validation_dataloader is not None:
+                    visulize_batch(model,validation_dataloader,transform,writer,viz_folder,f"val-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                
+                visulize_batch(model,test_dataloader,transform,writer,viz_folder,f"tst-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                          
     return metrics
