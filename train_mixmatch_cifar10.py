@@ -140,7 +140,7 @@ if __name__ == '__main__':
     else:
         ewa_model = None
 
-    # eval_loss_fn = losses.kl_divergence
+    # eval_loss_fn = nn.CrossEntropyLoss()
     eval_loss_fn = losses.soft_cross_entropy
 
     # Load previous checkpoint
