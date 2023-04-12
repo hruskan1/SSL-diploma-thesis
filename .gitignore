@@ -12,6 +12,7 @@ nohup.out
 /cityscape*/
 
 *.zip
+*.jpg
 
 
 # Python generic gitignore
