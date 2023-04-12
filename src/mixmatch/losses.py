@@ -65,20 +65,21 @@ def soft_cross_entropy(input:torch.Tensor, target:torch.Tensor,weight: torch.Ten
         Cross entropy loss 
     """
     assert input.shape == target.shape
-
+    N,C = input.shape[:2]
     logprobs = torch.nn.functional.log_softmax(input, dim = 1)
     
     if weight is None:
-            weight = torch.ones(input.shape[1]).to(input.device)
+            weight = torch.ones(C).to(input.device)
 
-    weight = weight.view(1,input.shape[1])
+    
+    weight = weight.view(1,C,*([1]*(input.ndim-2))).expand(N, -1, *input.shape[2:])
 
     if reduction == 'none':
         return  -(weight * target * logprobs)
     elif reduction == 'sum':
         return  -(weight * target * logprobs).sum()
     elif reduction == 'mean':
-        return  -(weight * target * logprobs).sum() / input.shape[0]
+        return  -(weight * target * logprobs).sum() / (torch.numel(input) / input.shape[1])
 
 def kl_divergence(input:torch.Tensor,target:torch.Tensor,reduction:str='batchmean'):
     """
