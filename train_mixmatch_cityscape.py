@@ -9,8 +9,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torchvision import transforms
-from torchvision.transforms import InterpolationMode
 from torch.utils import data
+from src.mixmatch import losses
 import src.mixmatch.utils as utils
 import src.mixmatch.datasets as my_datasets
 from src.mixmatch.mean_teacher import MeanTeacher
@@ -27,30 +27,30 @@ from src.mixmatch.train import train
 if __name__ == '__main__':
 
     # Create an ArgumentParser object
-    parser = argparse.ArgumentParser(description='Mixmatch CIFAR10 arguments')
+    parser = argparse.ArgumentParser(description='Mixmatch CityScape arguments')
     parser.add_argument('-c','--current_count',default=0,type=int,help="Current counter of images. Total length of training is always given by 'e - c' ")
     parser.add_argument('-e','--epochs', default = 1024, type=int, help='Number of epochs to train')
-    parser.add_argument('--kimg','--images_per_epoch',default=64,type=int,help='Number of images to see in each epoch (in thousands)')
+    parser.add_argument('--kimg','--images_per_epoch',default=0.5,type=float,help='Number of images to see in each epoch (in thousands)')
     parser.add_argument('-K','--K', default = 2, type=int, help='Number of agumentations to apply')
     parser.add_argument('-T','--temperature', default = 0.5, type=float, help='Temperature T for sharpening the distribution, T > 0')
     parser.add_argument('-a','--alpha',default=0.75, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
-    parser.add_argument('-lam','--lambda_u',default=75, type = float, help='Weight for loss corresponding to unlabeled data')
-    parser.add_argument('-rampup','--rampup_length',default=50, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
-    parser.add_argument('-nx','--n_labeled',default=250,type=int,help='Number of labeled samples (Rest is unlabeled)')
+    parser.add_argument('-lam','--lambda_u',default=150, type = float, help='Weight for loss corresponding to unlabeled data')
+    parser.add_argument('-rampup','--rampup_length',default = 1024, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
+    parser.add_argument('-nx','--n_labeled',default = 1000,type=int,help='Number of labeled samples (Rest is unlabeled)')
     parser.add_argument('-nv','--n_val',default = 0,type=int, help='Number of samples used in validation dataset (the dataset is split into labeled,unlabeled,validation and test if test exists)')
-    parser.add_argument('-BS','--batch_size',default=64,type = int,help='mini batch size')
+    parser.add_argument('-BS','--batch_size',default=4,type = int,help='mini batch size')
     parser.add_argument('-lr','--learning_rate',default=2e-3,type=float,help='learning rate of Adam Optimizer')
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
     parser.add_argument('--device',default=1, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
-    parser.add_argument('--dataset_path',default='./CIFAR10', type=str, help='Root directory for dataset') 
+    parser.add_argument('--dataset_path',default='/datagrid/public_datasets/CityScapes', type=str, help='Root directory for dataset') 
     parser.add_argument('-ewa', '--mean_teacher_coef', default = 0.999, type=utils._restricted_float, help='weight for exponential average of mean teacher model. Default is None and Mean teach is not used')
     parser.add_argument('--out', '--output_directory', default=f'./sl_city_run@mix_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
     parser.add_argument('--resume', default=None, type=utils._str, help='Path to model which is to be used to resume training')
     parser.add_argument('--from_yml', default=None, type=utils._str, help ='Path to file where the arguments are specified (as a dictionary)')
     parser.add_argument('--log_period', default=1, type=int, help = 'Epoch period for logging the prcoess')
     parser.add_argument('--save_period',default=0,type=int, help = 'Epoch period for saving the model,the model with best val acc is implicitly saved')
-    parser.add_argument('--debug',default=False,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
+    parser.add_argument('--debug',default=True,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
     parser.add_argument('--weight_decay',default=4e-5,type=float, help ="Weight decay (applied at each step), Applied only if  'mean_teacher_coef' is not None")
     parser.add_argument('--model_architecture', default='./src/models/unet/large_size.yaml', type=str, help = 'Path to the model architecture (yaml)')
@@ -109,35 +109,19 @@ if __name__ == '__main__':
     writer = SummaryWriter(args.out)
 
     ### Datasets and dataloaders ###
-    
-    # Mean and standard deviation for CityScapes
-    mean = my_datasets.CityScapeDataset.mean
-    std = my_datasets.CityScapeDataset.std
     size = (128,256)
-    _t = transforms.Compose([transforms.ToTensor(),
-                             transforms.Normalize(mean,std),
-                             transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
-    _tt = transforms.Compose([transforms.ToTensor(), 
-                              transforms.Resize(size,interpolation=InterpolationMode.NEAREST)])
 
-    train_dataset = my_datasets.CityScapeDataset(args.dataset_path,split='train', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
-    validation_dataset = my_datasets.CityScapeDataset(args.dataset_path,split='val', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
-    
-    # not public
-    # test_dataset = tv.datasets.Cityscapes(args.dataset_path,split='test', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
-    
-    # Taken from here https://stackoverflow.com/a/58748125/1983544
-    import os
-    num_workers = os.cpu_count() 
-    if 'sched_getaffinity' in dir(os):
-        num_workers = len(os.sched_getaffinity(0)) - 2
-    num_workers = 0 # if on servers
-
-    train_dataloader = data.DataLoader(train_dataset,args.batch_size,shuffle=True,num_workers=num_workers,)
-    validation_dataloader = data.DataLoader(validation_dataset,args.batch_size,shuffle=False,num_workers=num_workers)
-    #test_dataloader =  data.DataLoader(test_dataset,args.batch_size,shuffle=True,num_workers=num_workers,)
-
-    
+    labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader =\
+                                                my_datasets.get_CityScape(root=args.dataset_path,
+                                                                            n_labeled = args.n_labeled,
+                                                                            n_val = args.n_val,
+                                                                            batch_size = args.batch_size,
+                                                                            mode = 'fine', # change if you want to
+                                                                            size = size,
+                                                                            target_type='semantic',
+                                                                            verbose=True
+                                                                            )
+     
     ### Transformation ###
     k1 = transforms.Pad(padding=4, padding_mode='reflect')
     k2 = K.augmentation.RandomCrop(size=size,same_on_batch=True) #nessecary for mixmatch 
@@ -151,13 +135,13 @@ if __name__ == '__main__':
  
     ### Model,optimizer, LR scheduler, Eval function ###
     model = unet.Unet(args.model_architecture)
-    loss_fn = torch.nn.CrossEntropyLoss()
+    loss_fn = losses.soft_cross_entropy
 
     # find optimal lr
     if args.learning_rate is None:
         print("Searching for learning rate!")
         losses, lrs = utils.lr_find(model,
-                train_dl = train_dataloader,
+                train_dl = labeled_dataloader,
                 loss_fn = loss_fn,
                 args = args,
                 transform = None,
@@ -184,8 +168,8 @@ if __name__ == '__main__':
     else:
         ewa_model = None
 
-    # eval_loss_fn = losses.kl_divergence
-    eval_loss_fn = nn.CrossEntropyLoss()
+    eval_loss_fn = losses.soft_cross_entropy
+    #eval_loss_fn = nn.CrossEntropyLoss()
 
     # Load previous checkpoint
     if args.resume is not None and os.path.isfile(args.resume):
@@ -209,7 +193,7 @@ if __name__ == '__main__':
 
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0),file=open(args.logpath, 'a'), flush=True)
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
-
+    
     metrics = train(model=model,
                     ewa_model = ewa_model,
                     opt = opt,
