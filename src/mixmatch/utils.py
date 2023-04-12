@@ -89,34 +89,24 @@ def plot_batch(batch:torch.Tensor, num_rows=1,imgsize=(2,2))->plt.Figure:
 
     return fig
 
+
 def _is_torch_float(dtype):
     return dtype == torch.float or dtype == torch.float16 or dtype == torch.float32 or dtype == torch.float64
 
-def apply_transformation(transformation:nn.Module,features:torch.Tensor,targets:torch.Tensor):
-    """Detect the type of task and apply transformation correspondingly"""
-    
-    if _is_task_segmentation(features,targets):
-        return transformation(features,targets)
-    else:
-        return transformation(features),targets
 
 def _is_task_segmentation(features:torch.Tensor,targets:torch.Tensor):
     return features.ndim == targets.ndim and features.shape[-2:] == targets.shape[-2:]
 
-# 1a) One augumentation for each image in labeled batch
-    # if utils._is_task_segmentation(labeled_batch,labels):
-    #     # Segmentation -> Do transformation on both images and labels
-    #     aug_labeled_batch,aug_labels = augumentation(labeled_batch,labels)
-        
-    # else:
-    #     # Classification -> Do transformation only on images
-    #     if isinstance(augumentation,custom_transforms.MyAugmentation):
-    #         aug_labeled_batch,_ = augumentation(labeled_batch,None)
-    #     else:
-    #         aug_labeled_batch = augumentation(labeled_batch)
 
-    #     aug_labels = labels 
+def apply_transformation(transformation:nn.Module,features:torch.Tensor,targets:torch.Tensor):
+    """Detect the type of task and apply transformation correspondingly"""
 
+    if _is_task_segmentation(features,targets):
+        return transformation(features,targets)
+    else:
+        features = transformation(features)
+        features = features[0] if isinstance(features,tuple) else features
+        return features,targets
 
 
 def set_channel(batch, value, channel):
@@ -160,7 +150,6 @@ def _float(x):
         raise argparse.ArgumentTypeError("%r not a floating-point literal" % (x,))
     
     return x
-
 
 def _str(x):
     is_valid_keyword,x = _try_keywords(x)
