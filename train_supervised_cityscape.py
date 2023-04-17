@@ -25,7 +25,7 @@ from src.models.unet import unet
 from src.mixmatch.transformations import MyAugmentation
 from src.mixmatch import datasets as my_datasets
 from src.supervised.train import train
-
+from src.models.misc import visulize_batch
 
 if __name__ == '__main__':
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     # Mean and standard deviation for CityScapes
     mean = my_datasets.CityScapeDataset.mean
     std = my_datasets.CityScapeDataset.std
-    size = (128,256)
+    size = (256,512)
     _t = transforms.Compose([transforms.ToTensor(),
                              transforms.Normalize(mean,std),
                              transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
@@ -138,7 +138,8 @@ if __name__ == '__main__':
  
     ### Model,optimizer, LR scheduler, Eval function ###
     model = unet.Unet(args.model_architecture)
-    loss_fn = torch.nn.CrossEntropyLoss()
+    args.class_weights = torch.Tensor(my_datasets.CityScapeDataset.class_weights).to(args.device)
+    loss_fn = losses.SoftCrossEntropy(weight = args.class_weights,reduction='none')
 
     # find optimal lr
     if args.learning_rate is None:
