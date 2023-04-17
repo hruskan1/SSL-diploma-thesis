@@ -12,7 +12,7 @@ import warnings
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import save_image
 from ..mixmatch.utils import apply_transformation,plot_batch
-from ..mixmatch.datasets import CityScapeDataset
+from ..mixmatch.datasets import CityScapeDataset,get_base_dataset
 from .unet.unet import Unet
 from .wide_resnet.wide_resnet import WideResNet
 import matplotlib.pyplot as plt
@@ -69,7 +69,7 @@ def ensure_onehot(targets:torch.Tensor,num_classes):
     
     return targets
 
-def evaluate_IoU(model:nn.Module, dataloader:data.DataLoader)->Tuple[float,torch.Tensor]:
+def evaluate_IoU(model:nn.Module, dataloader:data.DataLoader,weights:torch.Tensor)->Tuple[float,torch.Tensor]:
     """
     Computes the average IoU for each class over the entire dataset.
 
@@ -115,7 +115,9 @@ def evaluate_IoU(model:nn.Module, dataloader:data.DataLoader)->Tuple[float,torch
 
     # Compute the average IoU score for each class
     class_iou = (intersection_total + 1e-15) / (union_total + 1e-15)
-    average_iou = np.mean(class_iou.cpu().numpy())
+    weighted_iou = class_iou * weights
+    n = torch.sum( (weighted_iou > 0) )
+    average_iou = torch.sum(weighted_iou) / n
 
     # Return the results as a dictionary
     return average_iou,class_iou
@@ -176,6 +178,7 @@ def F1(pred,target,smooth=1):
 
 def visulize_batch(model:torch.nn.Module,
                    dl:torch.utils.data.DataLoader,
+                   num_imgs:int=10,
                    augmentation:Optional[torch.nn.Module]=None,
                    writer:Optional[SummaryWriter]=None,
                    viz_folder:Optional[str]=None,
@@ -187,21 +190,23 @@ def visulize_batch(model:torch.nn.Module,
     Parameters:
         - model: The PyTorch model to use for inference.
         - dl: The PyTorch DataLoader object that generates the data.
+        - num_imgs: The number of images to visualize
         - augmentation (optional): The PyTorch transform module to apply to the batch inputs before passing them to the model.
         - writer (optional): The TensorBoard SummaryWriter object to use for logging the visualizations.
         - viz_folder (optional): The folder path to store the visualization images. The folder will be created if it does not exist.
         - id (optional): The id string of the batch and dataloader for logging and visualization purposes.
     """
     if isinstance(model,Unet):
-        _visulize_segmentation_model(model,dl,augmentation,writer,viz_folder,id_str,id_int)
+        _visulize_segmentation_model(model,dl,num_imgs,augmentation,writer,viz_folder,id_str,id_int)
     elif isinstance(model,WideResNet):
-        _visulize_classification_model(model,dl,augmentation,writer,viz_folder,id_str,id_int)
+        _visulize_classification_model(model,dl,num_imgs,augmentation,writer,viz_folder,id_str,id_int)
     else:
          warnings.warn(f"Model class not recognized: {type(model)}")
 
 
 def _visulize_classification_model(model:torch.nn.Module,
                                 dl:torch.utils.data.DataLoader,
+                                num_imgs:int=10,
                                 augmentation:Optional[torch.nn.Module]=None,
                                 writer:Optional[SummaryWriter]=None,
                                 viz_folder:Optional[str]=None,
@@ -212,6 +217,7 @@ def _visulize_classification_model(model:torch.nn.Module,
     
 def _visulize_segmentation_model(model:torch.nn.Module,
                                 dl:torch.utils.data.DataLoader,
+                                num_imgs:int = 10,
                                 augmentation:Optional[torch.nn.Module]=None,
                                 writer:Optional[SummaryWriter]=None,
                                 viz_folder:Optional[str]=None,
@@ -219,14 +225,30 @@ def _visulize_segmentation_model(model:torch.nn.Module,
                                 id_int:int=0):
      
     model.eval()
+    inputs = []
+    targets = []
+    num_loaded_imgs = 0
+    iter_d = iter(dl)
+
+    # Load num_imgs
+    while num_loaded_imgs < num_imgs:
+        try:
+            input, target = next(iter_d)
+        except:
+            break
+            
+        inputs.append(input)
+        targets.append(target)
+        num_loaded_imgs += input.shape[0]
+
+        
     
-    inputs, targets = next(iter(dl))
+    inputs = torch.cat(inputs,dim=0)
+    targets = torch.cat(targets,dim=0)
 
     # Apply augmentation if specified
     if augmentation:
-        inputs_aug,target_aug = apply_transformation(augmentation,inputs,targets)
-        inputs = torch.cat([inputs, inputs_aug], dim=0)
-        targets = torch.cat([targets,target_aug], dim=0)
+        inputs,targets = apply_transformation(augmentation,inputs,targets)
 
     
     device = next(model.parameters()).device
@@ -236,10 +258,12 @@ def _visulize_segmentation_model(model:torch.nn.Module,
     with torch.no_grad():
         outputs = model(inputs)
         preds = torch.argmax(outputs, dim=1,keepdim=True)
-
+        
+        if targets.shape[1] > 1: #hot encoded 
+            targets = torch.argmax(targets,dim=1,keepdim=True) # If targets one hot encoded!
 
     # Try to color if CityScapeDataset
-    if isinstance(dl.dataset,CityScapeDataset):
+    if isinstance(get_base_dataset(dl),CityScapeDataset):
         targets = CityScapeDataset.color_segmentation(targets)
         preds = CityScapeDataset.color_segmentation(preds)
 
