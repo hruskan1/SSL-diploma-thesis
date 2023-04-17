@@ -120,7 +120,8 @@ def train_one_epoch(model:nn.Module,
         logits_u = torch.cat(logits[1:], dim=0)
 
         # Losses
-        loss_supervised = losses.soft_cross_entropy(logits_l,targets_l,reduction='mean')
+        w = args.get('class_weights',None) 
+        loss_supervised = losses.soft_cross_entropy(logits_l,targets_l,weight = w,reduction='mean')
         loss_unsupervised = losses.mse_softmax(logits_u,targets_u,reduction='mean')
         
         lam_u = ramps.linear_rampup(current = (args.current_count + k/args.kimg), rampup_length = args.rampup_length) * args.lambda_u
@@ -147,7 +148,8 @@ def train_one_epoch(model:nn.Module,
         metrics['train_criterion'] = np.append(metrics['train_criterion'],loss.detach().cpu().numpy())
         metrics['train_criterrion_ewa'] = np.append(metrics['train_criterion'],ewa_loss.detach().cpu().numpy())
 
-        writer.add_scalars('Training loss',{'L':loss,'ewa_L':ewa_loss,'Lx': loss_supervised,'Lu' : loss_unsupervised,'lam_u': lam_u},global_step=len(metrics['lambda_u'])-1)
+        if writer is not None:
+            writer.add_scalars('Training loss',{'L':loss,'ewa_L':ewa_loss,'Lx': loss_supervised,'Lu' : loss_unsupervised,'lam_u': lam_u},global_step=len(metrics['lambda_u'])-1)
 
         k += current_batch_size
 
@@ -221,14 +223,15 @@ def train(model:nn.Module,
             # Compute IoU 
             model_to_eval = model.model if isinstance(m,MeanTeacher) else model
             if isinstance(model_to_eval,Unet):
-                trn_avg_iou,trn_class_iou = evaluate_IoU(model,labeled_dataloader)
+                w = args.class_weights > 0
+                trn_avg_iou,trn_class_iou = evaluate_IoU(model,labeled_dataloader,w)
 
                 if validation_dataloader is not None:
-                    val_avg_iou,val_class_iou = evaluate_IoU(model_to_eval,validation_dataloader)
+                    val_avg_iou,val_class_iou = evaluate_IoU(model_to_eval,validation_dataloader,w)
                 else:
                     val_avg_iou,val_class_iou = trn_avg_iou * 0, trn_class_iou * 0
 
-                tst_avg_iou,tst_class_iou = evaluate_IoU(model_to_eval,test_dataloader)
+                tst_avg_iou,tst_class_iou = evaluate_IoU(model_to_eval,test_dataloader,w)
 
                 writer.add_scalars('average IoU',{  'trn': trn_avg_iou,
                                                     'tst': tst_avg_iou,
@@ -306,12 +309,13 @@ def train(model:nn.Module,
             best_val_acc = current_val_acc
 
             # Make visualization if debug and 
-            if args.debug and isinstance(model,Unet):
+            model_to_vizulize = m.model if isinstance(m,MeanTeacher) else m
+            if args.debug and isinstance(model_to_vizulize,Unet):
                 viz_folder = os.path.join(args.out,'figs')
-                visulize_batch(model,labeled_dataloader,transform,writer,viz_folder,f"trn-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                visulize_batch(model_to_vizulize,labeled_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"trn-e{args.current_count}-a{current_val_acc*100:2.0f}")
                 if validation_dataloader is not None:
-                    visulize_batch(model,validation_dataloader,transform,writer,viz_folder,f"val-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                    visulize_batch(model_to_vizulize,validation_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"val-e{args.current_count}-a{current_val_acc*100:2.0f}")
                 
-                visulize_batch(model,test_dataloader,transform,writer,viz_folder,f"tst-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                visulize_batch(model_to_vizulize,test_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"tst-e{args.current_count}-a{current_val_acc*100:2.0f}")
                           
     return metrics
