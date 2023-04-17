@@ -10,7 +10,18 @@
 """Custom loss functions"""
 
 import torch
+import torch.nn as nn
 from torch.nn import functional as F
+from typing import Optional
+
+class SoftCrossEntropy(nn.Module):
+    def __init__(self,weight:Optional[torch.Tensor]=None,reduction:str='none') -> None:
+        super(SoftCrossEntropy,self).__init__()
+        self.reduction = reduction
+        self.weight = weight
+    
+    def forward(self,input,target):
+        return soft_cross_entropy(input,target,self.weight,self.reduction)
 
 
 def softmax_mse_loss(input_logits, target_logits):
@@ -80,6 +91,7 @@ def soft_cross_entropy(input:torch.Tensor, target:torch.Tensor,weight: torch.Ten
         return  -(weight * target * logprobs).sum()
     elif reduction == 'mean':
         return  -(weight * target * logprobs).sum() / (torch.numel(input) / input.shape[1])
+
 
 def kl_divergence(input:torch.Tensor,target:torch.Tensor,reduction:str='batchmean'):
     """
