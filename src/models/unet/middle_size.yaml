@@ -36,6 +36,6 @@ blocks: [
         normalization_type : 'batch'},  
 
         {type: classifier, #simple convolutional layer
-        in_ch : 32, out_ch : 20, conv_kernel : [1,1],normalization_type : 'batch'
+        in_ch : 32, out_ch : 8, conv_kernel : [1,1],normalization_type : 'batch'
         } 
 ] 
