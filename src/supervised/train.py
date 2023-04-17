@@ -73,14 +73,15 @@ def train(model:nn.Module,
             
             # Compute IoU 
             if isinstance(model,Unet):
-                trn_avg_iou,trn_class_iou = evaluate_IoU(model,train_dataloader)
+                w = args.class_weights > 0
+                trn_avg_iou,trn_class_iou = evaluate_IoU(model,train_dataloader,w)
 
                 if validation_dataloader is not None:
-                    val_avg_iou,val_class_iou = evaluate_IoU(model,validation_dataloader)
+                    val_avg_iou,val_class_iou = evaluate_IoU(model,validation_dataloader,w)
                 else:
                     val_avg_iou,val_class_iou = trn_avg_iou * 0, trn_class_iou * 0
 
-                tst_avg_iou,tst_class_iou = evaluate_IoU(model,test_dataloader)
+                tst_avg_iou,tst_class_iou = evaluate_IoU(model,test_dataloader,w)
 
                 writer.add_scalars('average IoU',{  'trn': trn_avg_iou,
                                                     'tst': tst_avg_iou,
@@ -160,14 +161,15 @@ def train(model:nn.Module,
 
             
             # Make visualization if debug and 
-            if args.debug and isinstance(model,Unet):
+            model_to_vizulize = model
+            if args.debug and isinstance(model_to_vizulize,Unet):
                 viz_folder = os.path.join(args.out,'figs')
-                visulize_batch(model,train_dataloader,transform,writer,viz_folder,f"trn-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                visulize_batch(model_to_vizulize,train_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"trn-e{args.current_count}-a{current_val_acc*100:2.0f}")
                 if validation_dataloader is not None:
-                    visulize_batch(model,validation_dataloader,transform,writer,viz_folder,f"val-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                    visulize_batch(model_to_vizulize,validation_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"val-e{args.current_count}-a{current_val_acc*100:2.0f}")
                 
-                visulize_batch(model,test_dataloader,transform,writer,viz_folder,f"tst-e{args.current_count}-a{current_val_acc*100:2.0f}")
-                
+                visulize_batch(model_to_vizulize,test_dataloader,writer=writer,viz_folder=viz_folder,id_str=f"tst-e{args.current_count}-a{current_val_acc*100:2.0f}")
+                  
 
                
     return metrics
@@ -212,7 +214,7 @@ def train_one_epoch(m:nn.Module,opt,lr_scheduler,loss_fn:Callable,dl,args,augume
         targets = ensure_onehot(targets,num_classes=targets_hat.shape[1])
 
 
-        l = loss_fn(targets_hat,targets)
+        l = torch.sum(loss_fn(targets_hat,targets)) / (targets_hat.numel() / targets_hat.shape[1])
         l.backward()
         opt.step()
         if lr_scheduler is not None:
