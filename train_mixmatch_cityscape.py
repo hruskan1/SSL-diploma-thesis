@@ -18,15 +18,17 @@ from src.models.unet import unet
 from src.mixmatch.transformations import MyAugmentation
 from datetime import datetime
 
+from typing import Optional,Tuple
+
 from torch.utils.tensorboard import SummaryWriter
 from progress.bar import Bar as Bar
 from src.mixmatch.train import train
+from src.models.misc import visulize_batch
 
 
-
-if __name__ == '__main__':
-
-    # Create an ArgumentParser object
+def parse_cmdline_arguments()-> EasyDict:
+    """parse command-line argumetns into EasyDict"""
+        # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description='Mixmatch CityScape arguments')
     parser.add_argument('-c','--current_count',default=0,type=int,help="Current counter of images. Total length of training is always given by 'e - c' ")
     parser.add_argument('-e','--epochs', default = 1024, type=int, help='Number of epochs to train')
@@ -36,9 +38,9 @@ if __name__ == '__main__':
     parser.add_argument('-a','--alpha',default=0.75, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
     parser.add_argument('-lam','--lambda_u',default=150, type = float, help='Weight for loss corresponding to unlabeled data')
     parser.add_argument('-rampup','--rampup_length',default = 1024, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
-    parser.add_argument('-nx','--n_labeled',default = 1000,type=int,help='Number of labeled samples (Rest is unlabeled)')
+    parser.add_argument('-nx','--n_labeled',default = 500,type=int,help='Number of labeled samples (Rest is unlabeled)')
     parser.add_argument('-nv','--n_val',default = 0,type=int, help='Number of samples used in validation dataset (the dataset is split into labeled,unlabeled,validation and test if test exists)')
-    parser.add_argument('-BS','--batch_size',default=4,type = int,help='mini batch size')
+    parser.add_argument('-BS','--batch_size',default=2,type = int,help='mini batch size')
     parser.add_argument('-lr','--learning_rate',default=2e-3,type=float,help='learning rate of Adam Optimizer')
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
@@ -70,7 +72,6 @@ if __name__ == '__main__':
 
     # Import and override with parameters provided on command line
     for k,v in parsed_args._get_kwargs():
-        print(f"{k}:{v}")
         args[k] = v
 
     # Get architecture of u-net
@@ -86,7 +87,29 @@ if __name__ == '__main__':
     args.device = utils.get_device(args.device)
     
     # Multiply kimg
-    args.kimg = args.kimg * 1000
+    args.kimg = int(args.kimg * 1000)
+
+    return args
+
+
+def prepare_transformation(size:Tuple[int,int])->MyAugmentation:
+    ### Transformation ###
+    k1 = transforms.Pad(padding=4, padding_mode='reflect')
+    k2 = K.augmentation.RandomCrop(size=size,same_on_batch=True) #nessecary for mixmatch 
+    k3 = K.augmentation.RandomHorizontalFlip()
+    
+    img_trans = nn.ModuleList([k1,k2,k3])
+    mask_trans = nn.ModuleList([k1,k2,k3]) # only for segmentation 
+    invert_trans  = nn.ModuleList([k3]) # only for segmentation 
+    augumentation = MyAugmentation(img_trans,mask_trans,invert_trans)
+
+    return augumentation
+
+
+
+if __name__ == '__main__':
+
+    args = parse_cmdline_arguments()
 
     # Create outdir and log 
     if not os.path.isdir(args.out):
@@ -108,41 +131,36 @@ if __name__ == '__main__':
 
     writer = SummaryWriter(args.out)
 
-    ### Datasets and dataloaders ###
-    size = (128,256)
+    ### Augumentation, Datasets and dataloaders ###
+    img_size = (256,512)
 
+    augumentation = prepare_transformation(img_size)
     labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader =\
                                                 my_datasets.get_CityScape(root=args.dataset_path,
                                                                             n_labeled = args.n_labeled,
                                                                             n_val = args.n_val,
                                                                             batch_size = args.batch_size,
                                                                             mode = 'fine', # change if you want to
-                                                                            size = size,
+                                                                            size = img_size,
                                                                             target_type='semantic',
                                                                             verbose=True
                                                                             )
      
-    ### Transformation ###
-    k1 = transforms.Pad(padding=4, padding_mode='reflect')
-    k2 = K.augmentation.RandomCrop(size=size,same_on_batch=True) #nessecary for mixmatch 
-    k3 = K.augmentation.RandomHorizontalFlip()
     
-    img_trans = nn.ModuleList([k1,k2,k3])
-    mask_trans = nn.ModuleList([k1,k2,k3]) # only for segmentation 
-    invert_trans  = nn.ModuleList([k3]) # only for segmentation 
-    augumentation = MyAugmentation(img_trans,mask_trans,invert_trans)
 
- 
     ### Model,optimizer, LR scheduler, Eval function ###
     model = unet.Unet(args.model_architecture)
-    loss_fn = losses.soft_cross_entropy
+    args.class_weights = torch.Tensor(my_datasets.CityScapeDataset.class_weights).to(args.device)
+    
+    eval_loss_fn = losses.SoftCrossEntropy(weight=args.class_weights,reduction='none')
+    #eval_loss_fn = nn.CrossEntropyLoss()
 
     # find optimal lr
     if args.learning_rate is None:
         print("Searching for learning rate!")
         losses, lrs = utils.lr_find(model,
                 train_dl = labeled_dataloader,
-                loss_fn = loss_fn,
+                loss_fn = eval_loss_fn,
                 args = args,
                 transform = None,
                 min_lr = 1e-7, max_lr = 100, steps = 50,
@@ -158,7 +176,7 @@ if __name__ == '__main__':
         lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(opt,
                                                         max_lr=3*args.learning_rate,
                                                         epochs=(args.epochs-args.current_count),
-                                                        steps_per_epoch=(args.kimg // args.batch_size + 1))
+                                                        steps_per_epoch=(args.kimg // args.batch_size))
     else:
         lr_scheduler = None
 
@@ -167,9 +185,6 @@ if __name__ == '__main__':
         ewa_model = MeanTeacher(model,args.mean_teacher_coef,weight_decay=args.weight_decay)
     else:
         ewa_model = None
-
-    eval_loss_fn = losses.soft_cross_entropy
-    #eval_loss_fn = nn.CrossEntropyLoss()
 
     # Load previous checkpoint
     if args.resume is not None and os.path.isfile(args.resume):
@@ -193,8 +208,9 @@ if __name__ == '__main__':
 
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0),file=open(args.logpath, 'a'), flush=True)
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
-    
-    metrics = train(model=model,
+
+
+    metrics = train(model = model,
                     ewa_model = ewa_model,
                     opt = opt,
                     lr_scheduler = lr_scheduler,
