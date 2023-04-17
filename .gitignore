@@ -11,6 +11,7 @@ nohup.out
 
 /cityscape*/
 
+_env.yml
 *.zip
 *.jpg
 
