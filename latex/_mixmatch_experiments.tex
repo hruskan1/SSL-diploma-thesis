@@ -1,0 +1,21 @@
+%% 
+As the original implementation of MixMatch is written in \texttt{TensorFlow} and does not support the segmentation task, we have re-implemented
+and adapted it. To verify the correctness of our implementation, we have run tests on CIFAR10 and compared our results with those reported in \cite{mixmatch-2019} and \cite{wide-resnet-2017}. The 
+comparison is shown in table \ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. Our results are based only on one run (due to the time requirements and as our goal
+is to only verify our implementation with respect to the original one). 
+\todo{Report the sensitivity with hyperparameters. And the training of supervised model}
+\begin{table}[htb]
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    Labels  & 250 & 500 & 1000 & 2000 & 4000 & All \\
+    \hline
+    Our code & $88.45$ & $89.58$& $91.83$ & $93.03$ & $93.50$ & $93.54$\\
+    \hline
+    Reported & $88.92\pm0.87$ & $90.35\pm0.94$ & $92.25\pm0.32$ & $92.97\pm0.15$ & $93.76\pm 0.06$ & $94.27$\\
+    \hline
+    \end{tabular}
+    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset \cite{cifar10-2009}. Labels row corresponds to number of labeled points available during trainig. 
+    The last column ("All") corresponds to fully-supervised mode performance.}
+    \label{tab:mixmatch-cifar10}
+\end{table}
+     

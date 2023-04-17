@@ -1,4 +1,4 @@
-/latex
+
 /src/mixmatch/examples/*
 !/src/mixmatch/examples/*.ipynb
 
@@ -15,6 +15,11 @@ _env.yml
 *.zip
 *.jpg
 *.txt
+
+/latex/*
+!/latex/_*.tex
+!/latex/DP.tex
+!/latex/Diploma Thesis.bib
 
 
 # Python generic gitignore

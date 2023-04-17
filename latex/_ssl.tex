@@ -1,0 +1,63 @@
+\section{SSL introduction}
+Semi-Supervised Learning (SSL) is an essential subfield of machine learning that aims to improve model performance by leveraging 
+both labeled and unlabeled data. In many real-world scenarios, obtaining labeled data is expensive and time-consuming, whereas 
+unlabeled data is abundant and relatively easy to acquire. Therefore, SSL algorithms seek to learn from both labeled and unlabeled 
+data to improve model generalization and achieve higher accuracy. Unlike supervised learning, where models rely entirely on labeled 
+data, SSL algorithms use a small amount of labeled data to guide the model's learning process while exploiting the vast amounts of 
+unlabeled data to extract useful features and improve its predictions. In recent years, there has been a growing interest in developing
+novel SSL algorithms that can tackle complex problems and achieve state-of-the-art performance, making SSL a rapidly evolving field of 
+research. 
+
+Typically the training dataset $\mathcal{D}$ can be divided into two subsets $\mathcal{D} = \mathcal{D}_l \cup \mathcal{D}_u$:
+\begin{align*}
+    \mathcal{D}_l = \{(x_1,y_1),\dots, (x_l,y_l)\},\quad \mathcal{D}_u = \{(x_{l+1}),\dots,(x_{u})\},
+\end{align*}
+In this \textit{standard} setting, SSL can be viewed as supervised learning, where 
+the \textit{unlabeled} data provide additional information on the underlying distribution of the examples $x$.
+We will refer to this setting in this thesis, however there are also different formulations of the SSL problem, such as \textit{SSL with constraints}
+ and others\cite[p. 1]{ssl-book-2006}.
+
+\begin{quote}
+    \textit{
+    ``A natural question arises: is semi-supervised learning meaningful? More precisely:
+    in comparison with a supervised algorithm that uses only labeled data, can one
+    hope to have a more accurate prediction by taking into account the unlabeled
+    points? \dots Yes, however there is an important prerequisite: that the
+    distribution of examples, which the unlabeled data will help elucidate, be relevant
+    for the classification problem.
+    \dots One should thus not be too surprised that for semi-supervised learning to work,
+    certain assumptions will have to hold.}''~--~Chappele et \textit{al}\cite[p. 4]{ssl-book-2006}
+\end{quote}
+
+\subsection*{Assumptions in SSL}
+As stated in the quote above, several assumptions are necessary for SSL algorithms to work \cite[p. 5]{ssl-book-2006}. 
+Some of them are well known from unsupervised learning:
+\begin{itemize}
+    \item \textbf{The Smoothness Assumption}: \textit{If two points $x_1$ and $x_2$ lies nearby in high-density region, then the desired outputs $y_1$ 
+    and $y_2$ should be similar.} This assumption generalizes the supervised learning assumption, where the same holds if $x_1$ and $x_2$ \textit{are 
+    close} (not necessarily in high-density region). Due to transitivity, the assumption clusters the data into high-density clusters, and many clusters
+    can share the same output value.
+    \item \textbf{The Cluster Assumption}: \textit{Points in one cluster are likely to be of the same class}, or in other words, \textit{the decision 
+    boundary should be located in low-denisty region.} This assumption is a special case of the previously mentioned assumption, as clusters are often 
+    considered regions with a high density of data. However, it is presented independently as it is easier to understand and has motivated several 
+    unsupervised algorithms such as K-means and others. %\cite{k-means-1967,k-means-1982}
+    \item \textbf{The Manifold Assumption}: \textit{The data lie along low-dimensional latent manifolds inside that high-dimensional space.} This
+    assumption tries to overcome the \textit{curse of dimensionality}. Simply put, as the dimension grows, the sparsity of data increases, which makes 
+    clustering impossible, as there are no clusters to be found. If the manifold assumption holds, we can search for a mapping into such a 
+    low-dimensional manifold, in which clustering is possible. There are several unsupervised algorithms that utilize this assumption, such as PCA, 
+    MDS, ISOMAP, and t-SNE.
+\end{itemize}
+
+\subsection*{SSL methods}
+SSL algorithms can be categorized into these following groups based on their motivation, making it easier to navigate and understand them\cite{ssl-overview-2020}:
+\begin{itemize}
+        \item \textbf{Consistency Regularization}: According to the Smoothness Assumption, when the input $x$ and its perturbed version $\tilde{x}$, 
+        are close to each other, their corresponding outputs, $y$ and $\tilde{y}$, should also be similar. By minimizing the distance between 
+        $f_\theta(x)$ and $f_\theta(\tilde{x})$, where the distance can be measured using a variety of techniques, such as mean squared error or 
+        Kullback-Leibler divergence, we can train the model to make consistent predictions on both the original and perturbed input.
+    \item \textbf{Proxy-label Methods}
+    \item \textbf{Generative Models} 
+    \item \textbf{Graph-Based Methods}
+\end{itemize}
+\section{MixMatch}
+\section{VAEs}

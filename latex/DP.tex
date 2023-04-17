@@ -1,0 +1,259 @@
+% arara: pdflatex: { synctex: yes }
+% arara: makeindex: { style: ctuthesis }
+% arara: bibtex
+
+% The class takes all the key=value arguments that \ctusetup does,
+% and a couple more: draft and oneside
+\documentclass[twoside]{ctuthesis}
+
+\ctusetup{
+	preprint = \ctuverlog,
+	mainlanguage = english,
+	titlelanguage = english,
+%	mainlanguage = czech,
+	otherlanguages = {czech},
+	title-czech = {Částečné učení s učitelem pro časově-prostorovou segmentaci satelitních snímků},
+	title-english = {Semi-Supervised Learning for Spatio-Temporal Segmentation of Satellite Images},
+	%subtitle-czech = {Cesta do tajů kdovíčeho},
+	%subtitle-english = {Journey to the who-knows-what wondeland},
+	doctype = M,
+	faculty = F3,
+ 	department-czech = {Katedra kybernetika},
+	department-english = {Department of Cybernetics},
+	author = {Antonín Hruška},
+	supervisor = {doc. Boris Flach, Dr. rer. nat. habil.},
+	%supervisor-address = {ss},
+	%supervisor-specialist = {John Doe},
+	fieldofstudy-english = {Cybernetics and Robotics},
+	%subfieldofstudy-english = {Mathematical Modelling},
+	fieldofstudy-czech = {Kybernetika a robotika},
+	%subfieldofstudy-czech = {Matematické modelování},
+	keywords-czech = {TODO},
+	keywords-english = {Segmentation, SSL, VAE, LVAE, sVAE, Mixmatch, CityScape},
+	day = 26,
+	month = 5,
+	year = 2023,
+	specification-file = {Thesis_Assignment_Antonin_Hruska_Semi-Supervised_Learning_for_Spatio-Temporal_Segmentation_of_Satellite_Images},
+	front-specification = true,
+	front-list-of-figures = true,
+	front-list-of-tables = true,
+    pkg-hyperref = true,
+% Does not work	pkg-biblatex = true
+%	monochrome = true,
+%	layout-short = true,
+}
+
+\ctuprocess
+
+\addto\ctucaptionsczech{%
+	\def\supervisorname{Vedoucí}%
+	\def\subfieldofstudyname{Studijní program}%
+}
+
+\ctutemplateset{maketitle twocolumn default}{
+	\begin{twocolumnfrontmatterpage}
+		\ctutemplate{twocolumn.thanks}
+		\ctutemplate{twocolumn.declaration}
+		\ctutemplate{twocolumn.abstract.in.titlelanguage}
+		\ctutemplate{twocolumn.abstract.in.secondlanguage}
+		\ctutemplate{twocolumn.tableofcontents}
+		\ctutemplate{twocolumn.listoffigures}
+	\end{twocolumnfrontmatterpage}
+}
+
+% Theorem declarations, this is the reasonable default, anybody can do what they wish.
+% If you prefer theorems in italics rather than slanted, use \theoremstyle{plainit}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{note}
+\newtheorem*{remark*}{Remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\setlength{\parskip}{4ex plus 0.2ex minus 1ex}
+
+% Abstract in Czech
+\begin{abstract-czech}
+\todo{}
+\end{abstract-czech}
+
+% Abstract in English
+\begin{abstract-english}
+ \todo{}
+\end{abstract-english}
+
+% Acknowledgements / Podekovani
+\begin{thanks}
+\todo{}
+\end{thanks}
+
+% Declaration / Prohlaseni
+\begin{declaration}
+I declare that the presented work was developed independently and that I have listed all sources of information
+used within it in accordance with the methodical instructions for observing the ethical principles in the preparation 
+of university theses.
+
+In Prague, 26th May, 2023
+\end{declaration}
+
+\usepackage{diagbox}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={.},exponent-product=\cdot}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes, arrows.meta, positioning}
+\usetikzlibrary{positioning,automata}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{csquotes}
+\usepackage{makecell}
+\usepackage{physics}
+\usepackage{lipsum}
+\usepackage{listings}
+%\usepackage{julia-mono-listings}
+
+% CUSTOM FONT SETTING
+\usepackage{tgpagella}
+
+\usepackage{xkeyval}	% Inline todonotes
+\usepackage[textsize = footnotesize]{todonotes}
+\presetkeys{todonotes}{inline}{}
+
+\usepackage[style=numeric]{biblatex}
+\addbibresource{Diploma Thesis.bib}
+\DefineBibliographyStrings{english}{%
+  bibliography = {References},
+}
+
+\usepackage{url}
+
+%%% --- The following two lines are what needs to be added --- %%%
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
+
+% Definition of new commands
+\newcommand{\argmax}{\mathop{\rm argmax}}
+\newcommand{\argmin}{\mathop{\rm argmin}}
+\newcommand{\arctg}{\mathop{\rm arctg}}
+\newcommand{\tg}{\mathop{\rm tg}}
+\newcommand{\aff}{\mathop{\rm aff}}
+\newcommand{\conv}{\mathop{\rm conv}}
+%\newcommand{\rank}{\mathop{\rm rank}}
+\newcommand{\diag}{\mathop{\rm diag}}
+\newcommand{\sgn}{\mathop{\rm sgn}}
+\newcommand{\Null}{\mathop{\rm null}}
+\newcommand{\Rng}{\mathop{\rm rng}}
+\newcommand{\dist}{\mathop{\rm dist}}
+\renewcommand{\d}[1]{\mbox{\rm d}#1}
+
+\renewcommand{\phi}{\varphi}
+
+% Change of symbols for footnotes
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+% Boldface vectors. Example: \_x
+\def\_#1{\protect\mathchoice
+    {\mbox{\boldmath $\displaystyle\bf#1$}}
+    {\mbox{\boldmath $\textstyle\bf#1$}}
+    {\mbox{\boldmath $\scriptstyle\bf#1$}}
+    {\mbox{\boldmath $\scriptscriptstyle\bf#1$}}}
+
+% Blackboard letters. Example: \bb R
+\def\bb#1{\mathbb{#1}}
+
+% Custom commands
+\def\maxjerk{j_{\mathrm{M}}}
+
+% Rozsireni tabulky kvuli nahnacani symbolu.
+\renewcommand{\arraystretch}{1.25}
+
+% Cpp, C#
+\newcommand{\CC}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
+\newcommand{\CS}{C\nolinebreak\hspace{-.05em}\raisebox{.6ex}{\tiny\bf \#}}
+
+% repeating footnote
+\newcommand{\savefootnote}[2]{\footnote{\label{#1}#2}}
+\newcommand{\repeatfootnote}[1]{\textsuperscript{\ref{#1}}}
+
+% Colour definitions
+\definecolor{myBlue}{HTML}{6666FF}
+\definecolor{myGreen}{HTML}{66B366}
+\definecolor{myRed}{HTML}{FF6666}
+
+\begin{document}
+
+\maketitle
+
+\chapter{Introduction}
+\input{_introduction}
+
+\chapter{Motivation and Theory}
+\label{motivation-theory}
+\input{_ssl}
+\todo{10-15 pages}
+
+
+
+\todo{5 pages}
+\todo{Introduction to SSL and its applications}
+\todo{Overview of different SSL paradigmas with mentioning the methods}
+\todo{Discussion of the advantages and disadvantages of SSL}
+\section{Introduction to VAE}
+\todo{5 pages}
+\todo{Detailed theoretical description of VAE paradigma and development}
+\todo{Summary of the previous work on autovariational encoder}
+
+
+\section{Unet}
+\todo{1-2 pages}
+\todo{Description of Unet, usage, results etc}
+
+\chapter{Methodology}
+\label{methodology}
+\todo{10-15 pages}
+\section{Segmentation}
+\todo{Description of the dataset and the segmentation task,metrics etc}
+\section{sVAE}
+\todo{Description of our algorithm}
+\section{Mixmatch}
+\todo{Description of the mixmatch model}
+\todo{Implementation details of the two models}
+
+
+\chapter{Experiments and Results} 
+\label{experiments-results}
+\todo{10-15 pages}
+\todo{Description of the experimental setup}
+\todo{Presentation of the results of the experiments}
+\todo{Comparison of the results of the ladder autovariational encoder with symmetrical learning and mixmatch models}
+\todo{Discussion of the results and analysis of the findings}
+\section{MixMatch}
+\input{_mixmatch_experiments}
+
+
+\chapter{Conclusion and Future Work}
+\label{conclusions}
+\todo{2-3 pages}	
+\todo{Summary of the main findings and contributions}
+\todo{Discussion of the limitations and future directions of the research}
+\todo{Final thoughts and conclusions}
+
+
+
+\printbibliography
+
+%\ctutemplate{specification.as.chapter}
+
+\end{document}
