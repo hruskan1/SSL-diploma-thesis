@@ -1,4 +1,5 @@
 \section{SSL introduction}
+\label{sec:ssl-introduction}
 Semi-Supervised Learning (SSL) is an essential subfield of Machine Learning (ML) that aims to improve model performance by leveraging 
 both labeled and unlabeled data. In many real-world scenarios, obtaining labeled data is expensive and time-consuming, whereas 
 unlabeled data is abundant and relatively easy to acquire. Therefore, SSL algorithms seek to learn from both labeled and unlabeled 
@@ -87,7 +88,7 @@ SSL algorithms can be categorized into these following groups based on their mot
 
     \todo{should cite bootstraping?}
 
-    \item \textbf{Generative Models}: The \textit{generative} models try to model the joint density $p(x,y)$ by some unsupervised learning procedure (i.e. maximum
+    \item \textbf{Generative Models}:\label{generative-modelling} The \textit{generative} models try to model the feature density $p(x)$ or even joint density $p(x,y)$ by some unsupervised learning procedure (i.e. maximum
         likelihood estimation (MLE)). An inference can be then obtained by Bayes inference rule (for a given loss $l$):
         \begin{equation*}
             f^{\star}(x) = \argmin_{y^\prime\in \mathcal{Y}} p(y|x)l(y,\hat{y})
@@ -96,14 +97,19 @@ SSL algorithms can be categorized into these following groups based on their mot
         \begin{equation*}
             p(y|x) = \frac{p(x,y)}{p(x)} =\frac{p(x|y)p(y)}{\int_\mathcal{Y} p(x|y)p(y) \d y}
         \end{equation*}
-        They are used in SSL because they can easily incorporate the unlabeled data points (compared to \textit{discriminative} models, which only focus on estimating
+
+        After training a model, we can use it to generate new samples from a \textit{modelled} distribution $p_\theta(x)$ at any time. 
+        This allows us to obtain features that were not present in the original training set, but the quality of these new features depends on
+        how closely our model approximates the true underlying distribution $p^\star(x)$ represented by the training set distribution 
+        $p_{\mathcal{D}}(x)$, which is also known as the \textit{evidence}. Therefore, the quality of the generated samples depends on the 
+        accuracy of the model's approximation to the true distribution.
+
+        Generative models are used in SSL because they can easily incorporate the unlabeled data points (compared to \textit{discriminative} models, which only focus on estimating
         $p(y|x)$ and cannot directly exploit the infromation in $p(x)$). On the other hand, the \textit{discriminative} models fulfill the Vapnik's principle and in its
         sense can provide comparable results even without the use of the unlabelled data.  In a broader context, SSL can be viewed in the field of generative models as 
         either classification with supplementary information on the marginal density or unsupervised clustering with additional information, i.e., labels of a subset 
         of points. A reasonable requirement on SSL would be that any valid SSL technique should surpass baseline methods by a significant margin in a range of across a
-        variety of practical and relevant scenarios.
-
-        
+        variety of practical and relevant scenarios. 
     \item \textbf{Graph-Based Methods}:
     Semi-supervised methods that are based on graphs establish a graph structure where the labeled and unlabeled examples in the dataset constitute the nodes, and the 
     similarity between examples is reflected by edges that may be weighted. Typically, these methods presume label smoothness throughout the graph. Graph-based 
@@ -121,6 +127,7 @@ Nevertheless, the neural networks (NN) can quickly overfit to low confident poin
 The Entropy minimization on its now does not lead to strong results, however it is often combined with different approaches to improve their performance \cite{ssl-overview-2020}.
 
 \section{MixMatch}
+\label{sec:mix-match}
 The Mixmatch was proposed by David Berthelot et \textit{al.} in 2019 \cite{mixmatch-2019} and combines several ideas and components from dominant paradigms of SSL.
 This \textit{holistic} approach yields state of the art results and is the cornerstone for a whole branch of new algorithms such as ReMixMatch \cite{remixmatch-2020}
 and FixMatch \cite{fixmatch-2020}. Namely, it combines \textit{consistency regularization} and \textit{proxy-labeling} with \textit{entropy minimization}.
@@ -182,8 +189,7 @@ The MixMatch algorithm consists of the following steps:
             as a MixUp per elements, i.e.
             \begin{equation*}
                 \begin{split}
-                    \text{MixUp}(\mathcal{D}_a,\mathcal{D}_b) = & \{\text{MixUp} \big{(} (x_{ai},y_{ai}),(x_{bi},y_{bi}) \big{)}\,|\, (x_{ai},y_{ai}) \in \mathcal{D}_a, \\
-                    &(x_{bi},y_{bi}) \in \mathcal{D}_b  \}.
+                    \text{MixUp}(\mathcal{D}_a,\mathcal{D}_b) = & \{\text{MixUp} \big{(} (x_{ai},y_{ai}),(x_{bi},y_{bi}) \big{)}\,|\,i \in {1,\dots,|\mathcal{D}_a|}  \}.
                 \end{split}
             \end{equation*}
         Going back to MixMatch, the previous steps resulted in two batches with different sizes:
@@ -213,4 +219,4 @@ The MixMatch algorithm consists of the following steps:
 
 \todo{Write about adaptation to the image segmentation?}
 
-\section{VAEs}
+
