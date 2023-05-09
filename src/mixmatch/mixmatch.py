@@ -173,23 +173,25 @@ def mixup(A:Tuple[torch.Tensor,torch.Tensor], B:Tuple[torch.Tensor,torch.Tensor]
     
     lam = torch.max(lam,1-lam).to(x1.device)
     lams = torch.ones(x1.shape).to(x1.device) * lam.view(N,*( [1]*(x1.ndim-1)))
-        
+    _lams = torch.ones(y1.shape).to(y1.device) * lam.view(N, *([1]* (y1.ndim-1)))
 
 
     # Due to the affine transformations, part of the image can be empty:
     # TODO QESTION: If view in seond pic is zero (due to transformation), do not apply weightening (Should it be important?)
-    
-    # If only x1 valid -> alpha = 1, if only x2 valid -> alpha = 0 
-    # x1_mask = (x1.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
-    # x2_mask = (x2.sum(axis=1,keepdim=True) > eps).repeat(1,C,*( [1] * (x1.ndim -2) ) )
-    # lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
-    # lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
+    # if utils._is_task_segmentation(x1,y1):
+    #     #If only x1 valid -> alpha = 1, if only x2 valid -> alpha = 0 
+    #     x1_mask = (x1.sum(axis=1,keepdim=True) == float('nan')).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+    #     x2_mask = (x2.sum(axis=1,keepdim=True) == float('nan')).repeat(1,C,*( [1] * (x1.ndim -2) ) )
+    #     lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
+    #     lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
+    #     y1_mask = (x1.sum(axis=1,keepdim=True) == float('nan')).repeat(1,*( [1] * (y1.ndim -1) ) )
+    #     y2_mask = (x1.sum(axis=1,keepdim=True) == float('nan')).repeat(1,*( [1] * (y1.ndim -1) ) )
+    #     _lams[torch.logical_and(x1_mask, torch.logical_not(x2_mask))] = 1
+    #     _lams[torch.logical_and(x2_mask, torch.logical_not(x1_mask))] = 0
 
     # Mix up the input data and labels
     
     mixed_x = lams * x1 + (1 - lams) * x2
-    
-    _lams = torch.ones(y1.shape).to(y1.device) * lam.view(N, *([1]* (y1.ndim-1)))
     mixed_y = _lams * y1 + (1 - _lams) * y2
         
     return (mixed_x, mixed_y),lam
