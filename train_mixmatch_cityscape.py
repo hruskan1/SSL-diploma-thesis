@@ -32,11 +32,11 @@ def parse_cmdline_arguments()-> EasyDict:
     parser = argparse.ArgumentParser(description='Mixmatch CityScape arguments')
     parser.add_argument('-c','--current_count',default=0,type=int,help="Current counter of images. Total length of training is always given by 'e - c' ")
     parser.add_argument('-e','--epochs', default = 1024, type=int, help='Number of epochs to train')
-    parser.add_argument('--kimg','--images_per_epoch',default=0.5,type=float,help='Number of images to see in each epoch (in thousands)')
+    parser.add_argument('--kimg','--images_per_epoch',default=5,type=float,help='Number of images to see in each epoch (in thousands)')
     parser.add_argument('-K','--K', default = 2, type=int, help='Number of agumentations to apply')
     parser.add_argument('-T','--temperature', default = 0.5, type=float, help='Temperature T for sharpening the distribution, T > 0')
-    parser.add_argument('-a','--alpha',default=0.75, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
-    parser.add_argument('-lam','--lambda_u',default=150, type = float, help='Weight for loss corresponding to unlabeled data')
+    parser.add_argument('-a','--alpha',default = 0.3, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
+    parser.add_argument('-lam','--lambda_u',default= 116, type = float, help='Weight for loss corresponding to unlabeled data')
     parser.add_argument('-rampup','--rampup_length',default = 1024, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
     parser.add_argument('-nx','--n_labeled',default = 500,type=int,help='Number of labeled samples (Rest is unlabeled)')
     parser.add_argument('-nv','--n_val',default = 0,type=int, help='Number of samples used in validation dataset (the dataset is split into labeled,unlabeled,validation and test if test exists)')
@@ -56,7 +56,7 @@ def parse_cmdline_arguments()-> EasyDict:
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
     parser.add_argument('--weight_decay',default=4e-5,type=float, help ="Weight decay (applied at each step), Applied only if  'mean_teacher_coef' is not None")
     parser.add_argument('--model_architecture', default='./src/models/unet/large_size.yaml', type=str, help = 'Path to the model architecture (yaml)')
-
+    parser.add_argument('--img_size', default = [128,256], type=int,nargs="+", help = '(H:int,W:int) shape of image' )
     ### Parse the command-line arguments ###
     parsed_args = parser.parse_args()
 
@@ -92,7 +92,7 @@ def parse_cmdline_arguments()-> EasyDict:
     return args
 
 
-def prepare_transformation(size:Tuple[int,int])->MyAugmentation:
+def prepare_transformation(size:Tuple[int,int])-> MyAugmentation:
     ### Transformation ###
     k1 = transforms.Pad(padding=4, padding_mode='reflect')
     k2 = K.augmentation.RandomCrop(size=size,same_on_batch=True) #nessecary for mixmatch 
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     writer = SummaryWriter(args.out)
 
     ### Augumentation, Datasets and dataloaders ###
-    img_size = (256,512)
+    img_size = args.img_size
 
     augumentation = prepare_transformation(img_size)
     labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader =\
