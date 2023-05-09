@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--debug',default=True,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
     parser.add_argument('--model_architecture', default='./src/models/unet/large_size.yaml', type=str, help = 'Path to the model architecture (yaml)')
-
+    parser.add_argument('--img_size', default = [128,256], type=int,nargs="+", help = '(H:int,W:int) shape of image' )
     ### Parse the command-line arguments ###
     parsed_args = parser.parse_args()
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     # Mean and standard deviation for CityScapes
     mean = my_datasets.CityScapeDataset.mean
     std = my_datasets.CityScapeDataset.std
-    size = (256,512)
+    size = args.img_size
     _t = transforms.Compose([transforms.ToTensor(),
                              transforms.Normalize(mean,std),
                              transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
