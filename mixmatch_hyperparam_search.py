@@ -9,10 +9,6 @@ configuration. As it is too time consuming to use the whole FashionMNIST dataset
 we here use a small subset of it.
 
 """
-
-import logging
-import sys
-
 import optuna
 from optuna.trial import TrialState
 
@@ -35,14 +31,15 @@ from src.models.misc import evaluate,evaluate_IoU
 from src.mixmatch.train import train_one_epoch
 
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 def set_mixmatch_params(trial:optuna.Trial,args:EasyDict):
     
     # We change those we wish 
-    args.rampup_length = trial.suggest_int("rampup_length", 16000/args.kimg, args.epochs)
-    args.K = trial.suggest_categorical('K',[2,3])
-    args.temperature = trial.suggest_float('temperature',0,1)
+    # args.rampup_length = trial.suggest_int("rampup_length", 16000/args.kimg, args.epochs)
+    # args.K = trial.suggest_categorical('K',[2,3])
+    # args.temperature = trial.suggest_float('temperature',0,1)
     args.alpha = trial.suggest_float('alpha',0,1)
     args.lambda_u = trial.suggest_float('lambda_u',25,400)
 
@@ -74,6 +71,7 @@ def objective(trial):
     # We set kimg and epcohs to accelerate thr training
     args.kimg = 2500
     args.epochs = 20
+    args.current_count = 0
     
     # We sample and change mixmatch params
     args = set_mixmatch_params(trial,args)
@@ -82,8 +80,8 @@ def objective(trial):
     # args = set_learning_params(trial,args)
 
     # We set cross entropy weights
-    args.class_weights = torch.Tensor(my_datasets.CityScapeDataset.custom_class_weights).to(args.device)
-    #args.class_weights = set_weights(trial,args.class_weights)
+    # args.class_weights = torch.Tensor(my_datasets.CityScapeDataset.custom_class_weights).to(args.device)
+    args.class_weights = set_weights(trial,args.class_weights)
 
 
 
@@ -167,14 +165,18 @@ def objective(trial):
         args.current_count += 1 
 
         # Set evaluation metric
-        
-        tst_avg_iou,_ = evaluate_IoU(m,test_dataloader,args.class_weights > 0)
-        
-    trial.report(tst_avg_iou, args.current_count)
+        tst_loss,tst_acc = evaluate(m,eval_loss_fn,test_dataloader,device=args.device)
+        tst_avg_iou,class_ious = evaluate_IoU(m,test_dataloader,args.class_weights > 0)
+        print(f"{args.current_count}/{args.epochs}|L: {tst_loss:4.2f}|acc: {tst_acc:4.2f}|iou: {tst_avg_iou}")
+        for idx,class_iou in enumerate(class_ious):
+            print(f"{idx}. class ({my_datasets.CityScapeDataset.trainid2names[idx]})\t {class_iou:4.2f}" ,end='')
+        print()
 
-    # Handle pruning based on the intermediate value.
-    if trial.should_prune():
-        raise optuna.exceptions.TrialPruned()
+        trial.report(tst_avg_iou, args.current_count)
+
+        # Handle pruning based on the intermediate value.
+        if trial.should_prune():
+            raise optuna.exceptions.TrialPruned()
 
     return tst_avg_iou
 
@@ -210,4 +212,5 @@ if __name__ == "__main__":
     
     
     fig = optuna.visualization.plot_param_importances(study)
-    fig.show()
+    #plt.show()
+    plt.savefig('param_importances.png')
