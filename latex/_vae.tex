@@ -5,8 +5,8 @@ It is a neural network architecture that is capable of learning a low-dimensiona
 images, text, or audio. The VAE is a probabilistic model that learns to approximate the true data distribution by using an encoder network to 
 map input data into a latent space, and a decoder network to map the latent space back to the original data space. But before we delve into the details of VAE, 
 let's explain the term ``Variational Autoencoders'' itself and what it actually represents. The explanation comes in two parts, first we explain 
-autoencoders in \ref{subsec:autoencoders} and then variational inference in \ref{subsec:variational-bayes}. The experinced reader can skip those 
-introductory parts and go right to \ref{subsec:vaes}.
+autoencoders in subsection \ref{subsec:autoencoders} and then variational inference in subsection \ref{subsec:variational-bayes}. The experinced reader can skip those 
+introductory parts and go right to subsection \ref{subsec:vaes}.
 
 \subsection{Autoencoders}
 \label{subsec:autoencoders}
@@ -14,13 +14,13 @@ An autoencoder was first introduced in the 1980s by Hinton \cite{autoencoders-19
 and the availability of large amounts of data and computational resources in the 2000s and 2010s that autoencoders became widely used and 
 achieved state-of-the-art results in a variety of task \cite{dim-reduction-ae-2006}. An autoencoder is a neural network designed to learn 
 identity mapping in unsupervised manner to reconstruct the original input while compressing the information in the ``bottleneck'' layer 
-to obtain a compressed representation \ref{fig:autoencoder}. Through this, we obtain an effecient dimensionality reduction: The low-dimensional 
+to obtain a compressed representation (see \ref{fig:autoencoder}). Through this, we obtain an effecient dimensionality reduction: The low-dimensional 
 latent representation can be used as an embedding vector in various application, such as search or data compression \cite{ae-blog-2018}.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{autoencoder.png}
-    \caption{Ilustration of autonecoder network with two networks: \textit{Encoder} and \textit{Decoder}, each parametrized by learnable parameters.
+    \caption[Autoencoder]{Ilustration of autonecoder network with two networks: \textit{Encoder} and \textit{Decoder}, each parametrized by learnable parameters.
     Source \cite{ae-blog-2018}}
     \label{fig:autoencoder}
 \end{figure}
@@ -60,7 +60,7 @@ performance. The idea of adding noise is today known as dropout technique \cite{
 
 Since then, other architectures have been proposed to improve robustness and prevent overfitting. These include sparse autoencoders
 \cite{sparse-ae-2011}, k-sparse autoencoders \cite{ksparse-ae-2014}, and contractive autoencoders \cite{contractive-ae-2011}. The novel 
-approach was then defined in 2013 by Kingma and Welling \cite{vae-original-2022} and VAEs were introduced. The key idea was to assume that 
+approach was then defined in 2013 by Kingma and Welling \cite{vae-original-2013} and VAEs were introduced. The key idea was to assume that 
 latent space is not deterministic, but stochastic with some distribution $p(z)$ over it. The goal of the VAE is to model this 
 distribution by variational bayes. 
 
@@ -124,7 +124,7 @@ The derivation of Euler-Lagrange equations is straightforward and is shown in ma
 
 \subsubsection*{Variational Bayes}
 Now we know what \textit{variations} are, but how do we apply them in the context of bayesian inference? Let's assume we have a probabilistic
-graphical model (PGM)\cite{graphical-models-2023} with some hidden (or unobserved) nodes $H$ and some observed nodes (evidence) $E$. The goal 
+graphical model (PGM) or Bayesian network \cite{graphical-models-2023} with some hidden (or unobserved) nodes $H$ and some observed nodes (evidence) $E$. The goal 
 of bayesian inference is to compute posterior probability $p(H|E)$:
 $$
 p(H|E) = \frac{p(H,E)}{p(E)} = \frac{p(E|H) p(H)}{p(E)}
@@ -151,20 +151,18 @@ where $\mathcal{Q}$ is the family of tractable distributions, and $\mathrm{KL}$ 
 non-optimization based methods to do such approximate inference, such as MCMC \cite{wiki-mcmc-2023}. 
 
 As the KL divergence is not symmetrical, one could ask why we have defined the optimization task as the reverse KL-divergence and not the other way
-around, i.e. forward KL divergence $\mathrm{KL}(p(H | E) | q(H))$. Both cases are illustrated in Figure \ref{fig:forward-reverse}. The reverse 
+around, i.e. forward KL divergence $\mathrm{KL}(p(H | E) | q(H))$. Both cases are illustrated in figure \ref{fig:forward-reverse}. The reverse 
 KL~divergence minimization results in $q$ \textit{under-estimating} $p$, which can be perceived as a safe choice. This choice ensures that sampling
 from found $q$ provides values which are plausible under original $p$. For a thorough explanation, we refer to the literature 
 \cite{another-vb-intro-2021}.
-
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{fwd-rvrs-kl.png}
-    \caption{Ilustration of forward vs reverse KL-divergence on a bimodal distribution. The blue and the red contours represent the target $p$ 
+    \caption[Forward vs reverse KL divergence]{Ilustration of forward vs reverse KL-divergence on a bimodal distribution. The blue and the red contours represent the target $p$ 
     and the unimodal approximation $q$, respectively.In (a), the forward KL-divergence minimization is visulized with $q$ trying to cover up $p$.
     The (b) and (c) shows the reverse KL-divergence where $q$ locks on to one of the two modes. Source \cite{another-vb-intro-2021}}
     \label{fig:forward-reverse}
 \end{figure}
-
 We will now relabel our variables to follow
 the standard notation used in deep learning literatue, where hidden variables $H$ are known as latent $\mathbf{z}$ and observed $E$ as features $\mathbf{x}$. 
 In this setting, we want to optimize:
@@ -184,13 +182,118 @@ If we rearange the last equation, we obtain
 \log p(\mathbf{x}) - \mathrm{KL}(q(\mathbf{z}) || p(\mathbf{z} | \mathbf{x})) &= \EX_q \big[\log p(\mathbf{x},\mathbf{z})\big] - \EX_q \big[\log q(\mathbf{z})\big] \\
     &= \mathrm{ELBO}(q)
 \end{align}
-where the left hand side (LHS) of the equation is called evidence lower bound (ELBO), since it is truly a lower bound on the logarithm of evidence $p(\mathbf{x})$. This is clear to see 
-as the KL divergnce is always positive. As the $\log p(\mathbf{x})$ is constant, maximizing the RHS is equal to minimzing the KL-divergence:
+where the left hand side (LHS) of the equation is called evidence lower bound (ELBO), since it is truly a lower bound on the logarithm of evidence 
+$p(\mathbf{x})$. This is clear to see as the KL divergnce is always positive. As the $\log p(\mathbf{x})$ is constant, maximizing the RHS is 
+equal to minimzing the KL-divergence:
 \begin{align*} 
     q^\star(\mathbf{z}) &= \argmin_{q \in \mathcal{Q}} \mathrm{KL}(q(\mathbf{z}) || p(\mathbf{z} | \mathbf{x})) \\
                         &= \argmax_{q \in \mathcal{Q}} \mathrm{ELBO}(q) \\
                         &= \argmax_{q \in \mathcal{Q}} \bigl[ \EX_q \big[\log p(\mathbf{x},\mathbf{z})\big] - \EX_q \big[\log q(\mathbf{z})\big] \bigr]  \\
 \end{align*}
+A commonly made assumption regarding the variational distribution $q(\mathbf{z})$ is that it factorizes over a partition of the latent variables, 
+such that the latent variables can be partitioned into subsets $\mathbf{z}_1,\dots,\mathbf{z}_m$. Specifically, we can write:
+$$
+q(\mathbf{z}) = \prod_{i=1}^m q_i(\mathbf{z}_i|\mathbf{x})
+$$
+This assumption is known as a \textit{mean field approximation}. It can be shown (see \cite{intro-variational-blog-2019}) that the following 
+equation holds for optimal $q^\star_j$: 
+$$
+\log q^\star_j(\mathbf{z}_j|\mathbf{x}) = \EX_{i \neq j} \log p(\mathbf{x},\mathbf{z}) + \text{constant}
+$$
+where $\EX_{{i\neq j}}[\ln p({\mathbf {z}},{\mathbf {x}})]$ represents the expected value of the logarithm of the joint probability 
+of the observed data and latent variables, taken over all variables that are not included in the current partition.The constant is 
+only a normalizing constant, so $q^\star_j$ is truly a probability distribution.This leads to iterative 
+algorithm of block-cordinate ascent on ELBO with initial random guess (see algorithm \ref{alg:cavi}). Furthermore, Neal and Hinton
+have shown in \cite{em-as-vb-1998} that the Expectation Maximization (EM) alogrithm (proposed by Dempster et \textit{al.} \cite{em-alg-1977}) 
+can be seen as such ascent on ELBO. 
+
+\begin{algorithm}
+    \caption[CAVI algorithm]{Coordinate Ascent Variational Inference (CAVI) Source: \cite{intro-variational-blog-2019}}
+    \label{alg:cavi}
+    \begin{algorithmic}[2]
+      \State \textbf{Input:} A model $p(\mathbf{x},\mathbf{z})$, a dataset $\mathbf{x}$
+      \State \textbf{Initialize:} Variational factors $q_j(\mathbf{z}_j)$
+      \While{the $\mathrm{ELBO}$ has not converged}
+        \For{$j \in \{1,\dots,m\}$}
+          \State Set $q_j(z_j) \gets \frac{\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}}{\int_{\mathbf{z}_j}\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}\d \mathbf{z}_j}$
+        \EndFor
+        \State Compute $\mathrm{ELBO}(q) \gets \EX \bigl[\log(p(\mathbf{x},\mathbf{z}))\bigr] - \EX \bigl[ \log q(\mathbf{z}) \bigr]$
+      \EndWhile
+      \State \textbf{return} $\prod_{j=1}^m q_j(\mathbf{z}_j)$
+    \end{algorithmic}
+\end{algorithm}
+
 \subsection{VAE}
 \label{subsec:vaes}
+The variational autoencoders were first introduced by Kingma and Welling in 2013 \cite{vae-original-2013}.
+
+\subsubsection{Deep Latent Variable Models}
+A deep latent variable model (DLVM) is a type of probabilistic graphical model or Bayesian network where some variables are hidden or latent \cite{intro-vae-2019}.
+These models use neural networks to parameterize the distributions of the its variables, enabling very complex marginal distributions (evidence)
+$p_\theta(\mathbf{x})$ even if each factor in the directed model (prior $p_\theta(\mathbf{z})$ or conditional $p_\theta(\mathbf{x}|\mathbf{z})$)
+is relatively simple. This expresivity maskes them attractive for approximating complicated true distributions $p^\star(\mathbf{x})$. 
+The simplest DLVM is one that is factored as with following structure:
+$$
+p_\theta(\mathbf{x},\mathbf{z}) = p_\theta(\mathbf{z})p_\theta(\mathbf{x}|\mathbf{z})
+$$
+where $p_\theta(\mathbf{z})$ and/or $p_\theta(\mathbf{x}|\mathbf{z})$ are specified, i.e. their family of distribution is fixed and its distribution
+parameters $\mathbf{\eta}$ are parametrized by neural network:
+\begin{align*}
+\mathbf{\eta} &= \mathrm{NeuralNet}_\theta(\text{Pa}(\mathbf{x})) \\
+p_\theta(\mathbf{x}|\text{Pa}(\mathbf{x})) &= p_\theta(x|\mathbf{\eta})
+\end{align*}
+or even both their family and distribuion parameters are fixed, e.g. 
+$$
+p_\theta(\mathbf{z}) = p(\mathbf{z}) = \mathcal{N}(\mathbf{z},0,\mathbf{I})
+$$
+The $\text{Pa}(\mathbf{x}))$ corresponds to all parents of node $\mathbf{x}$ in Bayesian Network.
+Such DLVM is visualized in picture \ref{fig:vae_pgm} as a Bayesian network. We will later see that 
+it is exactly this model that is under consideration when talking about VAE. 
+
+\begin{example}[DLVM for multivariate Bernoulli data]
+    A simple example of DLVM for binary model $\mathbf{x} \in \{0,1\}^{D}$ used in \cite{vae-ssl-dgm-2014} has following structure:
+    Latent space $\mathbf{z}$ is fixed as a spherical Gaussian distribution and conditional probability is modeled as
+    a factorized Bernoulli:
+    \begin{align*}
+        p(\mathbf{z}) &= \mathcal{N}(\mathbf{z},0,\mathbf{I})\\
+        \mathbf{p} &= \mathrm{DecoderNet}_\theta(\mathbf{z}) \\
+        \log p(\mathbf{x}|\mathbf{z}) &= \sum_{i=1}^D log(x_j | \mathbf{z}) = \sum_{i=1}^D \log \mathrm{Bern}(x_i,p_i)\\
+        &= \sum_{i=1}^D x_i \log p_j + (1-x_j) \log(1-p_j)\\
+    \end{align*}
+    where $p_j \in [0,1]\,\forall p_j \in \mathbf{p}$ and $\mathrm{Bern}(\cdot,p)$ is the probability mass function (PMF)
+    of the Bernoulli distribution.
+\end{example}
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=\textwidth]{vae_pgm.png}
+    \caption[VAE as Bayesian network]{Ilustration of VAE as Bayesian Network. Solid lines denote generative capabilities 
+    $p_\theta(\mathbf{x}|\mathbf{z})p_\theta(\mathbf{z})$, dashed lines denote the variational approximation $q_\phi(\mathbf{z}|\mathbf{x})$
+    to the intractable posterior $p_\theta(\mathbf{z}|\mathbf{x})$. The variational parameters $\phi$ are learned jointly with the generative model pa-
+    rameters $\theta$. Source \cite{vae-original-2013}}
+    \label{fig:vae_pgm}
+\end{figure}
+
+Up until now, we have only discussed DLVMs, which involve using neural networks in Bayesian networks. However, DLVMs face the same issues as 
+other Bayesian models discussed in the Variational Bayes section, such as the inability to compute the evidence $p(\mathbf{x})$ due to 
+intractabilities. To overcome this, approximate inference techniques such as Expectation Maximization (EM) (see \ref{alg:cavi}) or 
+Monte Carlo Markov Model (MCMC)  can be used to approximate the posterior $p_\theta(\mathbf{z}|\mathbf{x})$ and the marginal 
+likelihood $p_\theta(\mathbf{x})$ \cite[appx.~A2]{intro-vae-2019}.  However, these traditional inference methods are computationally expensive,
+often requiring per-datapoint optimization loops and are not well-suited for datasets with a large number of examples $N$. Moreover, they tend
+to yield poor posterior approximations. Thus, there is a need for more efficient procedures.
+\subsubsection{Approximate Posterior}
+\label{subsubsec:vae_encoder}
+To address the intractabilities of DLVM, VAEs utilize the \textit{recognition model} $q_\phi(\mathbf{z}|\mathbf{x})$, also known as an 
+\textit{inference model} or an \textit{encoder}, to approximate the intractable $p_\theta(\mathbf{z}|\mathbf{x})$. While the encoder, similar 
+to DLVM, can be any Bayesian network, in vanilla VAE, it is typically a simple network with $\mathbf{x}$ as input, which produces the parameter for
+the distribution for the latent $\mathbf{z}$. We denote the parameters of this network with $\phi$ to differentiate them from $\theta$, and refer
+to them as \textit{variational}, as the goal of the encoder is to approximate the conditional distribution $p_\theta(\mathbf{z}|\mathbf{x})$:
+$$
+q_\phi(\mathbf{z}|\mathbf{x}) \approx p_\theta(\mathbf{z}|\mathbf{x})
+$$
+It is important to note that, unlike the approximate posterior in mean-field variational inference, the encoder is not necessarily factorial, and
+its parameters $\phi$ are not computed from a closed-form expectation \cite{vae-original-2013}. Instead, VAEs' framework introduces a method for 
+jointly learning the recognition model parameters $\phi$ and the generative model parameters $\theta$.  This approach is known as \textit{amortized 
+variational inference} \cite{amortized-inference-2014}, which avoids a per-datapoint optimization loop and leverages the efficiency of SGD \cite{intro-vae-2019}.
+\subsubsection{ELBO objective}
 
