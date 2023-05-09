@@ -8,6 +8,10 @@
 //*.pt
 nohup.out
 /CIFAR10
+/MNIST
+/svae/*
+!/svae/nets/hvae.py
+/svae-mnist/*
 
 /cityscape*/
 
