@@ -17,7 +17,7 @@ from .unet.unet import Unet
 from .wide_resnet.wide_resnet import WideResNet
 import matplotlib.pyplot as plt
 
-def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('cpu')):
+def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('cpu'),ignore_class:int=0):
     """
     The function evaluates the neural network model m on the data in the data loader dl using the provided loss function loss_fn. 
     The evaluation is performed with torch.no_grad() to disable gradient computation and speed up computation. 
@@ -27,6 +27,7 @@ def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('c
     :param loss_fn: a loss function that takes two inputs and returns a value or values of the loss between the two inputs
     :param dl: a PyTorch DataLoader that yields mini-batches of features and targets for evaluation
     :param device: a pytorch device instance which specifies the gpu number or cpu device on which the evalutaion is running. 
+    :param ignore_class: which class to ignore for computing accuracy. The loss should be initialized seperatly (through weights which correspond).
     
     :returns: Tuple of (avreage loss,accuracy) (Average is compute across items in dataloder dl)
     """
@@ -48,9 +49,16 @@ def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('c
                 
             loss += torch.sum(loss_fn(targets_hat,targets))
 
+            
+
             acc_mask = torch.argmax(targets_hat,dim=1) == torch.argmax(targets,dim=1)
+            
+            # ignore targets with class "ignore_class" 
+            igonre_mask = torch.argmax(targets,dim=1) == ignore_class
+            acc_mask[igonre_mask]  = 0
+            
             accuracy += torch.sum(acc_mask)
-            numel += acc_mask.numel()
+            numel += acc_mask.numel() - igonre_mask.sum()
 
             bar.suffix  = f"#({idx}/{len(dl)})|{bar.elapsed_td}|ETA:{bar.eta_td}|L: {loss/numel:.4f}|acc:{(accuracy/numel)*100:2.4f}"
             bar.next()
