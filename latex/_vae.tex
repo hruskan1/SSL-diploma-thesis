@@ -215,7 +215,7 @@ can be seen as such ascent on ELBO.
       \State \textbf{Initialize:} Variational factors $q_j(\mathbf{z}_j)$
       \While{the $\mathrm{ELBO}$ has not converged}
         \For{$j \in \{1,\dots,m\}$}
-          \State Set $q_j(z_j) \gets \frac{\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}}{\int_{\mathbf{z}_j}\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}\d \mathbf{z}_j}$
+          \State Set $q_j(z_j) \gets \frac{\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}}{\SumInt_{\mathbf{z}_j}\exp{\EX_{i \neq j} [\log p(\mathbf{z},\mathbf{x})]}\d \mathbf{z}_j}$
         \EndFor
         \State Compute $\mathrm{ELBO}(q) \gets \EX \bigl[\log(p(\mathbf{x},\mathbf{z}))\bigr] - \EX \bigl[ \log q(\mathbf{z}) \bigr]$
       \EndWhile
