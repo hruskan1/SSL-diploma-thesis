@@ -97,9 +97,15 @@
 
 % Declaration / Prohlaseni
 \begin{declaration}
+\label{sec:decleration}
 I declare that the presented work was developed independently and that I have listed all sources of information
 used within it in accordance with the methodical instructions for observing the ethical principles in the preparation 
 of university theses.
+
+In particular, I declare that I have not used natural language processing models to generate the ideas and themes used in the thesis. 
+Nevertheless, I have used such tools (Grammarly, DeepL) to correct any grammatical or syntactical errors or to translate the original 
+Czech version of the text into English and to improve the wording of such text. I have also used the Chat-GPT models for creating code
+snippets in both Python and Latex, as well as having a second reader of the thesis. 
 
 In Prague, 26th May, 2023
 \end{declaration}
@@ -124,6 +130,9 @@ In Prague, 26th May, 2023
 \usepackage{listings}
 %\usepackage{julia-mono-listings}
 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 % CUSTOM FONT SETTING
 \usepackage{tgpagella}
 
@@ -138,6 +147,7 @@ In Prague, 26th May, 2023
 }
 
 \usepackage{url}
+\usepackage{tabularx}
 
 %%% --- The following two lines are what needs to be added --- %%%
 \setcounter{biburllcpenalty}{7000}
@@ -158,11 +168,11 @@ In Prague, 26th May, 2023
 \newcommand{\dist}{\mathop{\rm dist}}
 \renewcommand{\d}[1]{\mbox{\rm d}#1}
 
-\renewcommand{\phi}{\varphi}
+%\renewcommand{\phi}{\varphi}
 
 % Change of symbols for footnotes
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
-
+\graphicspath{{./figs/}}
 % Boldface vectors. Example: \_x
 \def\_#1{\protect\mathchoice
     {\mbox{\boldmath $\displaystyle\bf#1$}}
@@ -192,6 +202,19 @@ In Prague, 26th May, 2023
 \definecolor{myGreen}{HTML}{66B366}
 \definecolor{myRed}{HTML}{FF6666}
 
+% Make sumint symbol
+\DeclareMathOperator*{\SumInt}{%
+\mathchoice%
+  {\ooalign{$\displaystyle\sum$\cr\hidewidth$\displaystyle\int$\hidewidth\cr}}
+  {\ooalign{\raisebox{.14\height}{\scalebox{.7}{$\textstyle\sum$}}\cr\hidewidth$\textstyle\int$\hidewidth\cr}}
+  {\ooalign{\raisebox{.2\height}{\scalebox{.6}{$\scriptstyle\sum$}}\cr$\scriptstyle\int$\cr}}
+  {\ooalign{\raisebox{.2\height}{\scalebox{.6}{$\scriptstyle\sum$}}\cr$\scriptstyle\int$\cr}}
+}
+
+\DeclareRobustCommand{\bbone}{\text{\usefont{U}{bbold}{m}{n}1}}
+
+\DeclareMathOperator{\EX}{\mathbb{E}}
+
 \begin{document}
 
 \maketitle
@@ -199,41 +222,40 @@ In Prague, 26th May, 2023
 \chapter{Introduction}
 \input{_introduction}
 
-\chapter{Motivation and Theory}
+\chapter{Algorithms}
 \label{motivation-theory}
+In this chapter, we will provide a brief introduction to semi-supervised learning in section \ref{sec:ssl-introduction}, and classify its 
+algorithms into several groups based on the ideas and paradigms they employ. Additionally, we will provide a more detailed overview of 
+MixMatch and Variational Autoencoders in sections \ref{sec:mix-match} and \ref{sec:vae}, with a particular focus on Variational Autoencoders
+as they are cornerstone of the novel approach proposed by \cite{}, which is described in \ref{sec:symmetrical-learning}
+\todo{Add reference to unpublished paper}
+% Intorduction and Mixmatch
 \input{_ssl}
-\todo{10-15 pages}
+% VAE
+\input{_vae}
+\todo{Exponential Family introduction}
+\todo{Vae development, HVAE,ladder networks,blurriness issue etc.}
+\todo{sym learning vae}
+\input{_exp_family.tex}
+% Symmetrical learning paper
+\input{_sym_learning.tex}
 
 
 
-\todo{5 pages}
-\todo{Introduction to SSL and its applications}
-\todo{Overview of different SSL paradigmas with mentioning the methods}
-\todo{Discussion of the advantages and disadvantages of SSL}
-\section{Introduction to VAE}
-\todo{5 pages}
-\todo{Detailed theoretical description of VAE paradigma and development}
-\todo{Summary of the previous work on autovariational encoder}
-
-
-\section{Unet}
-\todo{1-2 pages}
-\todo{Description of Unet, usage, results etc}
-
-\chapter{Methodology}
-\label{methodology}
+\chapter{Experiments}
+\label{experiments}
 \todo{10-15 pages}
 \section{Segmentation}
 \todo{Description of the dataset and the segmentation task,metrics etc}
-\section{sVAE}
+
 \todo{Description of our algorithm}
 \section{Mixmatch}
 \todo{Description of the mixmatch model}
 \todo{Implementation details of the two models}
 
 
-\chapter{Experiments and Results} 
-\label{experiments-results}
+\chapter{Results} 
+\label{results}
 \todo{10-15 pages}
 \todo{Description of the experimental setup}
 \todo{Presentation of the results of the experiments}
@@ -243,17 +265,16 @@ In Prague, 26th May, 2023
 \input{_mixmatch_experiments}
 
 
-\chapter{Conclusion and Future Work}
+\chapter{Conclusion}
 \label{conclusions}
 \todo{2-3 pages}	
 \todo{Summary of the main findings and contributions}
-\todo{Discussion of the limitations and future directions of the research}
-\todo{Final thoughts and conclusions}
-
-
 
 \printbibliography
 
 %\ctutemplate{specification.as.chapter}
+
+\chapter*{List of used symbols, notations}
+\input{_list_of_symbols}
 
 \end{document}

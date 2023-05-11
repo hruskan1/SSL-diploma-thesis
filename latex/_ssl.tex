@@ -1,5 +1,6 @@
 \section{SSL introduction}
-Semi-Supervised Learning (SSL) is an essential subfield of machine learning that aims to improve model performance by leveraging 
+\label{sec:ssl-introduction}
+Semi-Supervised Learning (SSL) is an essential subfield of Machine Learning (ML) that aims to improve model performance by leveraging 
 both labeled and unlabeled data. In many real-world scenarios, obtaining labeled data is expensive and time-consuming, whereas 
 unlabeled data is abundant and relatively easy to acquire. Therefore, SSL algorithms seek to learn from both labeled and unlabeled 
 data to improve model generalization and achieve higher accuracy. Unlike supervised learning, where models rely entirely on labeled 
@@ -10,12 +11,12 @@ research.
 
 Typically the training dataset $\mathcal{D}$ can be divided into two subsets $\mathcal{D} = \mathcal{D}_l \cup \mathcal{D}_u$:
 \begin{align*}
-    \mathcal{D}_l = \{(x_1,y_1),\dots, (x_l,y_l)\},\quad \mathcal{D}_u = \{(x_{l+1}),\dots,(x_{u})\},
+    \mathcal{D}_l = \{(\mathbf{x}_1,y_1),\dots, (\mathbf{x}_l,y_l)\},\quad \mathcal{D}_u = \{(\mathbf{x}_{l+1}),\dots,(\mathbf{x}_{u})\},
 \end{align*}
 In this \textit{standard} setting, SSL can be viewed as supervised learning, where 
-the \textit{unlabeled} data provide additional information on the underlying distribution of the examples $x$.
+the \textit{unlabeled} data provide additional information on the underlying distribution of the examples $\mathbf{x}$.
 We will refer to this setting in this thesis, however there are also different formulations of the SSL problem, such as \textit{SSL with constraints}
- and others\cite[p. 1]{ssl-book-2006}.
+and others\cite[p. 1]{ssl-book-2006}.
 
 \begin{quote}
     \textit{
@@ -29,14 +30,14 @@ We will refer to this setting in this thesis, however there are also different f
     certain assumptions will have to hold.}''~--~Chappele et \textit{al}\cite[p. 4]{ssl-book-2006}
 \end{quote}
 
-\subsection*{Assumptions in SSL}
+\subsection{Assumptions in SSL}
 As stated in the quote above, several assumptions are necessary for SSL algorithms to work \cite[p. 5]{ssl-book-2006}. 
 Some of them are well known from unsupervised learning:
 \begin{itemize}
-    \item \textbf{The Smoothness Assumption}: \textit{If two points $x_1$ and $x_2$ lies nearby in high-density region, then the desired outputs $y_1$ 
-    and $y_2$ should be similar.} This assumption generalizes the supervised learning assumption, where the same holds if $x_1$ and $x_2$ \textit{are 
-    close} (not necessarily in high-density region). Due to transitivity, the assumption clusters the data into high-density clusters, and many clusters
-    can share the same output value.
+    \item \textbf{The Smoothness Assumption}: \textit{If two points $\mathbf{x}_1$ and $\mathbf{x}_2$ lies nearby in high-density region, 
+    then the desired outputs $\mathbf{y}_1$ and $\mathbf{y}_2$ should be similar.} This assumption generalizes the supervised learning assumption,
+    where the same holds if $\mathbf{x}_1$ and $\mathbf{x}_2$ \textit{are close} (not necessarily in high-density region). Due to transitivity, 
+    the assumption clusters the data into high-density clusters, and many clusters can share the same output value.
     \item \textbf{The Cluster Assumption}: \textit{Points in one cluster are likely to be of the same class}, or in other words, \textit{the decision 
     boundary should be located in low-denisty region.} This assumption is a special case of the previously mentioned assumption, as clusters are often 
     considered regions with a high density of data. However, it is presented independently as it is easier to understand and has motivated several 
@@ -47,17 +48,233 @@ Some of them are well known from unsupervised learning:
     low-dimensional manifold, in which clustering is possible. There are several unsupervised algorithms that utilize this assumption, such as PCA, 
     MDS, ISOMAP, and t-SNE.
 \end{itemize}
+\todo{Should I cite the algorithms?}
 
-\subsection*{SSL methods}
+Another important perspective on the proposed question is Vapnik's principle\cite[p. 7]{ssl-book-2006}:
+
+\begin{quote}
+    ``When solving a problem of interest, do not solve a more general problem as an intermediate step. 
+    Try to get the answer you really need, not a more general one''~--~Vapnik \cite{vapnik-quote-2006}
+\end{quote}
+
+We call the method \textit{transductive} if it only makes predictions for the test points (assuming the test set is available during the learning process). This is 
+in contradiction to \textit{inductive} learning, where the goal is to infere a prediction function defined on the whole set $\mathcal{X}$. In the idea of Vapnik's
+quote, the \textit{transductive} learning is more direct then \textit{inductive}.
+
+Suppose there is a transductive algorithm which result outperforms the one produced by an inductive algorithm trained on the same labeled data (but discarding the 
+unlabeled data). Then the performance difference could be due to one of the following (or a combination of them)
+\begin{enumerate}
+    \item transduction follows Vapnik's principle more closely than induction does, or
+    \item the transductive algorithm takes advantage of the unlabeled data in a way similar to semi-supervised learning algorithms. 
+\end{enumerate}
+There is a lot of evidence for the latter with no empirical results that would selectively support the first point\cite[p. 7]{ssl-book-2006}. However the 
+insightful discussion with different viewpoints is available in \cite[chap. 25]{ssl-book-2006} and the idea of the transduction and its effect on SSL is still open.
+
+\subsection{SSL methods}
 SSL algorithms can be categorized into these following groups based on their motivation, making it easier to navigate and understand them\cite{ssl-overview-2020}:
 \begin{itemize}
-        \item \textbf{Consistency Regularization}: According to the Smoothness Assumption, when the input $x$ and its perturbed version $\tilde{x}$, 
-        are close to each other, their corresponding outputs, $y$ and $\tilde{y}$, should also be similar. By minimizing the distance between 
-        $f_\theta(x)$ and $f_\theta(\tilde{x})$, where the distance can be measured using a variety of techniques, such as mean squared error or 
-        Kullback-Leibler divergence, we can train the model to make consistent predictions on both the original and perturbed input.
-    \item \textbf{Proxy-label Methods}
-    \item \textbf{Generative Models} 
-    \item \textbf{Graph-Based Methods}
+        \item \textbf{Consistency Regularization}: According to the smoothness assumption, if the input $\mathbf{x}$ and its perturbed version $\tilde{\mathbf{x}}$, 
+        are close to each other, their corresponding outputs, $\mathbf{y}$ and $\tilde{\mathbf{y}}$, should also be similar. By minimising the 
+        distance between the model outputs$f_\theta(\mathbf{x})$ and $f_\theta(\tilde{\mathbf{x}})$, where the distance can be measured using 
+        a variety of techniques, such as mean square error (MSE) or Kullback-Leibler (KL) divergence, we can train the model to make consistent
+        predictions on both the original and perturbed inputs \cite{temporal-ensembling-2017,regularization-&-pertrubations-2016}.
+        We can also use other divergence techniques, such as Jeffrys divergence or Jensen-Shanon (JSD) divergence, which have the advantage of 
+        being symmetric with respect to the inputs.
+    \item \textbf{Proxy-label Methods}: These methods are based on an (iterative) scheme, where the model generates the proxy label on unlabeled data (or parts 
+        thereof) using the prediction function itself or some variant of it \cite{psuedo-label-2013}. These labels are then taken as targets for the next iteration.
+        Although the proxy labels are often and/or weak, the methods can provide additional information for training. These methods can be divided into two groups: 
+        self-training, where the model produces the proxy label itself, and \textit{multi-view learning}, where the proxy labels are produced by (multiple) models
+        trained on different views of the training data. The idea of multi-view learning is exactly the same as bootstrapping.
+
+    \todo{should cite bootstraping?}
+
+    \item \textbf{Generative Models}:\label{generative-modelling} The \textit{generative} models try to model the feature density $p(\mathbf{x})$ or even joint density 
+        $p(\mathbf{x},y)$ by some unsupervised learning procedure (i.e. maximum likelihood estimation (MLE)). An inference can be then obtained by Bayes 
+        inference rule (for a given loss $l$):
+        \begin{equation*}
+            f^{\star}(\mathbf{x}) = \argmin_{y^\prime\in \mathcal{Y}} \sum_{y \in \mathcal{Y}}(y|\mathbf{x})l(y,y^\prime)
+        \end{equation*}
+        where conditional probability $p(y|x)$ can be obtained through Bayes theorem:
+        \begin{equation*}
+            p(y|\mathbf{x}) = \frac{p(\mathbf{x},y)}{p(\mathbf{x})} =\frac{p(\mathbf{x}|y)p(y)}{\int_\mathcal{Y} p(\mathbf{x}|y)p(y) \d y}
+        \end{equation*}
+
+        After training a model, we can use it to generate new samples from a \textit{modelled} distribution $p_\mathbf{\theta}(\mathbf{x})$ at any time. 
+        This allows us to obtain features that were not present in the original training set, but the quality of these new features depends on
+        how closely our model approximates the true underlying distribution $p^\star(\mathbf{x})$ represented by the training set distribution 
+        $p_{\mathcal{D}}(\mathbf{x})$, which is also known as the \textit{evidence}. Therefore, the quality of the generated samples depends on the 
+        accuracy of the model's approximation to the true distribution.
+
+        Generative models are used in SSL because they can easily incorporate the unlabeled data points (compared to \textit{discriminative} models, which only focus on estimating
+        $p(y|\mathbf{x})$ and cannot directly exploit the infromation in $p(\mathbf{x})$). On the other hand, the \textit{discriminative} models fulfill the Vapnik's principle and in its
+        sense can provide comparable results even without the use of the unlabelled data.  In a broader context, SSL can be viewed in the field of generative models as 
+        either classification with supplementary information on the marginal density or unsupervised clustering with additional information, i.e., labels of a subset 
+        of points. A reasonable requirement on SSL would be that any valid SSL technique should surpass baseline methods by a significant margin in a range of across a
+        variety of practical and relevant scenarios. 
+    \item \textbf{Graph-Based Methods}:
+    Semi-supervised methods that are based on graphs establish a graph structure where the labeled and unlabeled examples in the dataset constitute the nodes, and the 
+    similarity between examples is reflected by edges that may be weighted. Typically, these methods presume label smoothness throughout the graph. Graph-based 
+    approaches are characterized as nonparametric, discriminative, and transductive in nature\cite{another-survey-2008}.
 \end{itemize}
+
+When talking about \textit{consistency regularization}, one should mention also \textbf{Entropy minimization}\cite{entropy-min-2004} as it shares the same underlying concept
+of \textit{smoothness assumption} and aims at same result: Moving the decision boundary into low-density region. The entropy minimization encourage the 
+network to make confident (i.e. low-entropy) predictions on unlabled data regardless of the predicted class and thus moving the decision boundary away from any point in dataset.
+This can be obtained by adding an entropy minimization term:
+\begin{equation*}
+    H(p) = -\sum_{k=1}^{C} p_\mathbf{\theta}(y|\mathbf{x})_k \log p_\mathbf{\theta}(y|\mathbf{x})_k
+\end{equation*}
+Nevertheless, the neural networks (NN) can quickly overfit to low confident points early on in the learning process. This is caused by their high capacity \cite{how-to-evalute-ssl-2018}.
+The Entropy minimization on its now does not lead to strong results, however it is often combined with different approaches to improve their performance \cite{ssl-overview-2020}.
+
 \section{MixMatch}
-\section{VAEs}
+\label{sec:mix-match}
+The Mixmatch was proposed by David Berthelot et \textit{al.} in 2019 \cite{mixmatch-2019} and combines several ideas and components from dominant paradigms of SSL.
+This \textit{holistic} approach yields state of the art results and is the cornerstone for a whole branch of new algorithms such as ReMixMatch \cite{remixmatch-2020}
+and FixMatch \cite{fixmatch-2020}. Namely, it combines \textit{consistency regularization} and \textit{proxy-labeling} with \textit{entropy minimization}.
+It also utilizes other forms of regularizations, such as \textit{data augmentation}, \textit{exponentially weighted average of network weights}\cite{mean-teacher-2018},
+\textit{weight decay} \cite{weight-decay-2019} and \textit{MixUp} procedure \cite{mixup-2018}. The consistency regularization is obtained through loss term, the 
+proxy-labeling occures in stage of label guessing (\ref{label-guessing}) and the entropy minimization is applied in form of sharpening procedure (\ref{sharpening}).
+
+The algorithm itself is composed of several steps and provides augmented inputs to the model with \textit{guessed} labels. The batched augmented inputs are propagated 
+through the network and the standard semi-supervised loss containing the supervised and unsupervised term is computed from outputs of the model and the (guessed) 
+labels. The gradient is backpropagated to the network's weights, meaning the MixMatch is applicable in the setting of Deep Learning (DL).
+% todo change following x,u occurences. decide what to do with p.
+Assume we have batch of labeled inputs $\mathcal{X}$ (with labels encoded as one-hot vectors with $L$ possible classes) and batch of unlabeled inputs $\mathcal{U}$ 
+(without labels), both with same number of examples $n$. The SSL loss is defined as:
+\begin{align*}
+    \mathcal{X}^\prime,\mathcal{U}^\prime &= \text{MixMatch}(\mathcal{X}, \mathcal{U}, T, K, \alpha)\\
+    \mathcal{L}_{\mathcal{X}} &= \frac{1}{|\mathcal{X}^\prime|}\sum_{x^\prime,p^\prime \in \mathcal{X}^\prime} H(p^\prime,f_\theta(x^\prime)) \\
+    \mathcal{L}_{\mathcal{U}} &= \frac{1}{L|\mathcal{U}^\prime|}\sum_{u^\prime,q^\prime \in \mathcal{U}^\prime} ||q^\prime - f_\theta(u^\prime)||_2^2 \\
+    \mathcal{L} &= \mathcal{L}_{\mathcal{X}} + \lambda_\mathcal{U} \mathcal{L}_{\mathcal{U}}
+\end{align*}
+where $H(p,q)$ is cross-entropy loss between distributions $p$ and $q$:
+\begin{equation*}
+    H(p,q) = -\sum_{k=1}^{C} p_k(x) \log q_k(x)
+\end{equation*}
+and $T,K,\alpha$ and $\lambda_\mathcal{U}$ are hyperparameters and $f_\theta(\cdot)$ represents the 
+output of the model in the form of probability distribution. The $T$ is the \textit{temperature} in probability sharpening procedure, $K$ is the \textit{number of augmentations} applied to
+unlabeled input $u$ and the $\alpha$ is the Beta distribution parameter for MixUp. The $\lambda_\mathcal{U}$ replaces the originaĺ normalizing factor and provides tuning knob for 
+weighting the loss terms. 
+
+\subsection{MixMatch algorithm}
+The MixMatch algorithm consists of the following steps:
+\begin{enumerate}
+    \item \textbf{Data Augmentation}\label{data-augmentation}: Given the (stochastic) augmentation $A$, we transform each labeled features $x_i \in \mathcal{X}$ into $\tilde{x}_i$ while keeping the 
+        original label $p$ unchanged. For unlabeled feature $u_j \in \mathcal{U}$, we produce $K$ augmented views $\tilde{u}_{j,k}$. Through this, we obtain $n$ labeled features and
+        $nK$ unlabeled features. 
+    \item \textbf{Label Guessing}\label{label-guessing}: For each of $K$ views of unlabeled feature $\tilde{u}_{j,k}$ we make the predictions with the current model 
+        $\hat{q}_{j,k} = f_\theta(\tilde{u}_{j,k})$. We then compute the average
+            \begin{equation*}
+                \bar{q}_{j} = \frac{1}{K}\sum_{k=1}^K \hat{q}_{j,k}
+            \end{equation*}
+        for each unlabeled feature $u_j$.
+    \item \textbf{Sharpening}\label{sharpening}: We sharpen the averaged prediction $\bar{q}_{j}$ to reduce its entropy through the operation:
+            \begin{equation*}
+                q_{j,c} = \text{Sharpen}(\bar{q}_{j},T)_c = \bar{q}_{j,c}^{\frac{1}{T}} \Big{/} \sum_{k=1}^{K} \bar{q}_{j,k}^{\frac{1}{T}} 
+            \end{equation*}
+        where $q_{j,c}$ corresponds to $c$-th element of vector $q_{j}$, representing the probability of $c$-th class. 
+        The hyperparameter $T \in \mathbb{R}_{>0}$ is the \textit{temperature}. As $T\to 0$, the $\text{Sharpen}(p,T)$ approaches Dirac (one-hot) distribution, 
+        therefore lowering the $T$ minimizes the entropy of $p$. We obtain the sharpened $q_{j}$ and we replicate it to each of $K$ views of feature $u_{j}$.
+    \item \textbf{MixUp}: Before we continue in further description, we define the slightly alternated version of the vannila MixUp \cite{mixup-2018}.
+            For a pair of two features with their corresponding class probabilities $(x_1,p_1)$ and $(x_2,p_2)$, we define MixUp operation as following:
+            \begin{align*}
+                \lambda &\sim \text{Beta}(\alpha,\alpha) \\
+                \lambda^\prime &= \max(\lambda,1-\lambda) \\
+                x^\prime &= \lambda^\prime x_1 + (1-\lambda^\prime) x_2 \\
+                p^\prime &= \lambda^\prime p_1 + (1-\lambda^\prime) p_2 \\
+            \end{align*}
+            where $\alpha$ is hyperparameter. Vannila MixUp omits the second equation (i.e. $\lambda^\prime = \lambda$), but it is crucial in MixMatch as you will
+            see later. We define MixUp operation for (equally sized) sets\footnote{We should rather speak about sequences, as the sets do not have ordering. 
+            Nevertheless,in the field of ML, we often neglect this difference. In reality, the computer memory always has the implicit ordering, which is used.} 
+            as a MixUp per elements, i.e.
+            \begin{equation*}
+                \begin{split}
+                    \text{MixUp}(\mathcal{D}_a,\mathcal{D}_b) = & \{\text{MixUp} \big{(} (x_{ai},y_{ai}),(x_{bi},y_{bi}) \big{)}\,|\,i \in {1,\dots,|\mathcal{D}_a|}  \}.
+                \end{split}
+            \end{equation*}
+        Going back to MixMatch, the previous steps resulted in two batches with different sizes:
+            \begin{align*}
+                \mathcal{X}^\star &= \{ (\tilde{x}_i,p_i)\,|\, i \in \{1,\dots,n\}  \}, \, |\mathcal{X}^\star| = n \\
+                \mathcal{U}^\star &= \{ (\tilde{u}_{j,k},q_j)\,|\, j \in \{1,\dots,n\},\,k \in \{1,\dots,K\}  \}, \, |\mathcal{U}^\star| = Kn 
+            \end{align*}
+        First we concatenate those two batches and shuffle them :
+            \begin{align*}
+                \mathcal{W} = \text{Shuffle}(\text{Concat}(\mathcal{X}^\star,\mathcal{U}^\star))
+            \end{align*}
+        we then slice the $\mathcal{W}$ into two: $\mathcal{W}_1$ of the same size as $\mathcal{X}^\star$ and $\mathcal{W}_2$ of the same size 
+        as $\mathcal{U}^\star$ and we compute MixUp for both labeled and unlabeled sets:
+        \begin{align*}
+            \mathcal{X}^\prime &= \text{MixUp}(\mathcal{X}^\star,\mathcal{W}_1) \\
+            \mathcal{U}^\prime &= \text{MixUp}(\mathcal{U}^\star,\mathcal{W}_2)
+        \end{align*}
+        The definition of $\lambda^\prime$ in alternated MixUp ensures, that the $(x^\prime,y^\prime)$ is always closer to the 
+        $(x_1,y_1)$ then to $(x_2,y_2)$, which is important as it may happen, that the $\mathcal{W}_1$ will contain features from $\mathcal{U}$
+        and we need to compute individual loss components appropriately. In other words, the $\mathcal{X}^\prime$ and $\mathcal{U}^\prime$ are always 
+        closer to the $\mathcal{X}^\star$, resp. $\mathcal{U}^\star$ so the computed loss corresponds to the original inputs, i.e. batches $\mathcal{X}$, 
+        resp. $\mathcal{U}$.
+\end{enumerate}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{mixmatch_label_guessing.png}
+    \caption[Mixmatch label guessing]{Data augmentation, label guessing and sharpening procedure visualized for unlabeled datapoint. The unlabeled image is at first $K$ 
+    times augmented, each augmentation is then classified by the current model. The predictions are then averaged and sharpened. 
+    Source \cite{mixmatch-2019}}
+    \label{fig:mixmatch}
+\end{figure}
+
+\begin{algorithm}[H]
+ \caption{MixMatch}
+ \label{alg:mixmatch}
+ \begin{algorithmic}[1]
+   \State \textbf{Input:} Batch of labeled examples and their one-hot labels $X = ((x_i, p_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (u_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
+   \For{$i = 1$ \textbf{to} $n$}
+    \State $\bar{x}_i = \text{Augment}(x_i)$ \Comment{Apply data augmentation to $x_i$}
+    \For{$k = 1$ \textbf{to} $K$}
+     \State $\bar{u}_{i,k} = \text{Augment}(u_i)$ \Comment{Apply $k$th round of data augmentation to $u_b$}
+    \EndFor
+    \State $\bar{q}_i = \frac{1}{K} \sum_{k=1}^{K} p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$ \Comment{Compute average predictions across all augmentations of $u_i$}
+    \State $q_i = \text{Sharpen}(\bar{q}_i, T)$ \Comment{Apply temperature sharpening to the average prediction}
+   \EndFor
+   \State $X^\star = ((\bar{x}_i, p_i); i \in (1, \dots, n))$ \Comment{Augmented labeled examples and their labels}
+   \State $U^\star = ((\bar{u}_{i,k}, q_i); i \in (1, \dots, n), k \in (1, \dots, K))$ \Comment{Augmented unlabeled examples, guessed labels}
+   \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ \Comment{Combine and shuffle labeled and unlabeled data}
+   \State $X^\prime = (\text{MixUp}(\bar{x}_i, w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp to labeled data and entries from $W$}
+   \State $U^\prime = (\text{MixUp}(\bar{u}_{i}, w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ \Comment{Apply MixUp to unlabeled data and the rest of $W$}
+   \State \textbf{return} $X^\prime, U^\prime$
+   
+ \end{algorithmic}
+\end{algorithm}
+
+\subsection{Adaptation to segmentation task}
+We propose an extension of the MixMatch algorithm to address the task of image segmentation. While MixMatch is designed for classification tasks 
+and augmentation that does not alter labels, image segmentation requires augmentations that also modify the corresponding segmentation masks. 
+To enable MixMatch for segmentation tasks, we adapt the data augmentation and proxy-labeling procedure. We propose using affine transformations 
+for most data augmentations as they can be easily inverted and are quite general. To average predictions across multiple views of an image, 
+we align them with the original image by applying the inverse augmentation and then apply the original augmentation to assign the averaged 
+predictions to each view. However, care must be taken while averaging as a part of the original image might be cropped while keeping the spatial dimensions.
+Consequently, the segmentation prediction is only valid on the uncropped region of the image.
+The proposed change are incorporated into algorithm \ref{alg:mixmatch-seg}. In line (3), we apply augmentation to both $\mathbf{x}$ and $\mathbf{p}$.
+\todo{Add comments on change and rewrite the algorithm}
+\begin{algorithm}[H]
+    \caption{MixMatch adapted for segmentation}
+    \label{alg:mixmatch-seg}
+    \begin{algorithmic}[2]
+      \State \textbf{Input:} Batch of labeled examples and their one-hot labels $X = ((x_i, p_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (u_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
+      \For{$i = 1$ \textbf{to} $n$}
+       \State $\bar{x}_i = \text{Augment}(x_i)$ \Comment{Apply data augmentation to $x_i$}
+       \For{$k = 1$ \textbf{to} $K$}
+        \State $\bar{u}_{i,k} = \text{Augment}(u_i)$ \Comment{Apply $k$th round of data augmentation to $u_b$}
+       \EndFor
+       \State $\bar{q}_i = \frac{1}{K} \sum_{k=1}^{K} p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$ \Comment{Compute average predictions across all augmentations of $u_i$}
+       \State $q_i = \text{Sharpen}(\bar{q}_i, T)$ \Comment{Apply temperature sharpening to the average prediction}
+      \EndFor
+      \State $X^\star = ((\bar{x}_i, p_i); i \in (1, \dots, n))$ \Comment{Augmented labeled examples and their labels}
+      \State $U^\star = ((\bar{u}_{i,k}, q_i); i \in (1, \dots, n), k \in (1, \dots, K))$ \Comment{Augmented unlabeled examples, guessed labels}
+      \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ \Comment{Combine and shuffle labeled and unlabeled data}
+      \State $X^\prime = (\text{MixUp}(\bar{x}_i, w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp to labeled data and entries from $W$}
+      \State $U^\prime = (\text{MixUp}(\bar{u}_{i}, w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ \Comment{Apply MixUp to unlabeled data and the rest of $W$}
+      \State \textbf{return} $X^\prime, U^\prime$
+      
+    \end{algorithmic}
+   \end{algorithm}

@@ -27,8 +27,6 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Callable, Tuple
-from progress.bar import Bar as Bar
 
 
 class BasicBlock(nn.Module):
