@@ -15,7 +15,7 @@ from svae.nets.hvae import HVAE
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import torchvision.utils as vutils
-from src.mixmatch.datasets import get_CityScape
+from src.mixmatch.datasets import get_CityScape,CityScapeDataset
 
 
 def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_class:int=0):
@@ -55,6 +55,9 @@ def main(args):
         args.device = torch.device(args.device) # hot fix 
     else:
         args.device = torch.device('cpu')
+    
+    
+    
     logpath = 'logs/log-' + args['basename'] + args.call_prefix + '.txt'
     logpath = os.path.join(args.res_path, logpath)
     hvae_path = 'models/' + args.basename + args.call_prefix + '.pt'
@@ -64,9 +67,17 @@ def main(args):
     stats_path = 'logs/stats-' + args.basename + args.call_prefix + '-enc.npz'
     stats_path = os.path.join(args.res_path, stats_path)
 
+    # Create outdir and log 
+    if not os.path.isdir(args.res_path):
+        os.mkdir(args.res_path)
+        os.mkdir(os.path.join(args.res_path,'logs'))
+        os.mkdir(os.path.join(args.res_path,'models'))
+        os.mkdir(os.path.join(args.res_path,'images'))
+        
+
     # prepare data loaders
     
-    labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader =get_CityScape(root=args.dataset_path,
+    labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader = get_CityScape(root=args.dataset_path,
                                                                                                     n_labeled = args.n_labeled,
                                                                                                     n_val = args.n_val,
                                                                                                     batch_size = args.batch_size,
@@ -136,10 +147,10 @@ def main(args):
                 xl, tl = next(labeled_train_iter)
 
             try:
-                xu,_ = next(unlabeled_train_iter)
+                xu,su = next(unlabeled_train_iter)
             except:
                 unlabeled_train_iter = iter(unlabeled_dataloader)
-                xu,_ = next(unlabeled_train_iter)
+                xu,tu = next(unlabeled_train_iter)
 
             current_batch_size = min(xl.shape[0],xu.shape[0])
         
@@ -149,50 +160,62 @@ def main(args):
 
             k_imgs_seen += current_batch_size
         
-            # supervised batch 
+           
             xl  = xl.to(args.device)
-            tl  = tl.to(args.device, dtype=torch.float) # already one-hot
-            
+            tl  = tl.to(args.device, dtype=torch.float) 
+            xu  = xu.to(args.device)
+            tu  = tu.to(args.device, dtype=torch.float)
 
             # =====  decoder learn step (supervised learning) ====
             
+            # E_pi(x,z) log p_\theta(z|x)
             with torch.no_grad():
                 enc_acts = hvae.encoder_activations(xl)
                 act = enc_acts[0]
-                zl0_smpl = hvae.sblock_list[0].sample(act)
+                z0l_smpl = hvae.sblock_list[0].sample(act)
                 # z0[0] is segmentation, z0[1] is bernulli 
-                zl0_smpl[0] = tl
-            dt = hvae.decoder_learn_step(xl, z0=zl0_smpl)
+                z0l_smpl[0] = tl
+            sup_dt = hvae.decoder_learn_step(xl, z0=z0l_smpl)
             
             # =====  encoder learn step (supervised learning) ====
-            z0_shape = hvae.z0_shape
-            
+
+            # E_pi(x,z) log q_\phi(x|z)
             for _ in range(1):
-                z0x = hvae.z0_prior_sample(z0_shape)
-                z0x[0] = tl
-                et = hvae.encoder_learn_step(z0x)
+                
+                z0l_smpl = hvae.z0_prior_sample(hvae.z0_shape)
+                z0l_smpl[0] = tl 
+                sup_et = hvae.encoder_supervised_learn_step(xl,z0=z0l_smpl)
+            
 
-            # print(f"{hvae.z0_shape=}")
-            # print(f"{len(z0_smpl)=},{z0_smpl[0].shape},{z0_smpl[1].shape}")
+            # unsupervised batch 
 
-            xu = xu.to(args.device)
             # ====== decoder learn step (unsupervised) ======
-            dt = hvae.decoder_learn_step(xu)
+
+            #  E_pi(x) E_q log(p(x|z))
+            unsup_dt = hvae.decoder_learn_step(xu)
 
             # =====  encoder learn step (unsupervised) ======
             z0_shape = hvae.z0_shape
             for _ in range(1):
-                zu0_smpl = hvae.z0_prior_sample(z0_shape)
-                et = hvae.encoder_learn_step(zu0_smpl)
+                zu0_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
+                zu0_smpl[0] = tu 
+                unsup_et = hvae.encoder_learn_step(zu0_smpl)
+
+
+
 
             # accumulate data terms
             if start_acc:
-                acc_dt = dt.item()
-                acc_et = et.item()
+                sup_acc_dt = sup_dt.item()
+                sup_acc_et = sup_et.item()
+                unsup_acc_dt = unsup_dt.item()
+                unsup_acc_et = unsup_et.item()
                 start_acc = False
 
-            acc_dt = acc_dt * 0.999 + dt.item() * 0.001
-            acc_et = acc_et * 0.999 + et.item() * 0.001
+            sup_acc_dt = sup_acc_dt * 0.999 + sup_dt.item() * 0.001
+            sup_acc_et = sup_acc_et * 0.999 + sup_et.item() * 0.001
+            unsup_acc_dt = unsup_acc_dt * 0.999 + unsup_dt.item() * 0.001
+            unsup_acc_et = unsup_acc_et * 0.999 + unsup_et.item() * 0.001
 
             print(f"\r{count=}|({k_imgs_seen}/{args.kimg})",end='')
 
@@ -202,14 +225,16 @@ def main(args):
             cat_jsdivs =  jsdivs[0].mean().item()
             bin_jsdivs =  jsdivs[1].mean().item()
             strtoprint = 'epoch: '+ str(count + epoch)
-            strtoprint += ' dt: {:.4}'.format(-acc_dt)
-            strtoprint += ' et: {:.4}'.format(-acc_et)
+            strtoprint += ' sup_dt: {:.4}'.format(-sup_acc_dt)
+            strtoprint += ' sup_et: {:.4}'.format(-sup_acc_et)
+            strtoprint += ' unsup_dt: {:.4}'.format(-unsup_acc_dt)
+            strtoprint += ' unsup_et: {:.4}'.format(-unsup_acc_et)
             strtoprint += ' cat_jsdivs: {:.4}'.format(cat_jsdivs)
             strtoprint += ' bin_jsdivs: {:.4}'.format(bin_jsdivs)
             
-            val_loss, val_acc = validate(hvae, test_dataloader, args.device)
-            strtoprint += ' vloss: {:.4}'.format(val_loss)
-            strtoprint += ' vacc: {:.4}'.format(val_acc)
+            #val_loss, val_acc = validate(hvae, test_dataloader, args.device)
+            #strtoprint += ' vloss: {:.4}'.format(val_loss)
+            #strtoprint += ' vacc: {:.4}'.format(val_acc)
 
             print(strtoprint, file=open(logpath, 'a'), flush=True)
 
@@ -227,41 +252,74 @@ def main(args):
 
             # save a few reconstructions
             with torch.no_grad():
-                x0 = xl[0:16]
-                z0x = z0x[0:16]
-                u0 = xu[0:16]
-                z0u = zu0_smpl[0:16]
-                t0 = tl[0:16]
-                # reconstruction
-                _, probs = hvae.posterior_sample(x0)
-                x1 = probs[-1]
-                # sample image from latent
-                (x3, x2) = hvae.prior_sample(z0x)
-                # continue sampling (limiting marginal distrib)
+                # two batches (sup & unsup)
+                n = min(8,xl.shape[0])
+
+                x0l = xl[0:n]
+                x0u = xu[0:n]
+                t0l = tl[0:n]
                 
-                # supervised 
-                for _ in range(100):
-                    (z_all, _) = hvae.posterior_sample(x3, expanded=True)
-                    z_all[0][0] = t0
-                    (x3, probs) = hvae.posterior_sample(x3, z0=z_all[0])
-                x3 = probs[-1]
-                # unsupervised
+                _s = torch.empty((n,*list(hvae.z0_shape[0][1:])))
+                _l = torch.empty((n,*list(hvae.z0_shape[1][1:])))
+                
+                z0_shape = (_s.shape,_l.shape)
+                
+                z0l_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
+                z0l_smpl[0] = t0l
+
+                z0u_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
+
+                # ====== supervised visualization =================================
 
                 # reconstruction
-                _, probs = hvae.posterior_sample(u0)
-                u1 = probs[-1]
-                (u3,u2) = hvae.prior_sample(z0u)
+                _, probs = hvae.posterior_sample(x0l,expanded=True)
+                x1 = probs[-1] # img
+                x4 = probs[0][0] # target (segmentation)
+                
+                
+                (x3, x2) = hvae.prior_sample(z0l_smpl)
+                
+                # continue sampling (limiting marginal distrib)
+                for _ in range(100):
+                    (z_all, _) = hvae.posterior_sample(x3, expanded=True)
+                    z_all[0][0] = t0l
+                    (x3, probs) = hvae.posterior_sample(x3, z0=z_all[0])
+                x3 = probs[-1]
+
+                # ====== unsupervied visualization ===============================
+
+                # reconstruction
+                _, probs = hvae.posterior_sample(x0u,expanded=True)
+                u1 = probs[-1] # img
+                u4 = probs[0][0] # target (segmentation)
+
+                (u3,u2) = hvae.prior_sample(z0u_smpl)
+
                 for _ in range(100):
                     (u3, _) = hvae.posterior_sample(u3)
                 (_, probs) = hvae.posterior_sample(u3)
 
                 u3 = probs[-1]
-                xvis = torch.cat((x0, x1, x2, x3,u0,u1,u2,u3))
-                xvis.clamp_(0.0, 1.0)
+                # x0 & u0 original images
+
+                # z0x original segmentation 
+                # x1 & u1 reconstructions from image 
+                # x2 & u2 reconstructions from latent (segmentation or random sample)
+                # x3 & u3 limiting reconstruction of x2 & u2 
+                # x4 & u4 predicted segmentation for x1 & u1
+                
+                xvis = torch.cat((x0l, x0u, x1, u1, x2, u2, x3, u3))
+                xvis = CityScapeDataset.remove_normalization(xvis)
+    
+                segvis = torch.cat((x4, u4, t0l))    
+                segvis = CityScapeDataset.color_segmentation(torch.argmax(segvis,dim=1,keepdim=True))
+                vis = torch.cat([xvis,segvis],dim=0)
+            
+                vis.clamp_(0.0, 1.0)
 
                 #TODO: Take care about correct color visualization
                 
-                vutils.save_image(xvis, viz_path, normalize=True, nrow=8)
+                vutils.save_image(vis, viz_path, normalize=True, nrow=2*n)
 
         count += 1
         if count == niterations:
