@@ -11,9 +11,12 @@ nohup.out
 /MNIST
 /svae/*
 !/svae/nets/
+!/svae/custom_func/
+
 
 
 /svae-mnist/*
+
 /cityscape*/
 
 _env.yml
