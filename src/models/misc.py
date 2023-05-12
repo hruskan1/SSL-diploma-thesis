@@ -45,12 +45,7 @@ def evaluate(m:nn.Module,loss_fn:Callable,dl,device:torch.device=torch.device('c
 
             
             targets = ensure_onehot(targets,num_classes=targets_hat.shape[1])
-            
-                
             loss += torch.sum(loss_fn(targets_hat,targets))
-
-            
-
             acc_mask = torch.argmax(targets_hat,dim=1) == torch.argmax(targets,dim=1)
             
             # ignore targets with class "ignore_class" 

@@ -1,16 +1,16 @@
 # Hierarchical VAE with symmetric learning for MNIST
 # images: Bernoulli, latent: Bernoulli/Categorical
 
-blocks: [{type: pcustom, cho : 15,
+blocks: [{type: pcustom, cho : 108,
           pc_block: {type:  pc, cho: 8},
-          bin_block: {type: pb, cho: 7}},
+          bin_block: {type: pb, cho: 100}},
 # size 8, chan 64
          {type: sb, chi: 8, cho: 64, in_size: 8, out_size: 8, d_skip: False, e_skip: False, activ: relu,
           # DECODER is large conv net taking cat and binary together (chi = cho)
-          dec: [{type: 'mydec',  chi: 15, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+          dec: [{type: 'mydec',  chi: 108, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
           enc: [{type: 'myenc', activ: relu,
                   cat:[{type: 'c',chi: 64, cho: 8, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
-                  bin:[{type: 'c',chi: 64, cho: 7, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                  bin:[{type: 'c',chi: 64, cho: 100, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
                        {type: 'a2dpool', spatial_size: 1}]
                 }],
           },
@@ -88,7 +88,7 @@ n_val : 0
 n_labeled : 500
 img_size : [128,256]
 
-device : 6
+device : 1
 
 
 
@@ -99,15 +99,15 @@ lparm:   {enc_stepsize: 1.e-5, dec_stepsize: 1.e-5, parallel: False}
 batch_size:         4
 batch_workers:      0
 niterations:        5000
-call_prefix:        '2'
+call_prefix:        '1'
 load_prefix:        
 basename:           cityscape-shbvae-
 dataset_path:      /datagrid/public_datasets/CityScapes
-res_path:          /datagrid/personal/hruskan1/SSL-diploma-thesis/svae-mnist
+res_path:          /datagrid/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
 
 generate:
-    folder:         images_2
-    batch_size:     4
+    folder:         images_1
+    batch_size:     1
     b_num:          1
     repeats:        30
     samples:        100
