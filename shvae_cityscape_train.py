@@ -89,6 +89,8 @@ def main(args):
 
     print('# Starting', file=open(logpath, 'w'), flush=True)
 
+    # parse weights to cfg dict 
+    args.blocks[0].class_weights = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
     # model
     hvae = HVAE(**args).to(args.device)
 
@@ -147,7 +149,7 @@ def main(args):
                 xl, tl = next(labeled_train_iter)
 
             try:
-                xu,su = next(unlabeled_train_iter)
+                xu,tu = next(unlabeled_train_iter)
             except:
                 unlabeled_train_iter = iter(unlabeled_dataloader)
                 xu,tu = next(unlabeled_train_iter)
