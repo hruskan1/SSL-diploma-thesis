@@ -580,8 +580,13 @@ class CatPriorBlock(nn.Module):
     def __init__(self, cfg, **kwargs):
         super(CatPriorBlock, self).__init__()
         self.cfg = cfg
-        # define cel & npactivation 
-        self.cel = nn.CrossEntropyLoss(reduction='none')
+        # define cel & npactivation
+        
+        if 'class_weights' in kwargs:
+            self.cel = nn.CrossEntropyLoss(reduction='none',weight=kwargs['class_weights'])
+        else:
+            self.cel = nn.CrossEntropyLoss(reduction='none')
+
         self.npactivation = nn.Identity()
         # define buffers for statistics       
         self.register_buffer("jsdivs", torch.zeros(1))
@@ -698,7 +703,7 @@ class CustomPriorBlock(nn.Module):
 
         super(CustomPriorBlock, self).__init__()
         self.cfg = EasyDict(cfg)
-        self.cat = CatPriorBlock(cfg.pc_block)
+        self.cat = CatPriorBlock(cfg.pc_block,class_weights=cfg.class_weights)
         self.bin = BinPriorBlock(cfg.bin_block)
 
         self.jsdivs = (self.cat.jsdivs, self.bin.jsdivs)
@@ -892,8 +897,7 @@ class HVAE(nn.Module):
         return enc_acts
 
     def posterior_sample(self, x0_smpl, z0=None, stats=False, expanded=False):
-        # notice that this function samples the latent variables
-        # and a new image
+        # notice that this function samples the latent variables and a new image
         self.eval()
         num_blocks = len(self.sblock_list)
         z_all = [None] * num_blocks
