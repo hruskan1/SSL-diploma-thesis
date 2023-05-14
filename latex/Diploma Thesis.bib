@@ -358,7 +358,7 @@ journal = {Journal of Machine Learning Research}
   url          = {https://doi.org/10.5281/zenodo.4462916}
 }
 
-@misc{pluto-alegory,
+@misc{plato-alegory,
    author = "Wikipedia",
    title = "{Allegory of the cave} --- {W}ikipedia{,} The Free Encyclopedia",
    year = "2023",
@@ -376,15 +376,6 @@ journal = {Journal of Machine Learning Research}
 
 # Variational 
 
-@book{kulhanek-2016,
-  title    = "Vybran{\'e} kapitoly z teoretick{\'e} fyziky: Teoretick{\'a}
-              mechanika - Kvantov{\'a} teorie - Matematika pro fyziku. {I}",
-  author   = "Kulh{\'a}nek, Petr",
-  year     =  2020,
-  language = "cs",
-  publisher = {AGA},
-  address = {Prague, Nový lesík 21, 162 00 Praha 6}
-}
 
 @incollection{lagrangian-mechanics-1998,
   title     = "{LAGRANGIAN} {MECHANICS}",
@@ -407,16 +398,6 @@ journal = {Journal of Machine Learning Research}
   address   = "Mineola, NY"
 }
 
-@misc{werner-opt-2022,
-  author        = {Tomáš Werner},
-  title         = {Optimalizace},
-  subtitle      = {Elektronická skripta předmětu B0B33OPT},
-  month         = {October},
-  year          = {2022},
-  publisher = {Czech Technical University},
-  language  = {cs},
-  url={https://cw.fel.cvut.cz/wiki/_media/courses/b0b33opt/opt.pdf}
-}
 
 @BOOK{intro-variational-calc-2003,
   title     = "An introduction to the calculus of variations",
@@ -428,24 +409,7 @@ journal = {Journal of Machine Learning Research}
   address   = "Mineola, NY"
 }
 
-@misc{smooth-functions-2023,
-   author = "Wikipedia",
-   title = "{Smoothness} --- {W}ikipedia{,} The Free Encyclopedia",
-   year = "2023",
-   howpublished = {\url{http://en.wikipedia.org/w/index.php?title=Smoothness&oldid=1142265373}},
-   note = "[Online; accessed 06-May-2023]"
- }
 
- @misc{hurak-2021,
-  author        = {Zdeněk Hurák},
-  title         = {Continuous-time optimal control—indirect approach},
-  subtitle      = {Introduction to calculus of variations},
-  month         = {March},
-  year          = {2021},
-  publisher = {Czech Technical University},
-  language  = {en},
-  url={https://moodle.fel.cvut.cz/pluginfile.php/279892/mod_resource/content/11/L6_calculus_of_variations_continuous_time_optimal_control_notes.pdf}
-}
 
 
  @article{intro-variational-blog-2019,
@@ -524,4 +488,80 @@ journal = {Journal of Machine Learning Research}
   volume={36},
   number={36},
   year={2014}
+}
+
+
+@InProceedings{renedze-backprop-2014,
+  title = 	 {Stochastic Backpropagation and Approximate Inference in Deep Generative Models},
+  author = 	 {Rezende, Danilo Jimenez and Mohamed, Shakir and Wierstra, Daan},
+  booktitle = 	 {Proceedings of the 31st International Conference on Machine Learning},
+  pages = 	 {1278--1286},
+  year = 	 {2014},
+  editor = 	 {Xing, Eric P. and Jebara, Tony},
+  volume = 	 {32},
+  number =       {2},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Bejing, China},
+  month = 	 {22--24 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v32/rezende14.pdf},
+  url = 	 {https://proceedings.mlr.press/v32/rezende14.html},
+  abstract = 	 {We marry ideas from deep neural networks and approximate Bayesian inference to derive a generalised class of deep, directed generative models, endowed with a new algorithm for scalable inference and learning.   Our algorithm introduces a recognition model to represent an approximate posterior distribution and uses this for optimisation of a variational lower bound.  We develop stochastic backpropagation – rules for gradient backpropagation through stochastic variables – and   derive an algorithm that allows for joint optimisation of the parameters of both the generative and recognition models.  We demonstrate on several real-world data sets that by using stochastic backpropagation and variational inference, we obtain models that are able to  generate realistic samples of data, allow for accurate imputations of missing data, and provide a useful tool for high-dimensional data visualisation.}
+}
+
+@inproceedings{iaf-2016,
+ author = {Kingma, Durk P and Salimans, Tim and Jozefowicz, Rafal and Chen, Xi and Sutskever, Ilya and Welling, Max},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {D. Lee and M. Sugiyama and U. Luxburg and I. Guyon and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Improved Variational Inference with Inverse Autoregressive Flow},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2016/file/ddeebdeefdb7e7e7a697e1c3e3d8ef54-Paper.pdf},
+ volume = {29},
+ year = {2016}
+}
+
+
+@InProceedings{nf-2015,
+  title = 	 {Variational Inference with Normalizing Flows},
+  author = 	 {Rezende, Danilo and Mohamed, Shakir},
+  booktitle = 	 {Proceedings of the 32nd International Conference on Machine Learning},
+  pages = 	 {1530--1538},
+  year = 	 {2015},
+  editor = 	 {Bach, Francis and Blei, David},
+  volume = 	 {37},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {Lille, France},
+  month = 	 {07--09 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v37/rezende15.pdf},
+  url = 	 {https://proceedings.mlr.press/v37/rezende15.html},
+  abstract = 	 {The choice of the approximate posterior distribution is one of the core problems in variational inference. Most applications of variational inference employ simple families of posterior approximations in order to allow for efficient inference, focusing on mean-field or other simple structured approximations. This restriction has a significant impact on the quality of inferences made using variational methods. We introduce a new approach for specifying flexible, arbitrarily complex and scalable approximate posterior distributions. Our approximations are distributions constructed through a normalizing flow, whereby a simple initial density is transformed into a more complex one by applying a sequence of invertible transformations until a desired level of complexity is attained. We use this view of normalizing flows to develop categories of finite and infinitesimal flows and provide a unified view of approaches for constructing rich posterior approximations. We demonstrate that the theoretical advantages of having posteriors that better match the true posterior, combined with the scalability of amortized variational approaches, provides a clear improvement in performance and applicability of variational inference.}
+}
+
+
+@InProceedings{aux-var-2016,
+  title = 	 {Auxiliary Deep Generative Models},
+  author = 	 {Maaløe, Lars and Sønderby, Casper Kaae and Sønderby, Søren Kaae and Winther, Ole},
+  booktitle = 	 {Proceedings of The 33rd International Conference on Machine Learning},
+  pages = 	 {1445--1453},
+  year = 	 {2016},
+  editor = 	 {Balcan, Maria Florina and Weinberger, Kilian Q.},
+  volume = 	 {48},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {New York, New York, USA},
+  month = 	 {20--22 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v48/maaloe16.pdf},
+  url = 	 {https://proceedings.mlr.press/v48/maaloe16.html},
+  abstract = 	 {Deep generative models parameterized by neural networks have recently achieved state-of-the-art performance in unsupervised and semi-supervised learning. We extend deep generative models with auxiliary variables which improves the variational approximation. The auxiliary variables leave the generative model unchanged but make the variational distribution more expressive. Inspired by the structure of the auxiliary variable we also propose a model with two stochastic layers and skip connections. Our findings suggest that more expressive and properly specified deep generative models converge faster with better results. We show state-of-the-art performance within semi-supervised learning on MNIST, SVHN and NORB datasets.}
+}
+
+@misc{bowmann-2016,
+      title={Generating Sentences from a Continuous Space}, 
+      author={Samuel R. Bowman and Luke Vilnis and Oriol Vinyals and Andrew M. Dai and Rafal Jozefowicz and Samy Bengio},
+      year={2016},
+      eprint={1511.06349},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
 }

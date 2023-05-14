@@ -50,25 +50,25 @@ Some of them are well known from unsupervised learning:
 \end{itemize}
 \todo{Should I cite the algorithms?}
 
-Another important perspective on the proposed question is Vapnik's principle\cite[p. 7]{ssl-book-2006}:
+% Another important perspective on the proposed question is Vapnik's principle\cite[p. 7]{ssl-book-2006}:
 
-\begin{quote}
-    ``When solving a problem of interest, do not solve a more general problem as an intermediate step. 
-    Try to get the answer you really need, not a more general one''~--~Vapnik \cite{vapnik-quote-2006}
-\end{quote}
+% \begin{quote}
+%     ``When solving a problem of interest, do not solve a more general problem as an intermediate step. 
+%     Try to get the answer you really need, not a more general one''~--~Vapnik \cite{vapnik-quote-2006}
+% \end{quote}
 
-We call the method \textit{transductive} if it only makes predictions for the test points (assuming the test set is available during the learning process). This is 
-in contradiction to \textit{inductive} learning, where the goal is to infere a prediction function defined on the whole set $\mathcal{X}$. In the idea of Vapnik's
-quote, the \textit{transductive} learning is more direct then \textit{inductive}.
+% We call the method \textit{transductive} if it only makes predictions for the test points (assuming the test set is available during the learning process). This is 
+% in contradiction to \textit{inductive} learning, where the goal is to infere a prediction function defined on the whole set $\mathcal{X}$. In the idea of Vapnik's
+% quote, the \textit{transductive} learning is more direct then \textit{inductive}.
 
-Suppose there is a transductive algorithm which result outperforms the one produced by an inductive algorithm trained on the same labeled data (but discarding the 
-unlabeled data). Then the performance difference could be due to one of the following (or a combination of them)
-\begin{enumerate}
-    \item transduction follows Vapnik's principle more closely than induction does, or
-    \item the transductive algorithm takes advantage of the unlabeled data in a way similar to semi-supervised learning algorithms. 
-\end{enumerate}
-There is a lot of evidence for the latter with no empirical results that would selectively support the first point\cite[p. 7]{ssl-book-2006}. However the 
-insightful discussion with different viewpoints is available in \cite[chap. 25]{ssl-book-2006} and the idea of the transduction and its effect on SSL is still open.
+% Suppose there is a transductive algorithm which result outperforms the one produced by an inductive algorithm trained on the same labeled data (but discarding the 
+% unlabeled data). Then the performance difference could be due to one of the following (or a combination of them)
+% \begin{enumerate}
+%     \item transduction follows Vapnik's principle more closely than induction does, or
+%     \item the transductive algorithm takes advantage of the unlabeled data in a way similar to semi-supervised learning algorithms. 
+% \end{enumerate}
+% There is a lot of evidence for the latter with no empirical results that would selectively support the first point\cite[p. 7]{ssl-book-2006}. However the 
+% insightful discussion with different viewpoints is available in \cite[chap. 25]{ssl-book-2006} and the idea of the transduction and its effect on SSL is still open.
 
 \subsection{SSL methods}
 SSL algorithms can be categorized into these following groups based on their motivation, making it easier to navigate and understand them\cite{ssl-overview-2020}:
@@ -79,7 +79,13 @@ SSL algorithms can be categorized into these following groups based on their mot
         a variety of techniques, such as mean square error (MSE) or Kullback-Leibler (KL) divergence, we can train the model to make consistent
         predictions on both the original and perturbed inputs \cite{temporal-ensembling-2017,regularization-&-pertrubations-2016}.
         We can also use other divergence techniques, such as Jeffrys divergence or Jensen-Shanon (JSD) divergence, which have the advantage of 
-        being symmetric with respect to the inputs.
+        being symmetric with respect to the inputs.  This leads to an expanded loss objective, where a new term is introduced for consistency 
+        regularization:
+        $$
+        \mathcal{L} = \sum_{\mathbf{x},y \in \mathcal{D}_l}l(\mathbf{x},y) + \sum_{\mathbf{x} \in \mathcal{D}_u} d(f_\theta(\mathbf{x}),f_\theta(\tilde{\mathbf{x}}))
+        $$
+        where $l(\mathbf{x},y)$ corresponds to the standard supervised loss for given task and $d(\cdot,\cdot)$ corresponds to the one of the mentioned metrics. 
+
     \item \textbf{Proxy-label Methods}: These methods are based on an (iterative) scheme, where the model generates the proxy label on unlabeled data (or parts 
         thereof) using the prediction function itself or some variant of it \cite{psuedo-label-2013}. These labels are then taken as targets for the next iteration.
         Although the proxy labels are often and/or weak, the methods can provide additional information for training. These methods can be divided into two groups: 
@@ -129,12 +135,13 @@ The Entropy minimization on its now does not lead to strong results, however it 
 
 \section{MixMatch}
 \label{sec:mix-match}
-The Mixmatch was proposed by David Berthelot et \textit{al.} in 2019 \cite{mixmatch-2019} and combines several ideas and components from dominant paradigms of SSL.
-This \textit{holistic} approach yields state of the art results and is the cornerstone for a whole branch of new algorithms such as ReMixMatch \cite{remixmatch-2020}
-and FixMatch \cite{fixmatch-2020}. Namely, it combines \textit{consistency regularization} and \textit{proxy-labeling} with \textit{entropy minimization}.
-It also utilizes other forms of regularizations, such as \textit{data augmentation}, \textit{exponentially weighted average of network weights}\cite{mean-teacher-2018},
-\textit{weight decay} \cite{weight-decay-2019} and \textit{MixUp} procedure \cite{mixup-2018}. The consistency regularization is obtained through loss term, the 
-proxy-labeling occures in stage of label guessing (\ref{label-guessing}) and the entropy minimization is applied in form of sharpening procedure (\ref{sharpening}).
+We have selected the MixMatch algorithm as a reference algorithm for the comparison as it yielded state of the art results. This \textit{holistic} approach
+was proposed by David Berthelot et \textit{al.} in 2019 \cite{mixmatch-2019} and combines several ideas and components from classical dominant paradigms of SSL.
+It is the cornerstone for a whole branch of new algorithms such as ReMixMatch \cite{remixmatch-2020} and FixMatch \cite{fixmatch-2020}. Namely, it combines 
+\textit{consistency regularization} and \textit{proxy-labeling} with \textit{entropy minimization}.It also utilizes other forms of regularizations, such as
+\textit{data augmentation}, \textit{exponentially weighted average of network weights}\cite{mean-teacher-2018},\textit{weight decay} \cite{weight-decay-2019} and 
+\textit{MixUp} procedure \cite{mixup-2018}. The consistency regularization is obtained through loss term, the proxy-labeling occures in stage of label guessing 
+(\ref{label-guessing}) and the entropy minimization is applied in form of sharpening procedure (\ref{sharpening}).
 
 The algorithm itself is composed of several steps and provides augmented inputs to the model with \textit{guessed} labels. The batched augmented inputs are propagated 
 through the network and the standard semi-supervised loss containing the supervised and unsupervised term is computed from outputs of the model and the (guessed) 
@@ -246,35 +253,3 @@ The MixMatch algorithm consists of the following steps:
  \end{algorithmic}
 \end{algorithm}
 
-\subsection{Adaptation to segmentation task}
-We propose an extension of the MixMatch algorithm to address the task of image segmentation. While MixMatch is designed for classification tasks 
-and augmentation that does not alter labels, image segmentation requires augmentations that also modify the corresponding segmentation masks. 
-To enable MixMatch for segmentation tasks, we adapt the data augmentation and proxy-labeling procedure. We propose using affine transformations 
-for most data augmentations as they can be easily inverted and are quite general. To average predictions across multiple views of an image, 
-we align them with the original image by applying the inverse augmentation and then apply the original augmentation to assign the averaged 
-predictions to each view. However, care must be taken while averaging as a part of the original image might be cropped while keeping the spatial dimensions.
-Consequently, the segmentation prediction is only valid on the uncropped region of the image.
-The proposed change are incorporated into algorithm \ref{alg:mixmatch-seg}. In line (3), we apply augmentation to both $\mathbf{x}$ and $\mathbf{p}$.
-\todo{Add comments on change and rewrite the algorithm}
-\begin{algorithm}[H]
-    \caption{MixMatch adapted for segmentation}
-    \label{alg:mixmatch-seg}
-    \begin{algorithmic}[2]
-      \State \textbf{Input:} Batch of labeled examples and their one-hot labels $X = ((x_i, p_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (u_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
-      \For{$i = 1$ \textbf{to} $n$}
-       \State $\bar{x}_i = \text{Augment}(x_i)$ \Comment{Apply data augmentation to $x_i$}
-       \For{$k = 1$ \textbf{to} $K$}
-        \State $\bar{u}_{i,k} = \text{Augment}(u_i)$ \Comment{Apply $k$th round of data augmentation to $u_b$}
-       \EndFor
-       \State $\bar{q}_i = \frac{1}{K} \sum_{k=1}^{K} p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$ \Comment{Compute average predictions across all augmentations of $u_i$}
-       \State $q_i = \text{Sharpen}(\bar{q}_i, T)$ \Comment{Apply temperature sharpening to the average prediction}
-      \EndFor
-      \State $X^\star = ((\bar{x}_i, p_i); i \in (1, \dots, n))$ \Comment{Augmented labeled examples and their labels}
-      \State $U^\star = ((\bar{u}_{i,k}, q_i); i \in (1, \dots, n), k \in (1, \dots, K))$ \Comment{Augmented unlabeled examples, guessed labels}
-      \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ \Comment{Combine and shuffle labeled and unlabeled data}
-      \State $X^\prime = (\text{MixUp}(\bar{x}_i, w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp to labeled data and entries from $W$}
-      \State $U^\prime = (\text{MixUp}(\bar{u}_{i}, w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ \Comment{Apply MixUp to unlabeled data and the rest of $W$}
-      \State \textbf{return} $X^\prime, U^\prime$
-      
-    \end{algorithmic}
-   \end{algorithm}

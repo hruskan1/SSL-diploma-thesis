@@ -1,0 +1,43 @@
+\section{Mixmatch adaptation}
+The current implementation of MixMatch algorithm is limited as it only allows for augmentations that do not alter the labels of given features. 
+However, this limitation poses a problem for image segmentation tasks because most commonly used augmentations do apply spatial transformations 
+that affect image segmentations. To address this issue, we propose an extension of the MixMatch algorithm specifically designed for image s
+egmentation tasks.
+
+Our approach involves adapting the data augmentation and proxy-labeling procedure to allow for augmentations that modify the corresponding 
+segmentation masks. Specifically, we suggest using affine transformations for the data augmentations, as they are easily invertible and widely
+applicable.
+
+To combine predictions across multiple views of an image, we align the predictions with the original image by applying the inverse augmentation
+and then apply the original augmentation to assign the averaged predictions to each view. However, it's important to note that care must be taken
+while averaging because a part of the original image may be cropped while keeping the spatial dimensions. Thus, the segmentation prediction is 
+only valid on the uncropped region of the image.
+
+Finally, the MixUp procedure also requires adaptation so that cropped images are correctly mixed without propagating the empty parts 
+further down the stream and keeping the output of the mixmatch ($\mathbf{x}^\prime,\mathbf{y}^\prime)$ closer to the first argument $(\mathbf{x}_1,\mathbf{y}_1)$.  
+
+The proposed change are incorporated into algorithm \ref{alg:mixmatch-seg}. In line (3), we apply augmentation to both $\mathbf{x}$ and $\mathbf{p}$.
+
+\todo{Add comments on change and rewrite the algorithm}
+\begin{algorithm}[H]
+    \caption{MixMatch adapted for segmentation}
+    \label{alg:mixmatch-seg}
+    \begin{algorithmic}[2]
+      \State \textbf{Input:} Batch of labeled examples and their one-hot labels $X = ((x_i, p_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (u_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
+      \For{$i = 1$ \textbf{to} $n$}
+       \State $\bar{x}_i = \text{Augment}(x_i)$ \Comment{Apply data augmentation to $x_i$}
+       \For{$k = 1$ \textbf{to} $K$}
+        \State $\bar{u}_{i,k} = \text{Augment}(u_i)$ \Comment{Apply $k$th round of data augmentation to $u_b$}
+       \EndFor
+       \State $\bar{q}_i = \frac{1}{K} \sum_{k=1}^{K} p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$ \Comment{Compute average predictions across all augmentations of $u_i$}
+       \State $q_i = \text{Sharpen}(\bar{q}_i, T)$ \Comment{Apply temperature sharpening to the average prediction}
+      \EndFor
+      \State $X^\star = ((\bar{x}_i, p_i); i \in (1, \dots, n))$ \Comment{Augmented labeled examples and their labels}
+      \State $U^\star = ((\bar{u}_{i,k}, q_i); i \in (1, \dots, n), k \in (1, \dots, K))$ \Comment{Augmented unlabeled examples, guessed labels}
+      \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ \Comment{Combine and shuffle labeled and unlabeled data}
+      \State $X^\prime = (\text{MixUp}(\bar{x}_i, w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp to labeled data and entries from $W$}
+      \State $U^\prime = (\text{MixUp}(\bar{u}_{i}, w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ \Comment{Apply MixUp to unlabeled data and the rest of $W$}
+      \State \textbf{return} $X^\prime, U^\prime$
+      
+    \end{algorithmic}
+   \end{algorithm}
