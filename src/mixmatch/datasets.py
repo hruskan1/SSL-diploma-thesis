@@ -576,13 +576,13 @@ def get_CityScape(root:str,n_labeled:int,n_val:int,batch_size:int,mode:str='fine
             validation_dataloder and test_dataloader is also labeled, if n_val == 0, validation_dataloder is None
             The features are transformed into the torch.Tensors and normalized
             The targets are one-hot encoded if onehot_flag == True and returned as torch.Tensors(dtype=long)
-    """
+    """    
     # Taken from here https://stackoverflow.com/a/58748125/1983544
     import os
     num_workers = os.cpu_count() 
     if 'sched_getaffinity' in dir(os):
         num_workers = len(os.sched_getaffinity(0)) - 2
-    num_workers = 0 # if on servers
+    
     
     # Mean and standard deviation for CityScapes
     mean = CityScapeDataset.mean
