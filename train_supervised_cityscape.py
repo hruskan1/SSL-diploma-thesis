@@ -37,7 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('-lr','--learning_rate',default=0.001,type=utils._float,help='learning rate of Adam Optimizer, if None, lr will be found')
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
-    parser.add_argument('--device',default=1, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
+    parser.add_argument('--device',default=0, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
     parser.add_argument('--dataset_path',default='/datagrid/public_datasets/CityScapes', type=str, help='Root directory for dataset') 
     parser.add_argument('--out', '--output_directory', default=f'./sl_city_run_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
     parser.add_argument('--resume', default=None, type=utils._str, help='Path to model which is to be used to resume training')
@@ -48,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
     parser.add_argument('--model_architecture', default='./src/models/unet/large_size.yaml', type=str, help = 'Path to the model architecture (yaml)')
     parser.add_argument('--img_size', default = [256,512], type=int,nargs="+", help = '(H:int,W:int) shape of image' )
+    parser.add_argument('-nt','--n_total',default=2975,type=int,help="number of images available (maximum is what the dataset contains)")
     ### Parse the command-line arguments ###
     parsed_args = parser.parse_args()
 
@@ -110,16 +111,29 @@ if __name__ == '__main__':
 
     train_dataset = my_datasets.CityScapeDataset(args.dataset_path,split='train', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
     validation_dataset = my_datasets.CityScapeDataset(args.dataset_path,split='val', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
+    if args.n_total < len(train_dataset):
+        indicies = torch.randperm(len(train_dataset))[:args.n_total]
+        train_dataset = data.Subset(train_dataset,indicies)
     
     # not public
     # test_dataset = tv.datasets.Cityscapes(args.dataset_path,split='test', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
+    test_dataset = None
     
+    print("Datasets sizes: (respectively)")
+    if test_dataset is not None:
+        print(len(train_dataset),len(validation_dataset),len(test_dataset),file=open(args.logpath,'a'),flush=True)
+        print(len(train_dataset),len(validation_dataset),len(test_dataset))
+    else:
+        print(len(train_dataset),len(validation_dataset),file=open(args.logpath,'a'),flush=True)
+        print(len(train_dataset),len(validation_dataset))
+
+
     # Taken from here https://stackoverflow.com/a/58748125/1983544
     import os
     num_workers = os.cpu_count() 
     if 'sched_getaffinity' in dir(os):
         num_workers = len(os.sched_getaffinity(0)) - 2
-    num_workers = 0 # if on servers
+
 
     train_dataloader = data.DataLoader(train_dataset,args.batch_size,shuffle=True,num_workers=num_workers,)
     validation_dataloader = data.DataLoader(validation_dataset,args.batch_size,shuffle=False,num_workers=num_workers)
