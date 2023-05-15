@@ -222,29 +222,30 @@ In Prague, 26th May, 2023
 \chapter{Introduction}
 \input{_introduction}
 
-\chapter{Algorithms}
+\chapter{State of the art of SSL}
 \label{motivation-theory}
 In this chapter, we will provide a brief introduction to semi-supervised learning in section \ref{sec:ssl-introduction}, and classify its 
 algorithms into several groups based on the ideas and paradigms they employ. Additionally, we will provide a more detailed overview of 
 MixMatch and Variational Autoencoders in sections \ref{sec:mix-match} and \ref{sec:vae}, with a particular focus on Variational Autoencoders
 as they are cornerstone of the novel approach proposed by \cite{}, which is described in \ref{sec:symmetrical-learning}
 \todo{Add reference to unpublished paper}
-% Intorduction and Mixmatch
+
+% SotA SSL
 \input{_ssl}
-% VAE
+% VAE, HVAE,LVAE
 \input{_vae}
-\todo{Exponential Family introduction}
-\todo{Vae development, HVAE,ladder networks,blurriness issue etc.}
-\todo{sym learning vae}
-\input{_exp_family.tex}
+% Exp family 
+\input{_exp_family}
 % Symmetrical learning paper
-\input{_sym_learning.tex}
+\todo{sym learning vae}
+\input{_sym_learning}
 
-
-
+\chapter{Methods}
+\label{methods}
+\input{_mixmatch_adaptation}
 \chapter{Experiments}
 \label{experiments}
-\todo{10-15 pages}
+
 \section{Segmentation}
 \todo{Description of the dataset and the segmentation task,metrics etc}
 
