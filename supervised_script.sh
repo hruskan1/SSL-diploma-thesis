@@ -14,10 +14,10 @@
 # either specify all arguments you wish to change or do it by 
 if (($# > 0))
 then
-    echo "Running run -n refmix python train_supervised_cityscape.py  $*"
+    echo "Running conda run -n refmix python train_supervised_cityscape.py  $*"
     conda run -n refmix python train_supervised_cityscape.py  $*
 else
-    conda run -n refmix python train_supervised_cityscape.py -
+    conda run -n refmix python train_supervised_cityscape.py -nt 100 --out ./cityscape_cat@sup100 --device 0 --BS 32
 fi
 
 
