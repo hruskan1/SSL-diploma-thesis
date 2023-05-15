@@ -78,6 +78,7 @@ def evaluate_IoU(model:nn.Module, dataloader:data.DataLoader,weights:torch.Tenso
 
     :param model: A PyTorch model.
     :param dataloader: A PyTorch dataloader.
+    :weights: weights for the class iou
     :return: Tuple(average_iou,class_iou), float and tensor containg IoU on dataset for each class [C]
     """
     model.eval()
