@@ -1,0 +1,110 @@
+# Hierarchical VAE with symmetric learning for CityScape
+# images: Bernoulli, latent: Bernoulli/Categorical
+
+blocks: [{type: pcustom, cho : 208,
+          pc_block: {type:  pc, cho: 8},
+          bin_pixel_block : {type: pb, cho: 100},
+          bin_img_block: {type: pb, cho: 100}},
+# size 8, chan 128
+         {type: sb, chi: 208, cho: 128, d_skip: False, e_skip: False, activ: relu,
+          # DECODER is large conv net taking cat and binary together (chi = cho)
+          dec: [{type: 'mydec',  chi: 208, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+          enc: [{type: 'myenc', activ: relu,
+                  cat:[{type: 'c',chi: 128, cho: 8, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+                  bin_pixel :[{type: 'c',chi: 128, cho: 100, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+                  bin_img:[{type: 'c',chi: 128, cho: 100, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                           {type: 'a2dpool', spatial_size: 1}]
+                }],
+          },
+# size 4, chan 64          
+         {type: sb, chi: 128, cho: 128,  d_skip: False, e_skip: False, activ: relu,
+          enc: [{type: 'c', chi: 192, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True}],
+          enc_skip: [{type: 'rescale', factor: 2.}],
+          dec_skip: [{type: 'rescale',  factor: 0.5}]},
+#size 2, chan 128
+         {type: sb, chi: 128, cho: 128, d_skip: False, e_skip: False, activ: relu,
+          enc: [{type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: True}],
+          },
+# size 1, chan 256
+         {type: sb, chi: 128, cho: 256, d_skip: False, e_skip: False, activ: relu,
+          enc: [{type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True}], 
+          },
+# size 1,chan 256   # bottleneck     
+         {type: sb, chi: 256, cho: 256, d_skip: False, e_skip: False, activ: relu,
+          dec: [{type: 'c', chi: 256, cho: 512, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+          enc: [{type: 'c', chi: 256, cho: 512, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+                },
+# size 2, chan 128
+         {type: sb, chi: 256, cho: 128, d_skip: False, e_skip: False, activ: relu, #d_skip: False #e_skip: False
+          enc: [{type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True}], 
+          #dec_skip: [{type: 'i', chi: 64, cho: 32,  in_size: 4, out_size: 8}],
+          #enc_skip: [{type: 'i', chi: 32, cho: 64,  in_size: 8, out_size: 4}]
+          },
+# size 4 chan 64
+         {type: sb, chi: 128, cho: 64,  d_skip: False, e_skip: False, activ: relu,
+          enc: [{type: 'c', chi: 64, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 128, cho: 64, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True}],
+          
+          # dec_skip: [{type: 'r', in_size: 2, out_size: 2}],
+          # enc_skip: [{type: 'r', in_size: 2, out_size: 2}]
+          },
+
+# size 8 chan 3 (image)
+         {type: sg, chi: 64, cho: 3, in_size: 4, out_size: 8, d_skip: False, e_skip: False, activ: relu,
+          enc: [{type: 'c', chi: 3, cho: 64, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 64, cho: 6, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: True}]
+                }]
+
+graph_matrix:
+# matrix.yml
+- [0, 0, 0, 0, 0, 0, 0, 0, 0]
+- [1, 0, 0, 0, 0, 0, 0, 0, 0]
+- [0, 1, 0, 0, 0, 0, 0, 0, 0]
+- [0, 0, 1, 0, 0, 0, 0, 0, 0]
+- [0, 0, 0, 1, 0, 0, 0, 0, 0]
+- [0, 0, 0, 0, 1, 0, 0, 0, 0]
+- [0, 0, 0, 0, 1, 1, 0, 0, 0]
+- [0, 0, 0, 1, 0, 0, 1, 0, 0]
+- [0, 0, 1, 0, 0, 0, 0, 1, 0]
+
+kimg  : 500
+n_total : 2975
+img_size : [256,512]
+
+device : 'cuda'
+
+
+lparm:   {enc_stepsize: 1.e-4, dec_stepsize: 1.e-4, parallel: False}
+
+batch_size:         8
+niterations:        10000
+call_prefix:        '-1'
+load_prefix:        
+basename:           'z0_enlarged'
+dataset_path:      /mnt/personal/hruskan1/CityScapes
+res_path:          /mnt/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape-unsup
+
+generate:
+    folder:         images_2
+    batch_size:     1
+    b_num:          1
+    repeats:        30
+    samples:        100
