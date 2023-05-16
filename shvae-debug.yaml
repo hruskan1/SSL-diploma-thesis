@@ -1,4 +1,4 @@
-# Hierarchical VAE with symmetric learning for MNIST
+# Hierarchical VAE with symmetric learning for CityScape
 # images: Bernoulli, latent: Bernoulli/Categorical
 
 blocks: [{type: pcustom, cho : 108,
@@ -83,12 +83,12 @@ graph_matrix:
 - [0, 0, 0, 1, 0, 0, 1, 0, 0]
 - [0, 0, 1, 0, 0, 0, 0, 1, 0]
 
-kimg  : 100
+kimg  : 1
 n_val : 0
-n_labeled : 500
-img_size : [128,256]
+n_labeled : 1000
+img_size : [256,512]
 
-device : 1
+device : 'cuda'
 
 
 
@@ -98,15 +98,15 @@ lparm:   {enc_stepsize: 1.e-5, dec_stepsize: 1.e-5, parallel: False}
 
 batch_size:         4
 batch_workers:      0
-niterations:        5000
-call_prefix:        '1'
-load_prefix:        
+niterations:        1
+call_prefix:        'interactive-debug'
+load_prefix:        '@1000-e11-a88-m'
 basename:           cityscape-shbvae-
-dataset_path:      /datagrid/public_datasets/CityScapes
-res_path:          /datagrid/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
+dataset_path:      /mnt/personal/hruskan1/CityScapes
+res_path:          /mnt/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
 
 generate:
-    folder:         images_1
+    folder:         images_2
     batch_size:     1
     b_num:          1
     repeats:        30

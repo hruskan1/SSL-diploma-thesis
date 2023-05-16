@@ -152,17 +152,17 @@ class MyDec(nn.Module):
 
     def forward(self,input:list):
         #categorical is the first
-        assert  len(input) == 2
+        assert  len(input) == 3
 
-        cat,bin = input[0],input[1]
+        cat,bin_pixel,bin_img = input[0],input[1],input[2]
 
-        assert bin.ndim == 4 and bin.shape[2] == 1 and bin.shape[3] == 1
-        assert cat.ndim == 4
+        assert bin_img.ndim == 4 and bin_img.shape[2] == 1 and bin_img.shape[3] == 1
+        assert cat.ndim == 4 and bin_pixel.ndim == 4
 
         N,_,H,W = cat.shape
-        bin_replicated = bin.repeat(1,1,H,W)
+        bin_img_replicated = bin_img.repeat(1,1,H,W)
 
-        z0 = torch.cat([cat,bin_replicated],dim=1)
+        z0 = torch.cat([cat,bin_pixel,bin_img_replicated],dim=1)
         output = self.net(z0)
 
         #print(f"{output.shape=}")
@@ -178,19 +178,23 @@ class MyEnc(nn.Module):
         self.cat = nn.Sequential(
             *append_blocks(nn.ModuleList(),cfg.cat,activation=choose_activation(cfg))
         )
-        
-        self.bin = nn.Sequential(
-            *append_blocks(nn.ModuleList(),cfg.bin,activation=choose_activation(cfg)),
+
+        self.bin_pixel = nn.Sequential(
+            *append_blocks(nn.ModuleList(),cfg.bin_pixel,activation=choose_activation(cfg))
+        ) 
+
+        self.bin_img = nn.Sequential(
+            *append_blocks(nn.ModuleList(),cfg.bin_img,activation=choose_activation(cfg)),
             
         )
 
     def forward(self,x):
         
         cat_output = self.cat(x)
-        bin_output = self.bin(x)
-    
+        bin_pixel_output = self.bin_pixel(x)
+        bin_img_output = self.bin_img(x)
         #categorical is the first
-        return [cat_output , bin_output]
+        return [cat_output , bin_pixel_output, bin_img_output]
 
 
 class GaussNPactivation(nn.Module):
@@ -704,39 +708,45 @@ class CustomPriorBlock(nn.Module):
         super(CustomPriorBlock, self).__init__()
         self.cfg = EasyDict(cfg)
         self.cat = CatPriorBlock(cfg.pc_block,class_weights=cfg.class_weights)
-        self.bin = BinPriorBlock(cfg.bin_block)
+        self.bin_pixel = BinPriorBlock(cfg.bin_pixel_block)
+        self.bin_img = BinPriorBlock(cfg.bin_img_block)
 
-        self.jsdivs = (self.cat.jsdivs, self.bin.jsdivs)
-        self.jsdivs_av = (self.cat.jsdivs_av,self.bin.jsdivs_av)
+        self.jsdivs = (self.cat.jsdivs, self.bin_pixel.jsdivs,self.bin_img.jsdivs)
+        self.jsdivs_av = (self.cat.jsdivs_av,self.bin_pixel.jsdivs,self.bin_img.jsdivs_av)
 
 
     def update_stats(self, acte):
-        cat_acte,bin_acte = acte[0],acte[1]
+        cat_acte,bin_pixel_acte,bin_img_acte = acte[0],acte[1],acte[2]
         self.cat.update_stats(cat_acte)
-        self.bin.update_stats(bin_acte)
+        self.bin_pixel.update_stats(bin_pixel_acte)
+        self.bin_img.update_stats(bin_img_acte)
 
     
     def sample_prior(self, shapes):
-        cat_shape,bin_shape = shapes[0],shapes[1]
+        cat_shape,bin_pixel_shape,bin_img_shape = shapes[0],shapes[1],shapes[2]
         z0_cat = self.cat.sample_prior(cat_shape)
-        z0_bin = self.bin.sample_prior(bin_shape)
-        return [z0_cat, z0_bin]
+        z0_bin_pixel = self.bin_pixel.sample_prior(bin_pixel_shape)
+        z0_bin_img = self.bin_img.sample_prior(bin_img_shape)
+        return [z0_cat, z0_bin_pixel,z0_bin_img]
 
     def sample(self, acte, stats=False, verbose=False):
         cat = self.cat.sample(acte[0], stats, verbose)
-        bin = self.bin.sample(acte[1], stats, verbose)
+        bin_pixel = self.bin_pixel.sample(acte[1], stats, verbose)
+        bin_img  = self.bin_img.sample(acte[2],stats,verbose)
         if verbose:
             z0_cat,cat_probs = cat
-            z0_bin,bin_probs = bin
+            z0_bin_pixel,bin_pixel_probs = bin_pixel
+            z0_bin_img,bin_img_probs = bin_img
 
-            return [z0_cat,z0_bin],[cat_probs,bin_probs]
+            return [z0_cat,z0_bin_pixel,z0_bin_img],[cat_probs,bin_pixel_probs,bin_img_probs]
         else:
-            return [cat,bin]
+            return [cat,bin_pixel,bin_img]
         
         
     def neg_llik(self, z_out, acte):
         nll = self.cat.neg_llik(z_out[0],acte=acte[0])
-        nll += self.bin.neg_llik(z_out[1],acte=acte[1])
+        nll += self.bin_pixel.neg_llik(z_out[1],acte=acte[1])
+        nll += self.bin_img.neg_llik(z_out[2],acte=acte[2])
 
         return nll
     
@@ -911,11 +921,11 @@ class HVAE(nn.Module):
             if z0 is None:
                 z, p = sblock.sample(enc_acts[0], stats=stats, verbose=True)
                 
-                cprobs = p.detach().clone() if not (type(p) in (list, tuple)) else [p[0].detach().clone(),p[1].detach().clone()]
+                cprobs = p.detach().clone() if not (type(p) in (list, tuple)) else [p[i].detach().clone() for i in range(len(p))]
                 probs.append(p)
             else:
                 # if z0 from multiple blocks (in list/tuple)
-                z = z0.detach().clone() if not (type(z0) in (list, tuple)) else [z0[0].detach().clone(),z0[1].detach().clone()]
+                z = z0.detach().clone() if not (type(z0) in (list, tuple)) else [z0[i].detach().clone() for i in range(len(z0))]
             z_all[0] = z
             
 
@@ -934,7 +944,7 @@ class HVAE(nn.Module):
             z_all[-1] = z
             probs.append(cprobs.detach().clone())
         z0 = z_all[0]
-        self.z0_shape = z.shape if not (type(z0) in (list, tuple)) else [z0[0].shape,z0[1].shape]
+        self.z0_shape = z.shape if not (type(z0) in (list, tuple)) else [z0[i].shape for i in range(len(z0))]
 
         return (z_all, probs) if expanded else (z, probs)
 
@@ -1031,9 +1041,12 @@ class HVAE(nn.Module):
 
                 if self.graph_matrix[j,i] == 1:
                     enc_channels += bcfg[j].get('chi',float('nan'))
-
+                    # print(f"{i},{j}: {bcfg[j].get('chi',float('nan'))=}")
                 if self.graph_matrix[i,j] == 1:
                     dec_channels += bcfg[j].get('cho',float('nan'))
+                    # print(f"{i},{j}: {bcfg[j].get('chi',float('nan'))=}")
+                
+                
 
             enc_chi = _get_first_convolution(cfg.enc).chi
             dec_chi = _get_first_convolution(cfg.dec).chi

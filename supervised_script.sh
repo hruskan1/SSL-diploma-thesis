@@ -17,7 +17,7 @@ then
     echo "Running conda run -n refmix python train_supervised_cityscape.py  $*"
     conda run -n refmix python train_supervised_cityscape.py  $*
 else
-    conda run -n refmix python train_supervised_cityscape.py -nt 100 --out ./cityscape_cat@sup100 --device 0 --BS 32
+    conda run -n refmix python train_supervised_cityscape.py -nt 100 --out ./cityscape_cat@sup100_ --device 0 -BS 16 --dataset_path /mnt/personal/hruskan1/CityScapes -lr 1e-5
 fi
 
 

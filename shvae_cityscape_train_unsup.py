@@ -13,11 +13,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from svae.nets.hvae import HVAE
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader,Dataset,Subset
 from torchvision import datasets, transforms
 import torchvision.utils as vutils
 from src.mixmatch.datasets import get_CityScape,CityScapeDataset
+from torchvision.transforms import InterpolationMode
 from typing import Tuple
+from torch.utils.tensorboard import SummaryWriter
+from src.mixmatch.transformations import ToOneHot
 
 
 def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_class:int=0):
@@ -26,7 +29,7 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_clas
     
     ignore_class:int  class which should be ignored during evaluation
     """
-    cel = nn.CrossEntropyLoss(reduction='mean')
+    cel = nn.CrossEntropyLoss(reduction='none')
     numel = 0
     vloss = 0.0
     vacc = 0.0
@@ -87,6 +90,7 @@ def evaluate_IoU(model:HVAE, dataloader:DataLoader,weights:torch.Tensor)->Tuple[
             union_total += torch.sum(onehot_preds + targets, dim=(0, 2, 3)) - current_intersection
             
             _avg_iou = torch.mean( (intersection_total + 1e-15) / (union_total + 1e-15) )
+
             
 
     # Compute the average IoU score for each class
@@ -111,32 +115,55 @@ def main(args):
     logpath = os.path.join(args.res_path, logpath)
     hvae_path = 'models/' + args.basename + args.call_prefix
     hvae_path = os.path.join(args.res_path, hvae_path)
-    viz_path = 'images/' + args.basename + args.call_prefix + '-reconstructed.png'
+    viz_path = 'images/' + args.basename + args.call_prefix 
     viz_path = os.path.join(args.res_path, viz_path)
     stats_path = 'logs/stats-' + args.basename + args.call_prefix + '-enc.npz'
     stats_path = os.path.join(args.res_path, stats_path)
+    summary_path = os.path.join(args.res_path,args.basename + args.call_prefix +'-tensorboard_summary')
 
     # Create outdir and log 
-    if not os.path.isdir(args.res_path):
-        os.mkdir(args.res_path)
-        os.mkdir(os.path.join(args.res_path,'logs'))
-        os.mkdir(os.path.join(args.res_path,'models'))
-        os.mkdir(os.path.join(args.res_path,'images'))
-        
-
-    # prepare data loaders
     
-    labeled_dataloader, unlabeled_dataloader, validation_dataloader,test_dataloader = get_CityScape(root=args.dataset_path,
-                                                                                                    n_labeled = args.n_labeled,
-                                                                                                    n_val = args.n_val,
-                                                                                                    batch_size = args.batch_size,
-                                                                                                    mode = 'fine', # change if you want to
-                                                                                                    size = args.img_size,
-                                                                                                    target_type='semantic',
-                                                                                                    verbose=True
-                                                                                                    )
+    os.makedirs(args.res_path,exist_ok=True)
+    os.makedirs(os.path.join(args.res_path,'logs'),exist_ok=True)
+    os.makedirs(os.path.join(args.res_path,'models'),exist_ok=True)
+    os.makedirs(os.path.join(args.res_path,'images'),exist_ok=True)
+    os.makedirs(summary_path,exist_ok=True)
 
+    writer = SummaryWriter(summary_path)    
     print('# Starting', file=open(logpath, 'w'), flush=True)
+    # prepare data loader
+
+    mean = CityScapeDataset.mean
+    std = CityScapeDataset.std
+    size = args.img_size
+    num_classes =args.blocks[0].pc_block.cho
+    _t = transforms.Compose([transforms.ToTensor(),
+                             transforms.Normalize(mean,std),
+                             transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
+    _tt = transforms.Compose([transforms.ToTensor(), 
+                              ToOneHot(num_classes),
+                              transforms.Resize(size,interpolation=InterpolationMode.NEAREST)])
+    
+    unlabeled_dataset = CityScapeDataset(args.dataset_path,split='train', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
+    validation_dataset = CityScapeDataset(args.dataset_path,split='val', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
+    
+    if args.n_total < len(unlabeled_dataset):
+        indicies = torch.randperm(len(unlabeled_dataset))[:args.n_total]
+        unlabeled_dataset = Subset(train_dataset,indicies)
+
+    print("Datasets sizes: (respectively)",file=open(logpath,'a'),flush=True)
+    print("Datasets sizes: (respectively)")
+    print(len(unlabeled_dataset),len(validation_dataset),file=open(logpath,'a'),flush=True)
+    print(len(unlabeled_dataset),len(validation_dataset))
+
+    # Taken from here https://stackoverflow.com/a/58748125/1983544
+    num_workers = os.cpu_count() 
+    if 'sched_getaffinity' in dir(os):
+        num_workers = len(os.sched_getaffinity(0)) - 2
+
+    unlabeled_dataloader = DataLoader(unlabeled_dataset,args.batch_size,shuffle=True,num_workers=num_workers,)
+    validation_dataloader = DataLoader(validation_dataset,args.batch_size,shuffle=False,num_workers=num_workers)
+
 
     # parse weights to cfg dict 
     args.blocks[0].class_weights = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
@@ -170,131 +197,100 @@ def main(args):
 
     # learning preparation
     log_period = 1
-    save_period = 1
+    save_period = 0
     niterations = args.niterations
     count = 0
     start_acc = True
     acc_dt = 0.0
     acc_et = 0.0
+    best_val_acc = 0
 
-    labeled_train_iter = iter(labeled_dataloader)
     unlabeled_train_iter = iter(unlabeled_dataloader)
 
     #print(f"{hvae.sblock_list=}")
 
-
+    num_of_batches_seen = 0
     while True:
         # train epoch
         x0_smpl = None
 
         
         k_imgs_seen = 0
+        
         while k_imgs_seen < args.kimg:
-            # Iterate over the end if necessary (Can be used with different sizes of dataloaders)
-            try:
-                xl, tl = next(labeled_train_iter)
-            except:
-                labeled_train_iter = iter(labeled_dataloader)
-                xl, tl = next(labeled_train_iter)
-
             try:
                 xu,tu = next(unlabeled_train_iter)
             except:
                 unlabeled_train_iter = iter(unlabeled_dataloader)
                 xu,tu = next(unlabeled_train_iter)
 
-            current_batch_size = min(xl.shape[0],xu.shape[0])
-        
-            xl = xl[:current_batch_size]
-            xu = xu[:current_batch_size]
-            tl = tl[:current_batch_size]
-
-            k_imgs_seen += current_batch_size
-        
-           
-            xl  = xl.to(args.device)
-            tl  = tl.to(args.device, dtype=torch.float) 
+            k_imgs_seen += xu.shape[0]
+            
             xu  = xu.to(args.device)
             tu  = tu.to(args.device, dtype=torch.float)
 
-            # =====  decoder learn step (supervised learning) ====
-            
-            # E_pi(x,z) log p_\theta(z|x)
-            with torch.no_grad():
-                enc_acts = hvae.encoder_activations(xl)
-                act = enc_acts[0]
-                z0l_smpl = hvae.sblock_list[0].sample(act)
-                # z0[0] is segmentation, z0[1] is bernulli 
-                z0l_smpl[0] = tl
-            sup_dt = hvae.decoder_learn_step(xl, z0=z0l_smpl)
-            
-            # =====  encoder learn step (supervised learning) ====
-
-            # E_pi(x,z) log q_\phi(x|z)
-            for _ in range(1):
-                
-                z0l_smpl = hvae.z0_prior_sample(hvae.z0_shape)
-                z0l_smpl[0] = tl 
-                sup_et = hvae.encoder_supervised_learn_step(xl,z0=z0l_smpl)
-            
-
             # unsupervised batch 
-
             # ====== decoder learn step (unsupervised) ======
 
             #  E_pi(x) E_q log(p(x|z))
             unsup_dt = hvae.decoder_learn_step(xu)
 
             # =====  encoder learn step (unsupervised) ======
-
+            hvae.z0_shape
             # E_pi(z) log_p log(q(z|x)) 
-            for _ in range(1):
-                zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
-                zu0_smpl[0] = tu 
-                unsup_et = hvae.encoder_learn_step(zu0_smpl)
-
-
-
+            zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
+            zu0_smpl[0] = tu 
+            unsup_et = hvae.encoder_learn_step(zu0_smpl)
 
             # accumulate data terms
             if start_acc:
-                sup_acc_dt = sup_dt.item()
-                sup_acc_et = sup_et.item()
                 unsup_acc_dt = unsup_dt.item()
                 unsup_acc_et = unsup_et.item()
                 start_acc = False
 
-            sup_acc_dt = sup_acc_dt * 0.999 + sup_dt.item() * 0.001
-            sup_acc_et = sup_acc_et * 0.999 + sup_et.item() * 0.001
+
             unsup_acc_dt = unsup_acc_dt * 0.999 + unsup_dt.item() * 0.001
             unsup_acc_et = unsup_acc_et * 0.999 + unsup_et.item() * 0.001
 
+            writer.add_scalars('Loss terms',{'unsup_dt' : unsup_dt.item(),
+                                         'ewa_unsup_dt' : unsup_acc_dt,
+                                         'unsup_et' : unsup_et.item(),
+                                         'ewa_unsup_et' :unsup_acc_et},num_of_batches_seen)
+                                         
+
+            
             print(f"\r{count=}|({k_imgs_seen}/{args.kimg})",end='')
+            num_of_batches_seen += 1
 
         if (count % log_period == log_period-1) or (count == niterations-1):
             jsdivs = hvae.sblock_list[0].jsdivs
             cat_jsdivs =  jsdivs[0].mean().item()
             bin_jsdivs =  jsdivs[1].mean().item()
             strtoprint = 'epoch: '+ str(count + epoch)
-            strtoprint += ' sup_dt: {:.3}'.format(-sup_acc_dt)
-            strtoprint += ' sup_et: {:.3}'.format(-sup_acc_et)
             strtoprint += ' unsup_dt: {:.3}'.format(-unsup_acc_dt)
             strtoprint += ' unsup_et: {:.3}'.format(-unsup_acc_et)
-            strtoprint += ' cat_jsdivs: {:.3}'.format(cat_jsdivs)
-            strtoprint += ' bin_jsdivs: {:.3}'.format(bin_jsdivs)
+
+            trn_loss, trn_acc = validate(hvae,unlabeled_dataloader,args.device,ignore_class=0)
+
+            strtoprint += ' trnloss: {:.4}'.format(trn_loss)
+            strtoprint += ' trnacc: {:.4}'.format(trn_acc)
             
-            val_loss, val_acc = validate(hvae, test_dataloader, args.device,ignore_class=0)
-            strtoprint += ' vloss: {:.4}'.format(val_loss)
-            strtoprint += ' vacc: {:.4}'.format(val_acc)
+            val_loss, val_acc = validate(hvae, validation_dataloader, args.device,ignore_class=0)
+            strtoprint += ' valloss: {:.4}'.format(val_loss)
+            strtoprint += ' valacc: {:.4}'.format(val_acc)
 
-            trn_loss, trn_acc = validate(hvae,labeled_dataloader,args.device,ignore_class=0)
+            writer.add_scalars('Accuracy',{'trn_acc' : trn_acc,
+                                         'val_acc' : val_acc},count)
 
-            strtoprint += ' tloss: {:.4}'.format(trn_loss)
-            strtoprint += ' tacc: {:.4}'.format(trn_acc)
+            writer.add_scalars('Loss',{'trn_loss' : trn_loss,
+                                         'val_loss' : val_loss},count)
+                                         
+
+            
             print(strtoprint, file=open(logpath, 'a'), flush=True)
 
 
-        if (count % save_period == save_period-1) or (count == niterations-1):
+        if (save_period and ((count % save_period == save_period - 1) or (count == (niterations-1))) ) or val_acc > best_val_acc:
             print('# Saving models ...', file=open(logpath, 'a'), flush=True)
             checkpoint = {
                 'model_state_dict': hvae.state_dict(),
@@ -302,52 +298,43 @@ def main(args):
                 'dec_optimizer_state_dict': hvae.dec_optimizer.state_dict(),
                 'epoch': (count + epoch)}
 
-            h_path = hvae_path + f'-e{count}-a{100*trn_acc:2.0f}-m' + '.pt'
+            h_path = hvae_path + f'-e{count}-a{100*val_acc:2.0f}-m' + '.pt'
             torch.save(checkpoint, h_path)
 
             # save encoder stats
             hvae.save_stats(stats_path)
 
+            # update best_val_acc
+            best_val_acc = val_acc
 
             # evalute IoU
-            w = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
-            trn_avg_iou,trn_class_iou = evaluate_IoU(hvae,labeled_dataloader, w)
-            val_avg_iou,val_class_iou = evaluate_IoU(hvae,test_dataloader, w)
-            tags = [CityScapeDataset.trainid2names[trainid] for trainid in range(trn_class_iou.shape[0])]
+            # w = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
+            # trn_avg_iou,trn_class_iou = evaluate_IoU(hvae,unlabeled_dataloader, w)
+            # val_avg_iou,val_class_iou = evaluate_IoU(hvae,validation_dataloader, w)
+            # tags = [CityScapeDataset.trainid2names[trainid] for trainid in range(trn_class_iou.shape[0])]
             
-            strtoprint = 'Train: '
-            for tag,iou in zip(tags,trn_class_iou):
-                strtoprint +=  f'{tag} {iou*100:2.2f}|'
-            strtoprint += f'avg: {trn_avg_iou}'
-
-            strtoprint += '\nVal: '
-            for tag,iou in zip(tags,val_class_iou):
-                strtoprint += f'{tag} {iou*100:2.2f}|'
-            strtoprint += f'avg: {val_avg_iou}'
-
-            print(strtoprint, file=open(logpath, 'a'), flush=True)
-
-            
-
-        
-            
+            # writer.add_scalars('train class IoU',{tags[i]: trn_class_iou[i] for i in range(trn_class_iou.shape[0])},count)
+            # writer.add_scalars('val class IoU',{tags[i]: val_class_iou[i] for i in range(val_class_iou.shape[0])},count)
+            # writer.add_scalars('average IoU',{  'trn': trn_avg_iou,
+            #                                     'val': val_avg_iou},count)
                 
             
 
             # save a few reconstructions
             with torch.no_grad():
                 # two batches (sup & unsup)
-                n = min(8,xl.shape[0])
+                n = min(8,xu.shape[0])
 
-                x0l = xl[0:n]
+                x0l = xu[0:n]
                 x0u = xu[0:n]
-                t0l = tl[0:n]
+                t0l = tu[0:n]
                 
                 _s = torch.empty((n,*list(hvae.z0_shape[0][1:])))
-                _l = torch.empty((n,*list(hvae.z0_shape[1][1:])))
+                _pl = torch.empty((n,*list(hvae.z0_shape[1][1:])))
+                _il = torch.empty((n,*list(hvae.z0_shape[2][1:])))
                 
                 
-                z0_shape = (_s.shape,_l.shape)
+                z0_shape = (_s.shape,_pl.shape,_il.shape)
                 
                 z0l_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
                 z0l_smpl[0] = t0l
@@ -402,7 +389,10 @@ def main(args):
             
                 vis.clamp_(0.0, 1.0)
                 
-                vutils.save_image(vis, viz_path, normalize=True, nrow=2*n)
+                images = vutils.make_grid(vis,nrow=2*n)
+
+                writer.add_image(f'img-e{count}-a{val_acc*100:2.0f}', images, count)
+                vutils.save_image(images, viz_path + f'-img-e{count}-a{val_acc*100:2.0f}.png')
 
         count += 1
         if count == niterations:
