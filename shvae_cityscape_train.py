@@ -11,11 +11,13 @@ from easydict import EasyDict
 import itertools
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from svae.nets.hvae import HVAE
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import torchvision.utils as vutils
 from src.mixmatch.datasets import get_CityScape,CityScapeDataset
+from typing import Tuple
 
 
 def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_class:int=0):
@@ -35,7 +37,7 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_clas
             t0_smpl = tl.to(device, dtype=torch.float)
             enc_acts = mod.encoder_activations(x0_smpl)
             scores = enc_acts[0][0]
-            vloss += cel(scores, t0_smpl).mean().item()
+            vloss += cel(scores, t0_smpl).sum().item()
 
             acc_mask = torch.argmax(scores,dim=1) == torch.argmax(t0_smpl,dim=1)
             
@@ -49,6 +51,53 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_clas
     return vloss / numel, vacc / numel
 
 
+def evaluate_IoU(model:HVAE, dataloader:DataLoader,weights:torch.Tensor)->Tuple[float,torch.Tensor]:
+    """
+    Computes the average IoU for each class over the entire dataset.
+
+    :param model: A PyTorch model.
+    :param dataloader: A PyTorch dataloader.
+    :weights: weights for the class iou
+    :return: Tuple(average_iou,class_iou), float and tensor containg IoU on dataset for each class [C]
+    """
+    model.eval()
+    device = next(model.parameters()).device
+
+    # get output from model and through that obtain number of classes
+    num_classes = model.encoder_activations(next(iter(dataloader))[0].to(device))[0][0].shape[1]
+
+    # Initialize counters for each class
+    intersection_total = torch.zeros(num_classes, dtype=torch.float32, device=device)
+    union_total = torch.zeros(num_classes, dtype=torch.float32, device=device)
+
+    with torch.no_grad():
+        for idx,(inputs, targets) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+
+            # Compute predictions
+            outputs = model.encoder_activations(inputs)[0][0]
+            preds = torch.argmax(outputs, dim=1)
+            onehot_preds = F.one_hot(preds, num_classes=num_classes).permute(0, 3, 1, 2).float()
+
+
+            # Update the total intersection and union for each class
+            current_intersection = torch.sum(onehot_preds * targets, dim=(0, 2, 3))
+            intersection_total += current_intersection
+            union_total += torch.sum(onehot_preds + targets, dim=(0, 2, 3)) - current_intersection
+            
+            _avg_iou = torch.mean( (intersection_total + 1e-15) / (union_total + 1e-15) )
+            
+
+    # Compute the average IoU score for each class
+    class_iou = (intersection_total + 1e-15) / (union_total + 1e-15)
+    weighted_iou = class_iou * weights
+    n = torch.sum( (weighted_iou > 0) )
+    average_iou = torch.sum(weighted_iou) / n
+
+    # Return the results as a dictionary
+    return average_iou,class_iou
+
 def main(args):
     # general preparations
     if torch.cuda.is_available():
@@ -60,7 +109,7 @@ def main(args):
     
     logpath = 'logs/log-' + args['basename'] + args.call_prefix + '.txt'
     logpath = os.path.join(args.res_path, logpath)
-    hvae_path = 'models/' + args.basename + args.call_prefix + '.pt'
+    hvae_path = 'models/' + args.basename + args.call_prefix
     hvae_path = os.path.join(args.res_path, hvae_path)
     viz_path = 'images/' + args.basename + args.call_prefix + '-reconstructed.png'
     viz_path = os.path.join(args.res_path, viz_path)
@@ -121,7 +170,7 @@ def main(args):
 
     # learning preparation
     log_period = 1
-    save_period = 10
+    save_period = 1
     niterations = args.niterations
     count = 0
     start_acc = True
@@ -197,9 +246,10 @@ def main(args):
             unsup_dt = hvae.decoder_learn_step(xu)
 
             # =====  encoder learn step (unsupervised) ======
-            z0_shape = hvae.z0_shape
+
+            # E_pi(z) log_p log(q(z|x)) 
             for _ in range(1):
-                zu0_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
+                zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
                 zu0_smpl[0] = tu 
                 unsup_et = hvae.encoder_learn_step(zu0_smpl)
 
@@ -223,21 +273,24 @@ def main(args):
 
         if (count % log_period == log_period-1) or (count == niterations-1):
             jsdivs = hvae.sblock_list[0].jsdivs
-            print(f'jsdivs: {len(jsdivs)=},{jsdivs[0].shape},{jsdivs[1].shape}')
             cat_jsdivs =  jsdivs[0].mean().item()
             bin_jsdivs =  jsdivs[1].mean().item()
             strtoprint = 'epoch: '+ str(count + epoch)
-            strtoprint += ' sup_dt: {:.4}'.format(-sup_acc_dt)
-            strtoprint += ' sup_et: {:.4}'.format(-sup_acc_et)
-            strtoprint += ' unsup_dt: {:.4}'.format(-unsup_acc_dt)
-            strtoprint += ' unsup_et: {:.4}'.format(-unsup_acc_et)
-            strtoprint += ' cat_jsdivs: {:.4}'.format(cat_jsdivs)
-            strtoprint += ' bin_jsdivs: {:.4}'.format(bin_jsdivs)
+            strtoprint += ' sup_dt: {:.3}'.format(-sup_acc_dt)
+            strtoprint += ' sup_et: {:.3}'.format(-sup_acc_et)
+            strtoprint += ' unsup_dt: {:.3}'.format(-unsup_acc_dt)
+            strtoprint += ' unsup_et: {:.3}'.format(-unsup_acc_et)
+            strtoprint += ' cat_jsdivs: {:.3}'.format(cat_jsdivs)
+            strtoprint += ' bin_jsdivs: {:.3}'.format(bin_jsdivs)
             
-            #val_loss, val_acc = validate(hvae, test_dataloader, args.device)
-            #strtoprint += ' vloss: {:.4}'.format(val_loss)
-            #strtoprint += ' vacc: {:.4}'.format(val_acc)
+            val_loss, val_acc = validate(hvae, test_dataloader, args.device,ignore_class=0)
+            strtoprint += ' vloss: {:.4}'.format(val_loss)
+            strtoprint += ' vacc: {:.4}'.format(val_acc)
 
+            trn_loss, trn_acc = validate(hvae,labeled_dataloader,args.device,ignore_class=0)
+
+            strtoprint += ' tloss: {:.4}'.format(trn_loss)
+            strtoprint += ' tacc: {:.4}'.format(trn_acc)
             print(strtoprint, file=open(logpath, 'a'), flush=True)
 
 
@@ -248,9 +301,38 @@ def main(args):
                 'enc_optimizer_state_dict': hvae.enc_optimizer.state_dict(),
                 'dec_optimizer_state_dict': hvae.dec_optimizer.state_dict(),
                 'epoch': (count + epoch)}
-            torch.save(checkpoint, hvae_path)
+
+            h_path = hvae_path + f'-e{count}-a{100*trn_acc:2.0f}-m' + '.pt'
+            torch.save(checkpoint, h_path)
+
             # save encoder stats
             hvae.save_stats(stats_path)
+
+
+            # evalute IoU
+            w = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
+            trn_avg_iou,trn_class_iou = evaluate_IoU(hvae,labeled_dataloader, w)
+            val_avg_iou,val_class_iou = evaluate_IoU(hvae,test_dataloader, w)
+            tags = [CityScapeDataset.trainid2names[trainid] for trainid in range(trn_class_iou.shape[0])]
+            
+            strtoprint = 'Train: '
+            for tag,iou in zip(tags,trn_class_iou):
+                strtoprint +=  f'{tag} {iou*100:2.2f}|'
+            strtoprint += f'avg: {trn_avg_iou}'
+
+            strtoprint += '\nVal: '
+            for tag,iou in zip(tags,val_class_iou):
+                strtoprint += f'{tag} {iou*100:2.2f}|'
+            strtoprint += f'avg: {val_avg_iou}'
+
+            print(strtoprint, file=open(logpath, 'a'), flush=True)
+
+            
+
+        
+            
+                
+            
 
             # save a few reconstructions
             with torch.no_grad():
@@ -264,9 +346,10 @@ def main(args):
                 _s = torch.empty((n,*list(hvae.z0_shape[0][1:])))
                 _l = torch.empty((n,*list(hvae.z0_shape[1][1:])))
                 
+                
                 z0_shape = (_s.shape,_l.shape)
                 
-                z0l_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
+                z0l_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
                 z0l_smpl[0] = t0l
 
                 z0u_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
@@ -318,8 +401,6 @@ def main(args):
                 vis = torch.cat([xvis,segvis],dim=0)
             
                 vis.clamp_(0.0, 1.0)
-
-                #TODO: Take care about correct color visualization
                 
                 vutils.save_image(vis, viz_path, normalize=True, nrow=2*n)
 
