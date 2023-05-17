@@ -1,20 +1,27 @@
-%% 
-As the original implementation of MixMatch is written in \texttt{TensorFlow} and supports only the classification task only, we have re-implemented it in \texttt{PyTorch}
-and adapted it to the task of image segmentation. To verify the correctness of our implementation, we have run tests on CIFAR10 and compared our results with those reported in \cite{mixmatch-2019} and \cite{wide-resnet-2017}. The 
-comparison is shown in table \ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. Our results are based only on one run. 
-\todo{Report the sensitivity with hyperparameters. And the training of supervised model}
+\section{Mixmatch experiments}
+As the original implementation of MixMatch is written in \texttt{TensorFlow} we have re-implemented it in \texttt{PyTorch}. To verify the correctness of our implementation, we have run tests on CIFAR10 and compared our results with those reported in \cite{mixmatch-2019} and \cite{wide-resnet-2017}. The 
+comparison is shown in table \ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. 
+The specific hyperparameters of experiments are provided with the code and are available. We will not report them here.
+ 
 \begin{table}[htb]
     \begin{tabular}{|c|c|c|c|c|c|c|}
     \hline
-    Labels  & 250 & 500 & 1000 & 2000 & 4000 & All \\
+    Labels [\#]  & 250 & 500 & 1000 & 2000 & 4000 & All \\
     \hline
     Our code & $88.45$ & $89.58$& $91.83$ & $93.03$ & $93.50$ & $93.54$\\
     \hline
     Reported & $88.92\pm0.87$ & $90.35\pm0.94$ & $92.25\pm0.32$ & $92.97\pm0.15$ & $93.76\pm 0.06$ & $94.27$\\
+    \hline 
+    Baseline & $38.42$ & $45.77$ & $50.42$ & $60.21$ & $79.57$ &  \\
     \hline
     \end{tabular}
     \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset \cite{cifar10-2009}. Labels row corresponds to number of labeled points available during trainig. 
-    The last column ("All") corresponds to fully-supervised mode performance.}
+    The last column ("All") corresponds to fully-supervised mode performance.
+    We additionally provide the supervised row, which contains the supervised baseline trained on given number of images (Our code).
+    Our results are based only on one run.}
     \label{tab:mixmatch-cifar10}
 \end{table}
+
+We have 
+\todo{Write about the selection of the categories, etc.}
      
