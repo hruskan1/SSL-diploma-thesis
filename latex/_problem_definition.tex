@@ -1,0 +1,61 @@
+\section{Problem definition}
+Our main objective is to develop an effective approach for segmenting satellite imagery using a limited number of 
+accessible images and a smaller number of expert-provided annotations. The segmentation task involves assigning a 
+specific label to each pixel in the image, effectively partitioning the image into distinct regions based on their 
+semantic or visual characteristics.
+
+To achieve this objective, we will employ the U-Net architecture, which has been proven to be effective for image 
+segmentation \cite{unet-2015}. The U-Net architecture will serve as the core model for evaluating the proposed algorithms.
+We will use the plain accuracy and average ``intersection over union'' (IoU) metrics to evalute the 
+quality of the segmentation. The IoU measures the overlap between the predicted segmentation and the ground truth 
+segmentation, i.e:
+$$
+\mathrm{IoU} = \frac{\text{area of intersection}}{\text{area of union}},
+$$
+where the area of intersection corresponds to area where the model predicts the given class and the class in the ground truth segmentation.
+The area of union is then composed of area where either model predicts the class or the class is in the ground truth segmentation (or both).
+This can be rephrased to binary classification terminology as: 
+$$
+\mathrm{IoU} = \frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}+\mathrm{FN}},
+$$
+where the $\mathrm{TP}$ is \textit{true positive}, $\mathrm{FP}$ is \textit{false positive} and $\mathrm{FN}$ is \textit{false negative}. 
+The average IoU is then the simple average of the class IoU over all classes. 
+
+For the purpose of evaluating our methods and ensuring reproducible experiments, we will utilize the CityScape 
+dataset \cite{cityscapes-2016} as a benchmark. The CityScape dataset is mostly publicly available, with a fee-less 
+registration required to access. Although the dataset primarily consists of urban street scenes, we believe 
+that the complexity of segmentation in this dataset is comparable to, or even higher than, the challenges encountered in 
+land-coverage segmentation of forests.
+
+By leveraging the CityScape dataset and employing the U-Net architecture, we will be able to thoroughly evaluate our 
+methods and provide meaningful results that can be replicated and validated by others.
+
+The U-Net is a feed forward convolutional neural network (FF CNN) and its architecture consists of an encoder and a decoder part, which work together for image segmentation tasks
+(We would like to point out to the reader, that ``encoder'' and ``decoder'' are not reffering 
+to the VAE networks, but to inner structure of the U-Net architecture):
+\begin{itemize}
+    \item \textit{Encoder}: The encoder part of U-Net is responsible for downscaling the spatial resolution of the input
+     image while increasing its channel capacity. This is achieved through a series of convolutional blocks and downsampling. 
+     Each block typically consists of one or more convolutional layers, followed by non-linear activation
+    functions (such as ReLU) and batch normalization. The encoder acts as a feature extractor for image
+    classification tasks.
+    \item \textit{Decoder}: The decoder part of U-Net is connected to the encoder and performs the opposite operation
+     of the encoder. It upscales the feature maps while reducing the number of channels. This is done through 
+     a series of upsampling and convolutional blocks. Each block, similar to the encoder, consists of convolutional
+    layers, activation functions, and batch normalization 
+
+    \item \textit{Skip Connections}: U-Net incorporates skip connections between the encoder and decoder. These 
+    connections allow information from the encoder to be directly propagated to the corresponding decoder 
+    block at the same spatial resolution. By sharing this information, U-Net helps to preserve spatial details
+     and enables more precise segmentation.
+
+    \item \textit{Convolutional Blocks}: The convolutional blocks in U-Net typically consist of convolutional layers, activation 
+    functions, and batch normalization. The number of convolutional layers in each block can vary but is usually up to 2 or 3. 
+    These blocks are responsible for learning and extracting features from the input data. Their parameters are typically chossen such
+    that they retain spatial resolution
+
+    \item \textit{Spatial Resolution}: U-Net can maintain the spatial resolution of the input or perform downsampling and upsampling 
+    operations at specific layers, depending on the chosen parameters. This flexibility allows U-Net to
+     capture both local and global information.
+\end{itemize}
+Overall, the U-Net architecture is designed to effectively capture contextual information and spatial details for image segmentation tasks. It has been widely used and has shown promising results in various applications.

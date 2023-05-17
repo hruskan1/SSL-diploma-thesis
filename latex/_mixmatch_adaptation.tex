@@ -13,30 +13,51 @@ and then apply the original augmentation to assign the averaged predictions to e
 while averaging because a part of the original image may be cropped while keeping the spatial dimensions. Thus, the segmentation prediction is 
 only valid on the uncropped region of the image.
 
-Finally, the MixUp procedure also requires adaptation so that cropped images are correctly mixed without propagating the empty parts 
-further down the stream and keeping the output of the mixmatch ($\mathbf{x}^\prime,\mathbf{y}^\prime)$ closer to the first argument $(\mathbf{x}_1,\mathbf{y}_1)$.  
+Finally, the MixUp procedure requires adaptation to ensure that cropped images are correctly mixed without propagating
+the empty parts further down the stream while keeping the output of MixMatch ($\mathbf{x}^\prime,\mathbf{p}^\prime$) 
+closer to the first argument $(\mathbf{x}^1,\mathbf{p}^1)$.
 
-The proposed change are incorporated into algorithm \ref{alg:mixmatch-seg}. In line (3), we apply augmentation to both $\mathbf{x}$ and $\mathbf{p}$.
+The proposed changes have been incorporated into algorithm \ref{alg:mixmatch-seg} and are commented there. In MixUp, we 
+ensure that the cropped out parts of the images are suppressed so that they do not influence the MixUp process. 
+Additionally, we aim to keep the output image closer to the first argument. The modified MixUp procedure is as follows
+\begin{align}
+  &\lambda \sim \text{Beta}(\alpha,\alpha) \notag\\
+  &\lambda^\prime = \max(\lambda,1-\lambda) \notag\\
+  &\_\lambda^\prime_{i,j} =\begin{cases}
+    \lambda^\prime & \text{if } \_x^{1}_{i,j} \text{ and }  \_x^{2}_{i,j} \text{ are valid}\\
+    1 & \text{if }  \_x^{1}_{i,j} \text{ is not valid or }  \_x^{2}_{i,j} \text{ is not valid}\\
+  \end{cases} \label{eq:mixup_alternated}\\
+  &\_x^\prime = \_\lambda^\prime \odot \_x^1 + (\_1-\_\lambda^\prime) \odot \_x^2 \notag\\
+  &p^\prime = \_\lambda^\prime \odot \_p^1 + (\_1-\_\lambda^\prime) \odot \_p^2. \notag
+\end{align}
+Here, $\odot$ represents element-wise multiplication, and the upper index is used for indexing. The alternation
+ of $\_{\lambda}^\prime$ ignores the invalid parts of the second input and retains the original picture 
+ with its invalid parts. This modification aims to keep the output of the MixMatch procedure close to the input, as 
+ we have inputs of uneven quality, i.e., labeled and unlabeled data.
 
-\todo{Add comments on change and rewrite the algorithm}
-\begin{algorithm}[H]
+\begin{algorithm}[t]
     \caption{MixMatch adapted for segmentation}
     \label{alg:mixmatch-seg}
-    \begin{algorithmic}[2]
-      \State \textbf{Input:} Batch of labeled examples and their one-hot labels $X = ((x_i, p_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (u_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
+    \begin{algorithmic}[1]
+      \State \textbf{Input:} Batch of labeled examples and their segmentation masks $X = ((\_{x}_i, \_{p}_i);\,i \in (1, \dots, n))$, batch of unlabeled examples $U = (\_{u}_i; i \in (1, \dots, n))$, sharpening temperature $T$, number of augmentations $K$, Beta distribution parameter $\alpha$ for MixUp.
       \For{$i = 1$ \textbf{to} $n$}
-       \State $\bar{x}_i = \text{Augment}(x_i)$ \Comment{Apply data augmentation to $x_i$}
+       \State $\bar{\_x}_i,\bar{\_p}_i = \text{Augment}(\_x_i,\_p_i)$ \Comment{We apply augmentation both to $\_x_i$ and $\_p_i$}
        \For{$k = 1$ \textbf{to} $K$}
-        \State $\bar{u}_{i,k} = \text{Augment}(u_i)$ \Comment{Apply $k$th round of data augmentation to $u_b$}
+        \State $\bar{\_u}_{i,k} = \text{Augment}_k(\_u_i)$ 
+        \State $\bar{\_q}_{i,k} = p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$
        \EndFor
-       \State $\bar{q}_i = \frac{1}{K} \sum_{k=1}^{K} p_{\text{model}}(y|\bar{u}_{i,k}; \theta)$ \Comment{Compute average predictions across all augmentations of $u_i$}
-       \State $q_i = \text{Sharpen}(\bar{q}_i, T)$ \Comment{Apply temperature sharpening to the average prediction}
+       \State $\tilde{\_q}_{i,k} = \text{Inverse Augment}_k(\bar{\_q}_{i,k})$ \Comment{Align prediction with original image}
+       \State $\bar{\_q}_i = \frac{1}{K} \sum_{k=1}^{K} \tilde{\_q}_{i,k} $
+       \State $\_q_i = \text{Sharpen}(\bar{\_q}_i, T)$ 
+       \For{$k = 1$ \textbf{to} $K$}
+        \State $\_q_{i,k} = \text{Augment}_k(\_q_i)$ \Comment{Rematch the average prediction to augmented image}
+       \EndFor
       \EndFor
-      \State $X^\star = ((\bar{x}_i, p_i); i \in (1, \dots, n))$ \Comment{Augmented labeled examples and their labels}
-      \State $U^\star = ((\bar{u}_{i,k}, q_i); i \in (1, \dots, n), k \in (1, \dots, K))$ \Comment{Augmented unlabeled examples, guessed labels}
-      \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ \Comment{Combine and shuffle labeled and unlabeled data}
-      \State $X^\prime = (\text{MixUp}(\bar{x}_i, w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp to labeled data and entries from $W$}
-      \State $U^\prime = (\text{MixUp}(\bar{u}_{i}, w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ \Comment{Apply MixUp to unlabeled data and the rest of $W$}
+      \State $X^\star = ((\bar{\_x}_i, \_p_i); i \in (1, \dots, n))$ 
+      \State $U^\star = ((\bar{\_u}_{i,k}, \_q_{i,k}); i \in (1, \dots, n), k \in (1, \dots, K))$ 
+      \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ 
+      \State $X^\prime = (\text{MixUp}(\bar{\_x}_i, \_w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp described in \ref{eq:mixup_alternated}}
+      \State $U^\prime = (\text{MixUp}(\bar{\_u}_{i}, \_w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ 
       \State \textbf{return} $X^\prime, U^\prime$
       
     \end{algorithmic}

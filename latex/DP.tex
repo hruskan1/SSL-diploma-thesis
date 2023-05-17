@@ -28,8 +28,8 @@
 	%subfieldofstudy-english = {Mathematical Modelling},
 	fieldofstudy-czech = {Kybernetika a robotika},
 	%subfieldofstudy-czech = {Matematické modelování},
-	keywords-czech = {TODO},
-	keywords-english = {Segmentation, SSL, VAE, LVAE, sVAE, Mixmatch, CityScape},
+	keywords-czech = {Segmentace obrazu, SSL,HVAE,LVAE,symmetric learning, MixMatch,CityScape},
+	keywords-english = {Image segmentation, SSL, VAE,HVAE, LVAE, symetric learning, MixMatch, CityScape},
 	day = 26,
 	month = 5,
 	year = 2023,
@@ -92,7 +92,18 @@
 
 % Acknowledgements / Podekovani
 \begin{thanks}
-\todo{}
+	I would like to express my deepest gratitude to Doc. Boris Flach, Dr. rer. nat. habil., without 
+	whom this endeavor would not have been possible. I am immensely thankful to him for the professional 
+	guidance he provided me with, as well as his kind words and moral support during the challenging times. 
+	I would also like to extend my heartfelt thanks to all the teachers, lecturers, and individuals who generously
+	 dedicated their time, effort, and passion to teach me new things and propel me forward. 
+
+	 I am also grateful for the access to the computational infrastructure of the OP VVV funded project CZ.$02.1.01/0.0/0.0/16\_019/0000765$. 
+	 The support provided by the "Research Center for Informatics" through this project is sincerely acknowledged and appreciated.
+
+	 In addition, I would like to express my gratitude to my family, partner, and close friends who have been unwavering 
+	 in their support throughout my studies and have played a significant role in helping me complete this thesis. Their
+	encouragement and assistance have been invaluable to me, and I am truly grateful for their presence in my life.
 \end{thanks}
 
 % Declaration / Prohlaseni
@@ -204,13 +215,7 @@ In Prague, 26th May, 2023
 \definecolor{myRed}{HTML}{FF6666}
 
 % Make sumint symbol
-\DeclareMathOperator*{\SumInt}{%
-\mathchoice%
-  {\ooalign{$\displaystyle\sum$\cr\hidewidth$\displaystyle\int$\hidewidth\cr}}
-  {\ooalign{\raisebox{.14\height}{\scalebox{.7}{$\textstyle\sum$}}\cr\hidewidth$\textstyle\int$\hidewidth\cr}}
-  {\ooalign{\raisebox{.2\height}{\scalebox{.6}{$\scriptstyle\sum$}}\cr$\scriptstyle\int$\cr}}
-  {\ooalign{\raisebox{.2\height}{\scalebox{.6}{$\scriptstyle\sum$}}\cr$\scriptstyle\int$\cr}}
-}
+
 
 \DeclareRobustCommand{\bbone}{\text{\usefont{U}{bbold}{m}{n}1}}
 
@@ -225,10 +230,14 @@ In Prague, 26th May, 2023
 
 \chapter{State of the art of SSL}
 \label{motivation-theory}
-In this chapter, we will provide a brief introduction to semi-supervised learning in section \ref{sec:ssl-introduction}, and classify its 
-algorithms into several groups based on the ideas and paradigms they employ. Additionally, we will provide a more detailed overview of 
-MixMatch and Variational Autoencoders in sections \ref{sec:mix-match} and \ref{sec:vae}, with a particular focus on Variational Autoencoders
-as they are cornerstone of the novel approach proposed by \cite{}, which is described in \ref{sec:symmetrical-learning}
+In this chapter, we will present a brief introduction to semi-supervised learning in section \ref{sec:ssl-introduction}. 
+We will discuss the key concepts and principles underlying semi-supervised learning and its significance in machine learning. 
+Furthermore, we will classify the algorithms used in semi-supervised learning into various groups based on the different 
+ideas and paradigms they employ.
+
+Additionally, we will provide a more detailed overview of MixMatch and Variational Autoencoders in sections \ref{sec:mix-match} and \ref{sec:vae}, with
+a particular focus on Variational Autoencoders and their variants as they are cornerstone of the novel approach proposed by \cite{sym-learning-2023}, which 
+we finally introduce section \ref{sec:symmetrical-learning}.
 \todo{Add reference to unpublished paper}
 
 % SotA SSL
@@ -242,20 +251,20 @@ as they are cornerstone of the novel approach proposed by \cite{}, which is desc
 
 \chapter{Methods}
 \label{methods}
+% Metics, dataset, task etc.
+\input{_problem_definition}
+% Mixmatch adaptation
 \input{_mixmatch_adaptation}
-\chapter{Experiments}
-\label{experiments}
+% HVAE design and choice 
+\input{_sym_learning_adaptation}
 
-\section{Segmentation}
-\todo{Description of the dataset and the segmentation task,metrics etc}
 
-\todo{Description of our algorithm}
+
+\chapter{Experiments \& Results} 
+\input{_mixmatch_experiments}
 \section{Mixmatch}
-\todo{Description of the mixmatch model}
-\todo{Implementation details of the two models}
 
 
-\chapter{Results} 
 \label{results}
 \todo{10-15 pages}
 \todo{Description of the experimental setup}
@@ -263,7 +272,6 @@ as they are cornerstone of the novel approach proposed by \cite{}, which is desc
 \todo{Comparison of the results of the ladder autovariational encoder with symmetrical learning and mixmatch models}
 \todo{Discussion of the results and analysis of the findings}
 \section{MixMatch}
-\input{_mixmatch_experiments}
 
 
 \chapter{Conclusion}
