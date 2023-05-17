@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description='Supervised CIFAR10 arguments')
     parser.add_argument('-c','--current_count',default=0,type=int,help="Current counter of images. Total length of training is always given by 'e - c' ")
-    parser.add_argument('-e','--epochs', default = 400, type=int, help='Number of epochs to train')
+    parser.add_argument('-e','--epochs', default = 500, type=int, help='Number of epochs to train')
     parser.add_argument('--WRN_depth', default = 28, type=int, help='Depth of wide resnet')
     parser.add_argument('--WRN_factor', default = 2, type=int, help='Widen factor for resnet')
     parser.add_argument('--WRN_dropout', default = 0.3, type=int, help='dropout rate for resnet')
@@ -40,15 +40,17 @@ if __name__ == '__main__':
     parser.add_argument('-lr','--learning_rate',default=None,type=utils._float,help='learning rate of Adam Optimizer')
     parser.add_argument('--lr_scheduler',default=True,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
-    parser.add_argument('--device',default=1, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
-    parser.add_argument('--dataset_path',default='./CIFAR10', type=str, help='Root directory for dataset') 
-    parser.add_argument('--out', '--output_directory', default=f'./sl_cifar10_run_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
+    parser.add_argument('--device',default=0, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
+    parser.add_argument('--dataset_path',default='~/CIFAR10', type=str, help='Root directory for dataset') 
+    parser.add_argument('--out', '--output_directory', default=f'../sl_cifar10_run_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
     parser.add_argument('--resume', default=None, type=utils._str, help='Path to model which is to be used to resume training')
     parser.add_argument('--from_yml', default=None, type=utils._str, help ='Path to file where the arguments are specified (as a dictionary)')
     parser.add_argument('--log_period', default=1, type=int, help = 'Epoch period for logging the prcoess')
     parser.add_argument('--save_period',default=0,type=int, help = 'Epoch period for saving the model,the model with best val acc is implicitly saved')
     parser.add_argument('--debug',default=False,type=bool, help = 'Enable reporting accuracy and loss on unlabeled data (if data actually have labels')
     parser.add_argument('--seed',default=0,type=int, help ='Manual seed')
+    parser.add_argument('-nt','--n_total',default=15000,type=int,help="number of images available (maximum is what the dataset contains)")
+    
 
     ### Parse the command-line arguments ###
     parsed_args = parser.parse_args()
@@ -112,6 +114,10 @@ if __name__ == '__main__':
 
     train_dataset = tv.datasets.CIFAR10(args.dataset_path, train = True, transform = _t, download = True)
     test_dataset = tv.datasets.CIFAR10(args.dataset_path, train = False, transform = _t, download = True)
+    
+    if args.n_total < len(train_dataset):
+        indicies = torch.randperm(len(train_dataset))[:args.n_total]
+        train_dataset = data.Subset(train_dataset,indicies)
 
     # Taken from here https://stackoverflow.com/a/58748125/1983544
     import os
