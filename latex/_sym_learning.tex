@@ -1,0 +1,96 @@
+\section{Symetric leaning in VAE}
+The authors of \cite{sym-learning-2023} present an alternative approach to maximizing the evidence lower bound (ELBO)
+in Variational Autoencoders (VAEs). The traditional ELBO optimization imposes restrictions on the architectures of 
+VAEs, as it requires the latent distributions to be in closed form while only providing data samples. This asymmetry in
+the ELBO formulation contributes to the issue of blurriness in generated images (discussed in \ref{item:blurriness-of-img}),
+which has been partially addressed by methods like normalizing flows \cite{nf-2015} and LVAE \cite{lvae-2016}.
+
+The proposed symmetric learning approach relaxes these restrictions and enables VAE learning when both the data and 
+latent distributions are accessible only through sampling. This approach is also applicable to more complex models, such 
+as Hierarchical VAEs (HVAEs), and leads to simpler algorithms for training. The conducted experiments show that models obtained 
+from this training approach are comparable to those achieved through ELBO learning.
+
+In standard VAE framework, we train the encoder  and decoder through maximizing the ELBO objective, i.e.
+given the true underlying distribuion of data $pi(\boldsymbol{x}), \boldsymbol{x} \in \mathcal{X}$ and underlaying
+the distribuion in latent variable $\pi(\boldsymbol{z}), \boldsymbol{z} \in \mathcal{Z}$, we maximize ELBO:
+$$
+\mathcal{L}_{B} = \mathrm{ELBO} = \EX_{\pi(\boldsymbol{x})} \bigl[ \EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})} 
+\log p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z}) - \mathrm{KL} (q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x}) || 
+\pi(\boldsymbol{z})) \bigr]
+$$
+in order to obtain the pair of encoder $q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})$ and decoder
+$p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z})$. To keep the computation of KL divergence tractable, it is necessary to define
+the model distribuion $p(\boldsymbol{z})$ in closed form. This is issue in case the $\pi(\boldsymbol{z})$ is complex and we cannot model 
+it by a simple distribuion family. Another necessity is that the $q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})$ allow the 
+\textit{reparametrization trick}. 
+
+The authors propose a new algotihm for learning the encoder $q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})$ and 
+decoder $p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z})$ in case of \textit{semi-supervised} and 
+\textit{unsupervised} learning:
+\begin{itemize}
+    \item \textit{Semi-supervised learning}: We can draw i.i.d samples from underlaying unknown distribuions $(\boldsymbol{x},\boldsymbol{z})  \sim \pi(\boldsymbol{x},\boldsymbol{z})$
+    and its marginals: $\boldsymbol{x} \sim \pi(\boldsymbol{x})$, $\boldsymbol{z} \sim \pi(\boldsymbol{z})$.
+    \item \textit{Unsupervised learning}: We can draw only $\boldsymbol{x} \sim \pi(\boldsymbol{x})$. The latent space is modeled
+    through the choice of model $p(\boldsymbol{z})$.
+\end{itemize}
+
+The encoder and decoder belong to the exponential family and allow for tractable computation of log density and its derivatives.
+\begin{align*}
+    p_{\boldsymbol{\theta}}(\boldsymbol{x} | \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Theta}(\boldsymbol{x}) \cdot \boldsymbol{f}_{\boldsymbol{\theta}}(\boldsymbol{z}) \bigr] \\
+    p_{\boldsymbol{\phi}}(\boldsymbol{x} | \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Phi}(\boldsymbol{z}) \cdot \boldsymbol{g}_{\boldsymbol{\phi}}(\boldsymbol{x}) \bigr]
+\end{align*} 
+where $\boldsymbol{\Theta}(\boldsymbol{x}) \in \mathbb{R}^n$ and $ \boldsymbol{\Phi}(\boldsymbol{z}) \in \mathbb{R}^m$ are sufficient
+statistics. The variables $\boldsymbol{x}$ and $\boldsymbol{z}$ can be either discrete or continous depending on the choice of exponential family (e.g. Bernoulli or Gaussian). 
+
+The authors provide new optimization function, which is motivated through finding a \textit{Nash equilibrium} for two-player game 
+where players' strategies are represented through the encoder and decoder distributions respectively and utility function is
+a sum of the player expectation w.r.t his strategy \cite{sym-learning-2023}. 
+The objectives are 
+\begin{align*}
+    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x},\boldsymbol{z})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr]+
+                    \EX_{\pi(\boldsymbol{z})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{z})\bigr] +
+                    \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} |\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr]\\
+    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x},\boldsymbol{z})}\bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr] + 
+    \EX_{\pi(\boldsymbol{z})}\EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x} |\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr]
+\end{align*}
+for semi-supervised training and 
+\begin{align}
+    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} |\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr] \label{eq:unsup_objective_theta}\\
+    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr] \label{eq:unsup_objective_phi}
+\end{align}
+for unsupervised training with following interpretation: We maximize the decoder likelihood and encoder likelihood of the training data at same time. The mixed 
+terms reinforce the encoder decoder consistency. This corresponds to maximization of the ELBO objective, since we can 
+rewrite the ELBO into:
+$$
+\EX_{\pi(\boldsymbol{x})} \bigl[ 
+\log p_{\boldsymbol{\theta}}(\boldsymbol{x}) - \mathrm{KL} (q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x}) || 
+p_{\boldsymbol{\theta}}(\boldsymbol{z} \mid \boldsymbol{x})) \bigr]
+$$
+After inspecting the terms, we see that the ELBO goal is same as above: To maximize the data likelihood and reinforce the consistency of the decoder-encoder pair 
+simultaneously. 
+\subsection{Hiearchical VAEs}
+The algorithm can be also adopted for hiearchical VAE. Let us assume that we have HVAE with $M+1$ layers, i.e. $\boldsymbol{z}$ consists of 
+$\boldsymbol{z}_0,\boldsymbol{z}_1,\dots,\boldsymbol{z}_m$, where the encoder models corresponds to the LVAE and we can sample $\boldsymbol{x} \sim \pi(\boldsymbol{x})$.
+The encoder and decoder factorizes (the ordering is in reverse to the one in eq. \ref{eq:hvae_prior} and eq. \ref{eq:hvae_posterior}):
+\begin{align*}
+    p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})&=p_{\boldsymbol{\theta}}(\boldsymbol{z}_{0}) \prod_{t=1}^{M}\bigl[p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t}) \bigr]  p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z})  \\
+    q_{\boldsymbol{\phi}}(\boldsymbol{x},\boldsymbol{z}) &=\pi(\boldsymbol{x})q_{\boldsymbol{\phi}}(\boldsymbol{z}_{0}\mid\boldsymbol{x}) \prod_{t=1}^{M}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t},\boldsymbol{x}) 
+\end{align*}
+where the encoder shares the parameter as described in \ref{eq:lvae_encoder}. The objectives remain as in unsupervised case (eq. \ref{eq:unsup_objective_theta} and eq. \ref{eq:unsup_objective_phi}).
+The terms can be decomposed due to the factorization of decoder and encoder and are thus tractable.  If there is 
+acess to the samples $(\boldsymbol{x},\boldsymbol{z}_0) \sim \pi(\boldsymbol{x},\boldsymbol{z}_0)$,e.g. segmentation task with target masks, we can utilize them 
+by addding terms
+$$
+\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)}\EX_{q(\boldsymbol{z}_{>0} |\boldsymbol{z},\boldsymbol{x})} \log p(\boldsymbol{x},\boldsymbol{z}) 
+\quad\text{and}\quad
+\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)} \log q(\boldsymbol{z}_0|\boldsymbol{x})
+$$
+to the decoder and encoder respectively. 
+
+
+
+
+
+
+
+

@@ -472,7 +472,7 @@ As every method, the vanilla VAEs have also its weak points, which were identifi
     where $p_{\mathcal{D}}(\mathbf{x})$ represents the true underlaying distribuion of data (however only represented by the samples).
     This is due to the direction of the KL divergence: The generative model is only slightly penalized when putting probability mass on values 
     of $(\boldsymbol{x},\boldsymbol{z})$ with no support under $q_{\mathbf{\phi},\mathcal{D}}$\cite{intro-vae-2019}. This corresponds to forward KL
-    divergence visualized in (a) in \ref{fig:forward-reverse}.
+    divergence visualized in (a) in \ref{fig:forward-reverse}. \label{item:blurriness-of-img}
 
     \item \textbf{Posterior collapse}: It has been observed, that part of the latent variable can collapsese during the training
     and become inactive \cite{lvae-2016,iaf-2016,bowmann-2016}, i.e. the optimization gets stuck in an undesirable stable
@@ -493,12 +493,12 @@ As every method, the vanilla VAEs have also its weak points, which were identifi
 A hierarchical variational autoencoder (HVAE) is a generalization of the VAE that introduces multiple layers of latent variables.
 The first proposal to address the limitations of the vanilla VAE was the use of auxiliary latent variables, as introduced in \cite{aux-var-2016},
 which were followed up by truly hiearchical structure in \cite{lvae-2016} and \cite{iaf-2016}. Standard vanilla VAE contains only one layer
-of latent variables (fig. \ref{fig:vanilla-vae}) in contrast to HVAE, such as markov HVAE, where each latent variable depends only on previous one
+of latent variables (fig. \ref{fig:vanilla-vae}) in contrast to HVAE, where each latent variable depends only on previous one
 (fig. \ref{fig:mhvae}). The HVAE can be represented as (almost) any directed acyclic graph and can be represented as DLVM or Bayesian Network with 
 following joint and posterior distribuions:
 \begin{align}
-    p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z}_{1:T})&=p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z}_1) \prod_{t=1}^{T-1}\bigl[p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{>t}) \bigr]  p_{\boldsymbol{\theta}}(\boldsymbol{z}_{T}) \label{eq:hvae_prior} \\
-    q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1:T}\mid\boldsymbol{x}) &= q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1}\mid\boldsymbol{x}) \prod_{t=2}^{T}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t}) \label{eq:hvae_posterior}
+    p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z}_{1:T})&=p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z}_{1:T}) \prod_{t=1}^{T-1}\bigl[p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{>t}) \bigr]  p_{\boldsymbol{\theta}}(\boldsymbol{z}_{T}) \label{eq:hvae_prior} \\
+    q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1:T}\mid\boldsymbol{x}) &= q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1}\mid\boldsymbol{x}) \prod_{t=2}^{T}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid \boldsymbol{x},\boldsymbol{z}_{<t}) \label{eq:hvae_posterior}
 \end{align}
 where $\boldsymbol{z}_{<t} = \boldsymbol{z}_{1:t-1}$ represents the sequence of all latent variables $\boldsymbol{z}_1$ up to $\boldsymbol{z}_t$. 
 We can derive the ELBO objective for the HVAE: 
@@ -512,7 +512,7 @@ We can plug the joint and posterior distribuions from eq. \ref{eq:hvae_prior} an
 
 \begin{align}
     \mathrm{ELBO}(q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1:T}\mid\boldsymbol{x}))  &=
-    \mathbb{E}_{q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1:T}\mid\boldsymbol{x})}\left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{z}_T)p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z}_1)\prod_{t=1}^{T-1}p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{>t})}{q_{\boldsymbol{\phi}}(\boldsymbol{z}_1\mid\boldsymbol{x})\prod_{t=2}^{T}q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t})}\right]
+    \mathbb{E}_{q_{\boldsymbol{\phi}}(\boldsymbol{z}_{1:T}\mid\boldsymbol{x})}\left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{z}_T)p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z}_{1:T})\prod_{t=1}^{T-1}p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{>t})}{q_{\boldsymbol{\phi}}(\boldsymbol{z}_1\mid\boldsymbol{x})\prod_{t=2}^{T}q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{x},\boldsymbol{z}_{<t})}\right]
 \end{align}
 
 \begin{figure}[]
@@ -573,15 +573,3 @@ where $\tilde{q}_{\boldsymbol{\phi}}(\boldsymbol{z}_i \mid \boldsymbol{x})$ repr
 \tilde{q}_{\boldsymbol{\phi}}(\boldsymbol{z}_i \mid \boldsymbol{x}) &= \tilde{q}_{\boldsymbol{\phi}}(\boldsymbol{z}_i \mid \boldsymbol{d}_i )
 \end{align*}
 The multiplication in eq. \ref{eq:lvae_encoder} is a choice of authors, but is favorable in case the distribuions are members of exponential family (see \ref{sec:exp_family})
-
-
-
-
-
-
-
-
-
-
-
-

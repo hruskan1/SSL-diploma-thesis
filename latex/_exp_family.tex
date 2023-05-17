@@ -28,7 +28,7 @@ distribuions so they correspond to eq. \ref{eq:exp-fam} in table \ref{tab:exp-fa
   \label{tab:exp-fam-reparametrization}
   \end{table}
   
-\subsection*{Cumulant function}
+\subsection{Cumulant function}
 Because the $p(\boldsymbol{x}\mid \boldsymbol{\eta})$ is a probability density, the integral of it equalls one:
 \begin{align}
     \int_{\boldsymbol{x}} p(\boldsymbol{x}\mid \boldsymbol{\eta}) \d \boldsymbol{x} &= \int_{\boldsymbol{x}} h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \d\boldsymbol{x} \notag  \\
@@ -57,7 +57,7 @@ And then we also have a theorem about the convexity of the exponential family \c
 The natural parameter space $\mathcal{N}$ is convex (as a set) and the cumulant function $A(\boldsymbol{\eta})$ is convex (as a function). 
 If the family is minimal then $A(\boldsymbol{\eta})$ is strictly convex.
 \end{theorem}
-\subsection*{Exponential family and conjugate priors}
+\subsection{Exponential family and conjugate priors}
 Within bayes network, we assume that the prior $\boldsymbol{\theta}$ is a random variable (r.v.) and thus we need to specify its \textit{prior distribution} $p(\boldsymbol{\theta})$.
 We can obtain the \textit{posterior distribuion} via Bayes formula:
 \begin{equation}
@@ -94,7 +94,7 @@ which is in the form of exponential family. The update rules are
 \boldsymbol{\tau} &\mapsto \boldsymbol{\tau}  +\sum_{n=1}^N \boldsymbol{T}(\boldsymbol{x}) \\
 n_0 &\mapsto n_0 + N 
 \end{align*}
-\subsection*{Kullback Leibler divergence}
+\subsection{Kullback Leibler divergence}
 The KL divergence for two distribuions $p$ and $q$ is defined as:
 $$
 \mathrm{KL}(p(\boldsymbol{x}) || q(\boldsymbol{x})) = \int_x p(\boldsymbol{x}) \log \frac{p(\boldsymbol{x})}{q(\boldsymbol{x})} \d \boldsymbol{x} 
@@ -124,4 +124,4 @@ If we compute the KL divergence of the empirical data ditribution and model $p(\
 $$
 \mathrm{KL}(p_{\mathcal{D}} || p(\boldsymbol{x} | \boldsymbol{\theta})) = \sum_{\boldsymbol{x}} p_{\mathcal{D}} \frac{p_{\mathcal{D}}}{p(\boldsymbol{x} | \boldsymbol{\theta})} = \EX_{p_{\mathcal{D}}} \log p_{\mathcal{D}} - \frac{1}{N} l(\boldsymbol{\theta} \mid \mathcal{D})
 $$ 
-the empirical data distribution is not depending on the model parameters $\boldsymbol{\theta}$ and thus by minimizing the KL divergence to the empirical distribuion, we maximize the (log) likelihood. 
+the empirical data distribution is not depending on the model parameters $\boldsymbol{\theta}$ and thus \textit{by minimizing the KL divergence to the empirical distribuion, we maximize the (log) likelihood (of data under the model)}. 
