@@ -123,11 +123,10 @@ if __name__ == '__main__':
         train_dataset = tv.datasets.CIFAR10(args.dataset_path, train = True, transform = _t, download = False)
         test_dataset = tv.datasets.CIFAR10(args.dataset_path, train = False, transform = _t, download = False)
 
-        # Taken from here https://stackoverflow.com/a/58748125/1983544
-        import os
-        num_workers = os.cpu_count() 
-        if 'sched_getaffinity' in dir(os):
-            num_workers = len(os.sched_getaffinity(0)) - 2
+    # Taken from here https://stackoverflow.com/a/58748125/1983544
+    num_workers = os.cpu_count() 
+    if 'sched_getaffinity' in dir(os):
+        num_workers = len(os.sched_getaffinity(0)) - 2
 
         train_dataloader = data.DataLoader(train_dataset,args.batch_size,shuffle=True,num_workers=num_workers,drop_last=False)
         test_dataloader =  data.DataLoader(test_dataset,args.batch_size,shuffle=False,num_workers=num_workers,drop_last=False)

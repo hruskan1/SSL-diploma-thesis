@@ -143,7 +143,7 @@ def main(args):
     print('# Starting', file=open(logpath, 'w'), flush=True)
 
     # parse weights to cfg dict 
-    args.blocks[0].class_weights = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
+    args.blocks[0][0].class_weights = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
     # model
     hvae = HVAE(**args).to(args.device)
 
@@ -411,7 +411,6 @@ def main(args):
                 
                 images = vutils.make_grid(vis,nrow=2*n)
 
-                img_name = 
                 writer.add_image(f'img-e{count}-a{val_acc*100:2.0f}', images, count)
                 vutils.save_image(images, os.path.join(viz_path, f'-img-e{count}-a{val_acc*100:2.0f}.png'))
 

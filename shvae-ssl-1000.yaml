@@ -1,9 +1,9 @@
 # Hierarchical VAE with symmetric learning for CityScape
 # images: Bernoulli, latent: Bernoulli/Categorical
 
-blocks: [{type: pcustom, cho : 108,
-          pc_block: {type:  pc, cho: 8},
-          bin_block: {type: pb, cho: 100}},
+blocks: [{type: pcustom, cho : 208,
+          blocks: [{type: pc, cho: 8},
+                   {type: pb, cho: 100}]},
 # size 8, chan 64
          {type: sb, chi: 8, cho: 64, in_size: 8, out_size: 8, d_skip: False, e_skip: False, activ: relu,
           # DECODER is large conv net taking cat and binary together (chi = cho)
