@@ -1,0 +1,60 @@
+# Hierarchical VAE with symmetric learning for CIFAR10
+# images: Gauss, latent: Bernoulli/Categorical
+# semi-supervised learning
+
+blocks: [{type: pcb, cho: 256, clnum: 10},
+# size 1, chan 256
+         {type: sb, chi: 256, cho: 512, in_size: 1, out_size: 1, d_skip: True, e_skip: True, activ: sigmoid,
+          dec: [{type: 'c', chi: 256, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+                
+          enc: [{type: 'c', chi: 512, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          dec_skip: [{type: 'c', chi: 256, cho: 512, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          enc_skip: [{type: 'c', chi: 512, cho: 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]},
+# size 1, chan 512
+         {type: sg, chi: 512, cho: 3, in_size: 1, out_size: 32, d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 3, cho: 32, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 32, cho: 32, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 32, cho: 64, k_size: 2, num_l: 1, stride: 2, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 64, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 64, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 64, cho: 128, k_size: 2, num_l: 1, stride: 2, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 'c', chi: 256, cho: 512, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+                
+          dec: [{type: 't', chi: 512, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 256, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 128, cho: 64, k_size: 2, num_l: 1, stride: 2, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 64, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 64, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 64, cho: 32, k_size: 2, num_l: 1, stride: 2, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 32, cho: 32, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: True},
+                {type: 't', chi: 32, cho: 6, k_size: 3, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          dec_skip: [{type: 't', chi: 512, cho: 6, k_size: 32, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          enc_skip: [{type: 'c', chi: 3, cho: 512, k_size: 32, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]}]
+# size 28, chan 1
+
+lparm:   {enc_stepsize: 1.e-4, dec_stepsize: 1.e-4, supervised: True, parallel: False}
+batch_size:         256
+batch_workers:      8
+niterations:        10000
+call_prefix:        '2'
+load_prefix:        
+basename:           cifar-shbvae-
+data_path:          /mnt/personal/flachbor/versuche/data
+res_path:           /mnt/personal/flachbor/versuche/sym_vae/cifar/semisup
+# data_path:          /home/flachbor/versuche/data
+# res_path:           /home/flachbor/versuche/sym_vae/cifar/semisup
+
+generate:
+    folder:         images_2
+    batch_size:     256
+    b_num:          20
+    repeats:        100
+
+test:
+    augment_probs:  [1.0e-5, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    fgsm_eps:       [0.0, 0.05, 0.1, 0.15, 0.20, 0.25, 0.30]
