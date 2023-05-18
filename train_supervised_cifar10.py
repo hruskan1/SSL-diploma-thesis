@@ -124,7 +124,6 @@ if __name__ == '__main__':
     num_workers = os.cpu_count() 
     if 'sched_getaffinity' in dir(os):
         num_workers = len(os.sched_getaffinity(0)) - 2
-    num_workers = 0 # if on servers
 
     train_dataloader = data.DataLoader(train_dataset,args.batch_size,shuffle=True,num_workers=num_workers,drop_last=True)
     test_dataloader =  data.DataLoader(test_dataset,args.batch_size,shuffle=False,num_workers=num_workers,drop_last=False)

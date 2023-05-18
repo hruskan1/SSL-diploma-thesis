@@ -2,9 +2,8 @@
 # images: Bernoulli, latent: Bernoulli/Categorical
 
 blocks: [{type: pcustom, cho : 208,
-          pc_block: {type:  pc, cho: 8},
-          bin_pixel_block : {type: pb, cho: 100},
-          bin_img_block: {type: pb, cho: 100}},
+          blocks: [{type: pc, cho: 8},
+                   {type: pb, cho: 100}]},
 # size 8, chan 128
          {type: sb, chi: 208, cho: 128, d_skip: False, e_skip: False, activ: relu,
           # DECODER is large conv net taking cat and binary together (chi = cho)
