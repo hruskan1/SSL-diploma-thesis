@@ -34,7 +34,8 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device):
     with torch.no_grad():
         for (xl, tl) in loader:
             x0_smpl = xl.to(device)
-            t0_smpl = tl.to(device, dtype=torch.float)
+            t0_smpl = nn.functional.one_hot(tl, num_classes=10).to(device, dtype=torch.float)
+            t0_smpl = t0_smpl.reshape(*t0_smpl.shape,1,1)
             enc_acts = mod.encoder_activations(x0_smpl)
             scores = enc_acts[0][0]
             vloss += cel(scores, t0_smpl).sum().item()
@@ -192,6 +193,7 @@ def main(args):
             bar.suffix  = f"#({num_of_batches_seen%len(train_dataloader)}/{len(train_dataloader)})#({count}/{niterations})|{bar.elapsed_td}|ETA:{bar.eta_td}|"+\
                     f"ewa_dt:{acc_dt:.4f}|ewa_et :{acc_et:.4f}|"
             bar.next()
+            break
         bar.finish()
 
         if (count % log_period == log_period-1) or (count == niterations-1):
@@ -202,12 +204,12 @@ def main(args):
             strtoprint += ' dt: {:.3}'.format(-acc_dt)
             strtoprint += ' et: {:.3}'.format(-acc_et)
 
-            trn_loss, trn_acc = validate(hvae,train_dataloader,args.device,ignore_class=0)
+            trn_loss, trn_acc = validate(hvae,train_dataloader,args.device)
 
             strtoprint += ' trnloss: {:.4}'.format(trn_loss)
             strtoprint += ' trnacc: {:.4}'.format(trn_acc)
             
-            val_loss, val_acc = validate(hvae, val_dataloader, args.device,ignore_class=0)
+            val_loss, val_acc = validate(hvae, val_dataloader, args.device)
             strtoprint += ' valloss: {:.4}'.format(val_loss)
             strtoprint += ' valacc: {:.4}'.format(val_acc)
 
@@ -244,8 +246,8 @@ def main(args):
                 # two batches (sup & unsup)
                 n = min(8,xl.shape[0])
 
-                x0 = xl[0:n]
-                t0 = tl[0:n]
+                x0 = x0_smpl[0:n]
+                t0 = t0_smpl[0:n]
                 
                 # ====== supervised visualization =================================
 
@@ -256,13 +258,14 @@ def main(args):
 
 
 
-                _s = torch.empty((n,*list(hvae.z0_shape[0][1:])))
-                _l = torch.empty((n,*list(hvae.z0_shape[1][1:])))
+
                 
-                z0_shape = (_s.shape,_l.shape)
                 
-                z0_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
+                z0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
+                print(f"{z0_smpl[0].shape=},{z0_smpl[1].shape=}")
                 z0_smpl[0] = t0
+                print(f"{z0_smpl[0].shape=},{z0_smpl[1].shape=}")
+
                 (x3, x2) = hvae.prior_sample(z0_smpl)
                 
                 # continue sampling (limiting marginal distrib)
@@ -287,7 +290,7 @@ def main(args):
                 images = vutils.make_grid(vis,nrow=n,normalize=True,scale_each=True)
 
                 writer.add_image(f'img-e{count}-a{val_acc*100:2.0f}', images, count)
-                vutils.save_image(images, os.path.join(viz_path, f'-img-e{count}-a{val_acc*100:2.0f}.png'))
+                vutils.save_image(images,viz_path +f'-img-e{count}-a{val_acc*100:2.0f}.png')
 
         count += 1
         if count == niterations:
