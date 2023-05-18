@@ -1,0 +1,45 @@
+\section{Symetric learning for HVAE}
+We implement a hierarchical variational autoencoder (HVAE) that aims to provide a segmentation 
+$\mathbf{s}$ for a given image $\mathbf{x}$ and reconstruct the image if a ground truth segmentation is provided. 
+In our scenario, we only have access to samples from the unknown underlying distribution of images and
+segmentations, denoted as $\mathbf{x}, \mathbf{s} \sim \pi(\mathbf{x},\mathbf{s})$.
+
+The hierarchical VAE consists of $M+1$ layers of latent space:
+\begin{align*}
+\mathbf{z} = (\mathbf{z}_0, \mathbf{z}_1, \dots, \mathbf{z}_m), \quad \mathbf{z}_0 = (\mathbf{s}, \mathbf{l}),\, \mathbf{z}_m = \mathbf{x}
+\end{align*}
+Here, $\mathbf{z}_m$ corresponds to the image, and $\mathbf{z}_0$ is the composition of the segmentation $\mathbf{s}$ and 
+the latent code $\mathbf{l}$, which follows a uniform prior distribution. The latent code is expected to encode global
+information in the image (e.g., weather, texture), while the segmentation provides local information (e.g., road shape,
+surrounding types, pedestrians, cars, etc.). The hierarchical model consists of an encoder and
+ a decoder with a common factorization:
+\begin{align*}
+    p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})&=p_{\boldsymbol{\theta}}(\boldsymbol{z}_{0}) \prod_{t=1}^{M}\bigl[p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t}) \bigr]  p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z})  \\
+    q_{\boldsymbol{\phi}}(\boldsymbol{x},\boldsymbol{z}) &=\pi(\boldsymbol{x})q_{\boldsymbol{\phi}}(\boldsymbol{z}_{0}\mid\boldsymbol{x}) \prod_{t=1}^{M}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t},\boldsymbol{x}) 
+\end{align*}
+Both the encoder $q_{\boldsymbol{\phi}}$ and decoder $p_{\boldsymbol{\theta}}$ have a U-Net-like architecture. Since
+ the U-Net is a feedforward network, sampling from the decoder is tractable and we truly can construct the HVAE. 
+ The conditional models in the HVAE belong to different distributions within the exponential family, depending on the 
+ specific case. The hidden layers $\mathbf{z}_1, \dots, \mathbf{z}_{m-1}$, as well as the latent 
+ code $\mathbf{l}$, are modeled using a Bernoulli distribution. For the image and segmentation, we utilize Gaussian
+ and categorical distributions, respectively.
+ 
+
+We apply the standard construction blocks of the U-net, up to the last (first) layer of encoder (decoder), where we 
+face a challenge when combining the segmentation $\mathbf{s}$ and latent code $\mathbf{l}$ since the latent code does
+not possess spatial dimensions.
+\begin{itemize}
+    \item The \textit{encoder} consists of two independent networks, meaning they do not share parameters. 
+    The first network is a standard convolutional block responsible for mapping the input to segmentation activations. 
+    The number of output channels in this block corresponds to the number of classes in the segmentation task. 
+    The second network is an extended convolutional block that incorporates an adaptive average pooling layer. 
+    This layer reduces the spatial dimensions to 1, generating the latent code activations.
+
+    \item The \textit{decoder} part comprises a single convolutional block. Initially, we replicate the latent
+    code activations in the spatial dimension to match the segmentation's spatial dimensions. Next, we concatenate
+    the replicated latent code and the segmentations along the channel dimension, creating a compact block. This
+    block serves as the input to the aforementioned convolutional block in the decoder.
+\end{itemize}
+By replicating the latent code in the spatial dimension and combining it with the segmentations, we ensure that the
+latent code $\mathbf{l}$ possesses complete information about the image and has a global influence. 
+
