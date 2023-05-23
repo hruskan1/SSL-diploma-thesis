@@ -7,17 +7,17 @@
 
 Satellite imagery provides a wealth of information about our planet and has become a standard tool for monitoring, predicting and understanding 
 the change in vegetation, agriculture and human environmental impact. With advancements in satellite technology, it is now possible to collect
-massive amounts of high-resolution multispectral images over time, enabling researchers to perform complex spatio-temporal analyses of these 
-datasets. However, the sheer magnitude of the raw data makes it challenging to process and analyze effectively. Moreover the remote sensing 
-still has to face other challenges, which are rare in other areas of computer vision. Those are among others partial measurements 
+considerably large amounts of high-resolution multispectral images over time, enabling researchers to perform complex spatiotemporal analyses of these 
+datasets. However, the magnitude of the raw data makes it challenging to process and analyze effectively. Moreover the remote sensing 
+still faces other challenges, which are rare in other areas of computer vision. Those are among others partial measurements 
 (i.e. cloud cover, electro-magnetic (EM) interference), geolocation, different quality of measurement (spatial resolution, different EM bands) and 
 calibration (issue of atmospheric reflectance).
 
-From a machine learning perspective, the main challenges are the large amounts of unannotated data and partially missing measurements.
-To tackle the former, semi-supervised learning \cite{ssl-book-2006} (SSL) have shown promise in leveraging the abundance of unlabeled
+From a machine learning perspective, the main challenges are the quite large amounts of unannotated data and partially missing measurements.
+To adress the first, semi-supervised learning \cite{ssl-book-2006} (SSL) has shown promise in leveraging the abundance of unlabeled
 data to improve model performance. SSL algorithms aim to learn from labeled and unlabeled data, using the labeled data to guide the 
-learning process and the unlabeled data to regularize the model. As for the issue of partially missing measurements, generative
-models, such as variational autoencoders (VAEs) \cite{intro-vae-2019}, have shown potential to fill in the missing data gaps. 
+learning process and the unlabeled data to regularize the model. Regarding the issue of partially missing measurements, generative
+models, such as variational autoencoders (VAEs) \cite{intro-vae-2019}, have shown the potential to fill in missing data gaps. 
 By learning a generative model of the data distribution, VAEs can be used to impute missing values in a dataset, making it possible to 
 fully utilize the available data.
 
@@ -28,8 +28,8 @@ generate inpainting for partially missing measurements. The project is funded by
 \footnote[1]{\url{https://eo4society.esa.int/projects/spatiotemporal-sen2vhr/}}.
 
 The authors of \cite{sym-learning-2023} proposed a novel SSL algorithm that employs symmetrical learning with hierarchical VAEs, which is capable of
-handling exponential families of distribution, not just multivariate Gaussians for the latent variable. We adapt this algorithm for  
-land-cover segmentation task, where the learning process from only partially available inputs is necessary. This is due to the missing measurements 
+handling exponential families of distribution, not just multivariate Gaussians for the latent variable. We adapt this algorithm to the 
+land-cover segmentation task, where the learning process from only partially available inputs is necessary. This is due to missing measurements 
 which are mainly caused by cloud or snow cover. 
 Our approach involves combining a reasonably sized model inspired by U-net architecture and its skip connections\cite{unet-2015} with hierarchical VAEs, enabling
 us to obtain a latent space distribution that represents the desired segmentation. Additionally, this setup will allow us to generate both segmentation from images 
@@ -37,35 +37,18 @@ and images from segmentation.
 
 We will compare our approach with MixMatch \cite{mixmatch-2019} algorithm, which unifies the consistency regularization methods with proxy-labeling
 methods \cite{ssl-overview-2020} and is the cornerstone for other algorithms such as ReMixMatch \cite{remixmatch-2020} and FixMatch \cite{fixmatch-2020}.
-To our knowledge, the MixMatch algorithm has only been used on classification tasks (CIFAR10, SVHN). We will adapt it so it is applicable
+To our knowledge, the MixMatch algorithm has only been used for classification tasks (CIFAR10, SVHN). We will adapt it, so that is applicable
 to the segmentation task. To verify its suitability and compare it with our method, we will use CityScape dataset and standard metrics used in 
 segmentation, such as intersection over union (IoU), plain accuracy  and others. We will also validate the generative capabilities of the novel approach (e.g. 
 inpainting of missing data).
 \todo{Rewrite it once the actual evaluation is done.}
 
-We provide a brief introduction to SSL and its methods in chapter \ref{motivation-theory}. We will discuss the main ideas and cornerstones of 
-MixMatch and our approach, namely consistency regularization, proxy label methods and VAE. In \ref{methodology}, we describe the dataset and 
-segmentation task and provide the definition of the evaluation metrics. We also introduce the ladder variational autoencoders (LVAE) and 
-symmetrical learning. Furthermore, we provide a description of MixMatch algorithm. The experiments and results are available in 
-\ref{experiments-results} with a summary of main findings and contributions in \ref{conclusions}. We make all code publicly available
-\footnote[2]{At \url{https://github.com/hruskan1/SSL-diploma-thesis}}. 
+In chapter \ref{motivation-theory} we provide a brief introduction to SSL and its methods.  We will discuss the main ideas 
+and cornerstones of MixMatch and the novel symmetrical equilibrium learning, namely consistency regularization with proxy 
+labelling methods and VAE framework respectively. 
+We also introduce the hieachical models (HVAE) and ladder variational autoencoders (LVAE) in this chapter as a necessary foundation for 
+the novel algorithm. The description of the segmentation task, dataset, metrics and models architecture is provided
+in chapter \ref{methods}. The experiments and results are available in \ref{results} with a summary of main findings and contributions in \ref{conclusions}. 
+We make all code publicly available \footnote[2]{At \url{https://github.com/hruskan1/SSL-diploma-thesis}}. 
 
 
-% Objectives (1-2 paragraphs)
-
-% Explanation of the specific objectives of the thesis
-% Description of the research methods and approaches that will be used to achieve these objectives
-% Brief overview of the expected results or outcomes of the research
-
-
-% Thesis Structure (1-2 paragraphs)
-
-% Brief overview of the structure of the thesis
-% Explanation of how the different sections of the thesis contribute to answering the research question and achieving the objectives
-
-
-% To make it longer, you could expand on the importance and potential impact of accurately monitoring and predicting changes in forest development,
-% as well as the challenges and limitations of traditional methods. You could also provide more background on SSL, including its history and 
-% previous applications in different fields. Additionally, you could discuss the potential advantages and disadvantages of combining 
-% spatio-temporal U-nets with variational autoencoders and how they complement each other in your approach. Finally, you could elaborate on the 
-% evaluation metrics and their significance in assessing the performance of your approach.

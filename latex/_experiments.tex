@@ -1,0 +1,107 @@
+\section{Mixmatch experiments}
+As the original implementation of MixMatch is written in \texttt{TensorFlow} we have re-implemented it in \texttt{PyTorch}. To verify the correctness
+ of our implementation, we have run tests on CIFAR10 and compared our results with those reported in ~\cite{mixmatch-2019} and ~\cite{wide-resnet-2017}. The 
+comparison is shown in table~\ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. 
+The specific hyperparameters of all experiments are provided with the code and are available. We will not report any of them here.
+ 
+\begin{table}[tbh]
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    Labels [\#]  & 250 & 500 & 1000 & 2000 & 4000 & All \\
+    \hline
+    Our code & $88.45$ & $89.58$& $91.83$ & $93.03$ & $93.50$ & $93.54$\\
+    \hline
+    Reported & $88.92\pm0.87$ & $90.35\pm0.94$ & $92.25\pm0.32$ & $92.97\pm0.15$ & $93.76\pm 0.06$ & $94.27$\\
+    \hline 
+    Baseline & $38.42$ & $45.77$ & $50.42$ & $60.21$ & $79.57$ &  \\
+    \hline
+    \end{tabular}
+    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset ~\cite{cifar10-2009}. Labels row corresponds to number of labeled points available during trainig. 
+    The last column ("All") corresponds to fully-supervised mode performance on whole dataset (50k images).
+    We additionally provide the basline row, which contains the result of supervisied training on given number of images (Our code).
+    Our results are based only on one run.}
+    \label{tab:mixmatch-cifar10}
+\end{table}
+
+We have conducted another experiment on CityScape dataset. The classes and labelling policy of the CityScape
+dataset is well described in ~\cite{cityscapes-2016} and on their website. In our setting, we want to predict only 
+7 valid classes and 1 void class corresponding to the CityScape ``categories''. The prediction on the void class \
+is ignored during the training and evaluation. In tab.~\ref{tab:mixmatch-cityscapes}, we report the plain accuracy for 
+the MixMatch and supervised baseline and in tab.~\ref{tab:mixmatch-cityscapes-iou} we provide the average $\mathrm{IoU}$ metric. 
+The hyperparameters of the MixMatch were found with help of \texttt{Optuna} framework~\cite{optuna-2019}.
+The applied augmentation is simple combination of padding, crop and horizontal flip as in original paper~\cite{mixmatch-2019}, even
+tough the framework is able to use any affine transformations. The original image are rescaled to the $256 \times 512$ size.
+We provide few images for visualization in fig.~\ref{fig:mixmatch_visualization_10} and fig.~\ref{fig:mixmatch_visualization_all}. 
+MixMatch tends to "regularize and smooth" the predictions. However, this can be a disadvantage for unbalanced datasets 
+like Cityscapes, as the network may ignore classes with a small representation ratio.
+
+\begin{table}[tbh]
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Labels [\#]  & 10 & 100 & 500 & 1000 & All \\
+    \hline
+    Mixmatch & $84.53$ & $90.76$ & $93.42$ & $94.32$ & $94.84$ \\
+    \hline
+    Supervised & $76.85$ & $87.59$ & $93.50$ & $94.71$ & $95.58$ \\
+    \hline
+    \end{tabular}
+    \caption[Mixmatch accuracy on CityScape]{Mixmatch accuracy rate (\%) on Citysacpe dataset~\cite{cityscapes-2016} compared to the supervised baseline. The 
+    "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
+    column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
+    The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
+    Our results are based only on one run.}
+    \label{tab:mixmatch-cityscapes}
+\end{table}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{mix10_vizualization_stacked.png}
+    \caption[Mixmatch result visualization (10)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on 10 images. 
+    The first two rows contains the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
+    while the supervised baseline predictions are in the fourth row. \newline
+     The colors used in the segmentation are as follows: flat (purple), human (red), vehicle (dark blue), construction (dark grey), 
+     object (light gray), nature (green), sky (light blue), and void (black). The predictions on the "void"
+    class are not penalized nor evaluated.}
+    \label{fig:mixmatch_visualization_10}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{mixall_vizualization_stacked.png}
+    \caption[Mixmatch result visualization (10)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on all available images.
+    See caption of~\ref{ig:mixmatch_visualization_10} for the legend.}
+    \label{fig:mixmatch_visualization_all}
+\end{figure}
+
+We can see that the MixMatch do improve the results for the small amount of data and can produce comparable results to supervised basline 
+for more images available. However, it has been obsereved that the best results achived were obtained during the early stage of training for low $\lambda_u$
+parameter (which is linearly ramped up). This means that the unsupervised loss term $\mathcal{L}_{\mathcal{U}}$ worsenes the learning. 
+As its main role is to regularize the model, we believe that the worsening effect is mainly caused by the fact that the model is not yet fully 
+trained on labeled dataset $\mathcal{X}$. This could also fit well with the better accuracy for the small size of $\mathcal{X}$ as the model 
+has enough capacity to obtain 100\% training accuracy. As the MixMatch is complex model, it is hard to determine, which of its
+component was most significant in this task. The paper does provide an ablatation study~\cite{mixmatch-2019}, however I was not able to 
+conduct the similar study for this experiment due to a limited time available. We would also like to note, that the supervised experiment utilized the same augmentation as 
+the MixMatch (on the labeled dataset only) and that even small number of images contain a lot of information, which can be destiled by the network
+(contrary to the classification task) due to the fact that we use the convolutional neural network (CNN). 
+
+\begin{table}[tbh]
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Labels [\#]  & 10 & 100 & 500 & 1000 & All \\
+    \hline
+    Mixmatch & $48.10$ & $61.98$ & $69.24$ & $71.97$ & $73.08$ \\
+    \hline
+    Supervised & $41.78$ & $54.38$ & $68.25$ & $71.93$ & $73.84$ \\
+    \hline
+    \end{tabular}
+    \caption[Mixmatch average IoU on CityScape]{Mixmatch average IoU (\%) on Citysacpe dataset~\cite{cityscapes-2016} compared to the supervised baseline. The 
+    "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
+    column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
+    The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
+    Our results are based only on one run.}
+    \label{tab:mixmatch-cityscapes-iou}
+\end{table}
+     
+
+\section{Symmetric learning for HVAE}
+We
