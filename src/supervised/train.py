@@ -211,8 +211,7 @@ def train_one_epoch(m:nn.Module,opt,lr_scheduler,loss_fn:Callable,dl,args,augume
         targets = targets.to(args.device)
         targets_hat = m.forward(features)
 
-        targets = ensure_onehot(targets,num_classes=targets_hat.shape[1])
-
+        targets = ensure_onehot(targets,num_classes=targets_hat.shape[1]).to(float)
 
         l = torch.sum(loss_fn(targets_hat,targets)) / (targets_hat.numel() / targets_hat.shape[1])
         l.backward()

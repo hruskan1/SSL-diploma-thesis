@@ -29,9 +29,8 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,ignore_clas
     """
     num_classes = mod.encoder_activations(next(iter(loader))[0].to(device))[0][0].shape[1]
 
-    print(f"DEBUG,REMOVE ME: {num_classes=}")
-    weights = torch.ones(num_classes)
-    weights = weights[ignore_class] = 0
+    weights = torch.ones(num_classes).to(device)
+    weights[ignore_class] = 0
     cel = nn.CrossEntropyLoss(reduction='none',weight = weights)
     numel = 0
     vloss = 0.0

@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import numpy as np
 from easydict import EasyDict
 import itertools
+import torch.distributions as dstrs
 
 from ..custom_func.stoch_func import StochHeavi, ReSigm
 #from custom_func.stoch_func import StochHeavi, ReSigm
@@ -20,11 +21,11 @@ def append_conv_block(mlist: nn.ModuleList, cfg: EasyDict, activation, **kwargs)
     chi = cfg['chi']
     cho = cfg['cho']
     kernel_size = cfg['k_size']
-    num_layer = getattr(cfg, 'num_l', 1)
-    stride = getattr(cfg, 'stride', 1)
-    pd = getattr(cfg, 'pad', 0)
-    bnorm = getattr(cfg, 'bn', False)
-    ll_act = getattr(cfg, 'll_act', False)
+    num_layer = cfg.get( 'num_l', 1)
+    stride = cfg.get( 'stride', 1)
+    pd = cfg.get('pad', 0)
+    bnorm = cfg.get( 'bn', False)
+    ll_act = cfg.get( 'll_act', False)
     # construct and append the layers
     for l in range(num_layer):
         cl = nn.Conv2d(chi, cho, kernel_size=kernel_size, stride=stride, padding=pd)
@@ -49,11 +50,11 @@ def append_conv_transpose_block(mlist: nn.ModuleList, cfg: EasyDict, activation,
     chi = cfg.chi
     cho = cfg.cho
     kernel_size = cfg.k_size
-    num_layer = getattr(cfg, 'num_l', 1)
-    stride = getattr(cfg, 'stride', 1)
-    pd = getattr(cfg, 'pad', 0)
-    bnorm = getattr(cfg, 'bn', False)
-    ll_act = getattr(cfg, 'll_act', False)
+    num_layer = cfg.get( 'num_l', 1)
+    stride = cfg.get( 'stride', 1)
+    pd = cfg.get( 'pad', 0)
+    bnorm = cfg.get( 'bn', False)
+    ll_act = cfg.get( 'll_act', False)
     # construct and append the layers       
     for l in range(num_layer):
         if l < num_layer - 1:
@@ -87,7 +88,7 @@ def append_interpolation_block(mlist: nn.ModuleList, cfg: EasyDict, **kwargs):
 
 def append_resize_block(mlist: nn.ModuleList, cfg: EasyDict, **kwargs):
     i = cfg.get('interpolation','bilinear')
-    r = Resize(size=cfg.out_size,interpolation=i)
+    r = Resize(size=cfg.out_size,interpolation=i,antialias=False)
     mlist.append(r)
 
     return mlist
@@ -98,7 +99,6 @@ def append_rescale_block(mlist: nn.ModuleList, cfg: EasyDict, **kwargs):
     mlist.append(r)
 
     return mlist
-
 
 def append_blocks(mlist: nn.ModuleList, bcfg: EasyDict, activation, **kwargs):
     for cfg in bcfg:
@@ -114,18 +114,20 @@ def append_blocks(mlist: nn.ModuleList, bcfg: EasyDict, activation, **kwargs):
             mlist.append(MyEnc(cfg=cfg,**kwargs))
         elif cfg['type'] == 'mydec':
             mlist.append(MyDec(cfg=cfg,**kwargs))
+        elif cfg['type'] == 'mysegenc':
+            mlist.append(MySegEnc(cfg=cfg,**kwargs))
+        elif cfg['type'] == 'mysegdec':
+            mlist.append(MySegDec(cfg=cfg,**kwargs))
         elif cfg['type'] == 'resize':
             mlist = append_resize_block(mlist,cfg,**kwargs)
         elif cfg['type'] == 'rescale':
             mlist = append_rescale_block(mlist,cfg,**kwargs)
         elif cfg['type'] == 'a2dpool':
-            mlist.append(nn.AdaptiveAvgPool2d(cfg.spatial_size))
+
+            mlist.append(nn.AdaptiveAvgPool2d(cfg['spatial_size']))
         else:
             raise Exception("Requested block type missing/not implemented")
     return mlist
-
-
-
 
 def choose_activation(cfg: EasyDict):
     activation = None
@@ -141,6 +143,21 @@ def choose_activation(cfg: EasyDict):
         raise NotImplementedError(f"Requested activation {cfg.active} not implemented")
     return activation
 
+# custom function # needs to be adapted for each architecture (TODO:)
+def concatenate_z0(z0:list[torch.Tensor]):
+    assert  len(z0) == 2
+
+    cat,bin = z0[0],z0[1]
+    assert bin.ndim == 4 and bin.shape[2] == 1 and bin.shape[3] == 1
+    assert cat.ndim == 4 
+
+    N,_,H,W = cat.shape
+    bin = bin.repeat(1,1,H,W)
+    # print(f"{cat.shape=}")
+    # print(f"{bin.shape=}")
+
+    z0 = torch.cat([cat,bin],dim=1)
+    return z0 
 
 # Ugly hot fix
 class MyDec(nn.Module):
@@ -149,9 +166,10 @@ class MyDec(nn.Module):
         super(MyDec, self).__init__()
         self.net = nn.Sequential(*append_blocks(nn.ModuleList(),cfg.net,activation=choose_activation(cfg)))
 
-    def forward(self,input:list):
-        z0 = torch.cat(input,dim=1)
+    def forward(self,z0:torch.Tensor):
+
         output = self.net(z0)
+
         #print(f"{output.shape=}")
         return output
 
@@ -160,10 +178,17 @@ class MyEnc(nn.Module):
     def __init__(self,cfg,**kwargs):
         super(MyEnc, self).__init__()
         
-        self.nets = nn.ModuleList()
-        for net_config in cfg.nets:
+        self.cfg = cfg
+        
+        if getattr(self.cfg, 'core_net', None) is not None:
+            self.core_net = nn.Sequential(
+                *append_blocks(nn.ModuleList(),cfg['core_net'],activation=choose_activation(cfg))
+                )
+
+        self.clf_nets = nn.ModuleList()
+        for net_config in cfg.clf_nets:
         #categorical is the first
-            self.nets.append(
+            self.clf_nets.append(
                 nn.Sequential(
                 *append_blocks(nn.ModuleList(),net_config,activation=choose_activation(cfg))
                 )
@@ -172,61 +197,59 @@ class MyEnc(nn.Module):
     def forward(self,x):
         #categorical is the first
         outputs = []
+
+        if getattr(self.cfg, 'core_net', None) is not None:
+            x = self.core_net(x)
         
-        for net, in self.nets:
+        for net in self.clf_nets:
             outputs.append(net(x))
    
         return outputs
 
-# class MySegDec(nn.Module):
-#     """ad-hoc decoder for enabling input of different shape"""
-#     def __init__(self,cfg,**kwargs):
-#         super(MySegDec, self).__init__()
+class MySegDec(nn.Module):
+    """ad-hoc decoder for enabling input of different shape"""
+    def __init__(self,cfg,**kwargs):
+        super(MySegDec, self).__init__()
+        self.net = nn.Sequential(*append_blocks(nn.ModuleList(),cfg.net,activation=choose_activation(cfg)))
+
+    def forward(self,z0:torch.Tensor):
         
-#         self.net = nn.Sequential(
-#             *append_conv_block(nn.ModuleList(),cfg,activation=nn.ReLU())
-#         )
+        output = self.net(z0)        
+        return output
 
-#     def forward(self,input:list):
-#         #categorical is the first
-#         assert  len(input) == 2
-
-#         cat,bin = input[0],input[1]
-
-#         assert bin.ndim == 4 and bin.shape[2] == 1 and bin.shape[3] == 1
-#         assert cat.ndim == 4 
-
-#         N,_,H,W = cat.shape
-#         bin_img_replicated = bin.repeat(1,1,H,W)
-
-#         z0 = torch.cat([cat,bin],dim=1)
-#         output = self.net(z0)
-
-#         #print(f"{output.shape=}")
+class MySegEnc(nn.Module):
+    """ad-hoc decoder for enabling input of different shape"""
+    def __init__(self,cfg,**kwargs):
+        super(MySegEnc, self).__init__()
         
-#         return output
-
-# class MySegEnc(nn.Module):
-#     """ad-hoc decoder for enabling input of different shape"""
-#     def __init__(self,cfg,**kwargs):
-#         super(MySegEnc, self).__init__()
+        #categorical is the first
+        self.cfg = cfg
         
-#         #categorical is the first
-#         self.cat = nn.Sequential(
-#             *append_blocks(nn.ModuleList(),cfg.cat,activation=choose_activation(cfg))
-#         )
+        if getattr(self.cfg, 'core_net', None) is not None:
+            self.core_net = nn.Sequential(
+                *append_blocks(nn.ModuleList(),cfg['core_net'],activation=choose_activation(cfg))
+                )
 
-#         self.bin_pixel = nn.Sequential(
-#             *append_blocks(nn.ModuleList(),cfg.bin_pixel,activation=choose_activation(cfg))
-#         ) 
+        self.clf_nets = nn.ModuleList()
+        for net_config in cfg.clf_nets:
+            self.clf_nets.append(
+                nn.Sequential(
+                *append_blocks(nn.ModuleList(),net_config,activation=choose_activation(cfg))
+                )
+            )
 
-#     def forward(self,x):
+    def forward(self,x):
+
+        outputs = []
+
+        if getattr(self.cfg, 'core_net', None) is not None:
+            x = self.core_net(x)
         
-#         cat_output = self.cat(x)
-#         bin_pixel_output = self.bin_pixel(x)
-#         #categorical is the first
-#         return [cat_output , bin_pixel_output]
-
+        for net in self.clf_nets:
+            outputs.append(net(x))
+   
+        return outputs
+        
 
 class GaussNPactivation(nn.Module):
     def __init__(self, cho, **kwargs):
@@ -276,17 +299,17 @@ class StochBinBlock(nn.Module):
 
     def update_stats(self, acte, actd):
         with torch.no_grad():
-            pe = torch.distributions.Bernoulli(logits=acte)
-            pd = torch.distributions.Bernoulli(logits=actd)
-            pm = torch.distributions.Bernoulli(0.5*(pe.probs + pd.probs))
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pe = dstrs.Bernoulli(logits=acte)
+            pd = dstrs.Bernoulli(logits=actd)
+            pm = dstrs.Bernoulli(0.5*(pe.probs + pd.probs))
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
             jsdivs_av = jsdivs.mean([0, 2, 3])
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
-            pe1 = torch.distributions.Bernoulli(probs=pe.probs.mean([0, 2, 3]))
-            pd1 = torch.distributions.Bernoulli(probs=pd.probs.mean([0, 2, 3]))
-            pm1 = torch.distributions.Bernoulli(0.5*(pe1.probs + pd1.probs))
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.Bernoulli(probs=pe.probs.mean([0, 2, 3]))
+            pd1 = dstrs.Bernoulli(probs=pd.probs.mean([0, 2, 3]))
+            pm1 = dstrs.Bernoulli(0.5*(pe1.probs + pd1.probs))
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)
     
     def sample(self, z, acte=None, stats=False, verbose=False):
@@ -299,7 +322,7 @@ class StochBinBlock(nn.Module):
                 act = actd + acte
             else:
                 act = actd
-            pd = torch.distributions.Bernoulli(logits=act)
+            pd = dstrs.Bernoulli(logits=act)
             z_out = pd.sample()
             z_out = z_out.detach().clone()
             if stats:
@@ -388,17 +411,17 @@ class StochCatBlock(nn.Module):
 
     def update_stats(self, actd, acte):
         with torch.no_grad():
-            pe = torch.distributions.OneHotCategorical(logits=acte.movedim(1, -1))
-            pd = torch.distributions.OneHotCategorical(logits=actd.movedim(1, -1))
-            pm = torch.distributions.OneHotCategorical(probs=0.5*(pe.probs + pd.probs))
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pe = dstrs.OneHotCategorical(logits=acte.movedim(1, -1))
+            pd = dstrs.OneHotCategorical(logits=actd.movedim(1, -1))
+            pm = dstrs.OneHotCategorical(probs=0.5*(pe.probs + pd.probs))
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
             jsdivs_av = jsdivs.mean()
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
-            pe1 = torch.distributions.OneHotCategorical(probs=pe.probs.mean([0, 1, 2]))
-            pd1 = torch.distributions.OneHotCategorical(probs=pd.probs.mean([0, 1, 2]))
-            pm1 = torch.distributions.OneHotCategorical(probs=0.5*(pe1.probs + pd1.probs))
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.OneHotCategorical(probs=pe.probs.mean([0, 1, 2]))
+            pd1 = dstrs.OneHotCategorical(probs=pd.probs.mean([0, 1, 2]))
+            pm1 = dstrs.OneHotCategorical(probs=0.5*(pe1.probs + pd1.probs))
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)
 
     def sample(self, z, acte=None, stats=False, verbose=False):
@@ -411,7 +434,7 @@ class StochCatBlock(nn.Module):
                 act = actd + acte
             else:
                 act = actd
-            pd = torch.distributions.OneHotCategorical(logits=act.movedim(1, -1))
+            pd = dstrs.OneHotCategorical(logits=act.movedim(1, -1))
             z_out = pd.sample().movedim(-1, 1)
             z_out = z_out.detach().clone()
             if stats:
@@ -494,14 +517,14 @@ class StochGaussBlock(nn.Module):
             sigd = vard.sqrt()
             mue, vare = self.compute_st_param(acte)
             sige = vare.sqrt()
-            pd = torch.distributions.Normal(mud, sigd)
-            pe = torch.distributions.Normal(mue, sige)
+            pd = dstrs.Normal(mud, sigd)
+            pe = dstrs.Normal(mue, sige)
             # surrogate Gaussian (for mixture)
             mum = 0.5 * mud + 0.5 * mue
             varm = 0.5 * (vard + vare + 0.5 * (mud - mue).square())
             sigm = varm.sqrt()
-            pm = torch.distributions.Normal(mum, sigm)
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pm = dstrs.Normal(mum, sigm)
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
             jsdivs_av = jsdivs.mean([0, 2, 3])
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
@@ -509,10 +532,10 @@ class StochGaussBlock(nn.Module):
             sig_d_av, mu_d_av = torch.std_mean(pd.sample(), (0, 2, 3))
             sig_m_av, mu_m_av = torch.std_mean(pm.sample(), (0, 2, 3))
      
-            pe1 = torch.distributions.Normal(mu_e_av, sig_e_av)
-            pd1 = torch.distributions.Normal(mu_d_av, sig_d_av)
-            pm1 = torch.distributions.Normal(mu_m_av, sig_m_av)
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.Normal(mu_e_av, sig_e_av)
+            pd1 = dstrs.Normal(mu_d_av, sig_d_av)
+            pm1 = dstrs.Normal(mu_m_av, sig_m_av)
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)   
 
     def sample(self, z, acte=None, stats=False, verbose=False):
@@ -527,7 +550,7 @@ class StochGaussBlock(nn.Module):
                 act = actd
             mu, var = self.compute_st_param(act)
             sig = var.sqrt()
-            pd = torch.distributions.Normal(mu, sig)
+            pd = dstrs.Normal(mu, sig)
             z_out = pd.sample()
             z_out = z_out.detach().clone()
             if stats:
@@ -578,19 +601,19 @@ class BinPriorBlock(nn.Module):
 
     def update_stats(self, acte):
         with torch.no_grad():
-            pe = torch.distributions.Bernoulli(logits=acte)
-            pd = torch.distributions.Bernoulli(logits=torch.zeros_like(acte))
-            pm = torch.distributions.Bernoulli(probs=0.5*(pe.probs + pd.probs))
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pe = dstrs.Bernoulli(logits=acte)
+            pd = dstrs.Bernoulli(logits=torch.zeros_like(acte))
+            pm = dstrs.Bernoulli(probs=0.5*(pe.probs + pd.probs))
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
 
             #jsdivs_av = jsdivs.mean([0, 2, 3])
             jsdivs_av = jsdivs.mean([0,*range(-jsdivs.ndim+2,0)])
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
-            pe1 = torch.distributions.Bernoulli(probs=pe.probs.mean([0,*range(-jsdivs.ndim+2,0)]))
-            pd1 = torch.distributions.Bernoulli(probs=pd.probs.mean([0,*range(-jsdivs.ndim+2,0)]))
-            pm1 = torch.distributions.Bernoulli(probs=0.5*(pe1.probs + pd1.probs))
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.Bernoulli(probs=pe.probs.mean([0,*range(-jsdivs.ndim+2,0)]))
+            pd1 = dstrs.Bernoulli(probs=pd.probs.mean([0,*range(-jsdivs.ndim+2,0)]))
+            pm1 = dstrs.Bernoulli(probs=0.5*(pe1.probs + pd1.probs))
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)
     
     def sample_prior(self, shape):
@@ -600,7 +623,7 @@ class BinPriorBlock(nn.Module):
 
     def sample(self, acte, stats=False, verbose=False):
         with torch.no_grad():
-            pd = torch.distributions.Bernoulli(logits=acte)
+            pd = dstrs.Bernoulli(logits=acte)
             z = pd.sample().detach().clone()
             if stats:
                 self.update_stats(acte.detach().clone())
@@ -629,28 +652,28 @@ class CatPriorBlock(nn.Module):
 
     def update_stats(self, acte):
         with torch.no_grad():
-            pe = torch.distributions.OneHotCategorical(logits=acte.movedim(1, -1))
-            pd = torch.distributions.OneHotCategorical(logits=torch.zeros_like(acte.movedim(1, -1)))
-            pm = torch.distributions.OneHotCategorical(probs=0.5*(pe.probs + pd.probs))
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pe = dstrs.OneHotCategorical(logits=acte.movedim(1, -1))
+            pd = dstrs.OneHotCategorical(logits=torch.zeros_like(acte.movedim(1, -1)))
+            pm = dstrs.OneHotCategorical(probs=0.5*(pe.probs + pd.probs))
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
             jsdivs_av = jsdivs.mean()
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
-            pe1 = torch.distributions.OneHotCategorical(probs=pe.probs.mean([0, 1, 2]))
-            pd1 = torch.distributions.OneHotCategorical(probs=pd.probs.mean([0, 1, 2]))
-            pm1 = torch.distributions.OneHotCategorical(probs=0.5*(pe1.probs + pd1.probs))
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.OneHotCategorical(probs=pe.probs.mean([0, 1, 2]))
+            pd1 = dstrs.OneHotCategorical(probs=pd.probs.mean([0, 1, 2]))
+            pm1 = dstrs.OneHotCategorical(probs=0.5*(pe1.probs + pd1.probs))
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)
     
     def sample_prior(self, shape):
         with torch.no_grad():  # this is perhaps not necessary here
-            pd = torch.distributions.OneHotCategorical(logits=torch.zeros(shape).to(self.jsdivs.device).movedim(1,-1))
+            pd = dstrs.OneHotCategorical(logits=torch.zeros(shape).to(self.jsdivs.device).movedim(1,-1))
             z = pd.sample().movedim(-1, 1)
         return z.detach().clone()
 
     def sample(self, acte, stats=False, verbose=False):
         with torch.no_grad():
-            pd = torch.distributions.OneHotCategorical(logits=acte.movedim(1, -1))
+            pd = dstrs.OneHotCategorical(logits=acte.movedim(1, -1))
             z = pd.sample().movedim(-1, 1)
             z = z.detach().clone()
             if stats:
@@ -684,14 +707,14 @@ class GaussPriorBlock(nn.Module):
         with torch.no_grad():
             mu, var = self.compute_st_param(act)
             sig = var.sqrt()
-            pe = torch.distributions.Normal(mu, sig)
-            pd = torch.distributions.Normal(torch.zeros_like(mu), torch.ones_like(sig))
+            pe = dstrs.Normal(mu, sig)
+            pd = dstrs.Normal(torch.zeros_like(mu), torch.ones_like(sig))
             # surrogate Gaussian (for mixture)
             mum = 0.5 * mu
             varm = 0.5 * sig.square().add(0.5) + 0.25 * mu.square()
             sigm = varm.sqrt()
-            pm = torch.distributions.Normal(mum, sigm)
-            jsdivs = torch.distributions.kl_divergence(pe, pm) + torch.distributions.kl_divergence(pd, pm)
+            pm = dstrs.Normal(mum, sigm)
+            jsdivs = dstrs.kl_divergence(pe, pm) + dstrs.kl_divergence(pd, pm)
             jsdivs_av = jsdivs.mean([0, 2, 3])
             self.jsdivs_av.data.copy_(0.99 * self.jsdivs_av.data + 0.01 * jsdivs_av.detach().data)
 
@@ -699,10 +722,10 @@ class GaussPriorBlock(nn.Module):
             sig_d_av, mu_d_av  = torch.std_mean(pd.sample(), (0, 2, 3))
             sig_m_av, mu_m_av  = torch.std_mean(pm.sample(), (0, 2, 3))
      
-            pe1 = torch.distributions.Normal(mu_e_av, sig_e_av)
-            pd1 = torch.distributions.Normal(mu_d_av, sig_d_av)
-            pm1 = torch.distributions.Normal(mu_m_av, sig_m_av)
-            jsdivs = torch.distributions.kl_divergence(pe1, pm1) + torch.distributions.kl_divergence(pd1, pm1)
+            pe1 = dstrs.Normal(mu_e_av, sig_e_av)
+            pd1 = dstrs.Normal(mu_d_av, sig_d_av)
+            pm1 = dstrs.Normal(mu_m_av, sig_m_av)
+            jsdivs = dstrs.kl_divergence(pe1, pm1) + dstrs.kl_divergence(pd1, pm1)
             self.jsdivs.data.copy_(0.99 * self.jsdivs.data + 0.01 * jsdivs.detach().data)            
 
 
@@ -716,7 +739,7 @@ class GaussPriorBlock(nn.Module):
         with torch.no_grad():
             mu, var = self.compute_st_param(acte)
             sig = var.sqrt()
-            pd = torch.distributions.Normal(mu, sig)
+            pd = dstrs.Normal(mu, sig)
             z = pd.sample()
             z = z.detach().clone()
             if stats:
@@ -727,6 +750,7 @@ class GaussPriorBlock(nn.Module):
         mu, var = self.compute_st_param(acte)
         nll = self.gnnnl(mu, z_out, var).mean(dim=0).sum()
         return nll
+
 
 class CustomPriorBlock(nn.Module):
     """
@@ -802,6 +826,74 @@ class CustomPriorBlock(nn.Module):
         return nll
     
 
+class CatBinPriorBlock(nn.Module):
+    def __init__(self, cfg, **kwargs):
+        super(CatBinPriorBlock, self).__init__()
+        self.cfg = EasyDict(cfg)
+        # define sigmoid, bce & npactivation
+        self.sigmoid = nn.Sigmoid()
+        self.bcel = nn.BCEWithLogitsLoss(reduction='none')
+        self.cel = nn.CrossEntropyLoss(reduction='none')
+        self.npactivation = nn.Identity()
+        self.cnum = self.cfg.clnum  # number of categorical components
+        # define buffers for statistics       
+        self.register_buffer("prm_var", torch.zeros(self.cfg.cho))
+        self.register_buffer("jsdivs", torch.zeros(self.cfg.cho))
+        self.register_buffer("jsdivs_av", torch.zeros(self.cfg.cho))
+
+    def update_stats(self, act):
+        with torch.no_grad():
+            pd = dstrs.Bernoulli(logits=act)
+            var = pd.probs.var([0, 2, 3])
+            self.prm_var.data.copy_(0.99 * self.prm_var.data + 0.01 * var.detach().data)
+    
+    def sample_prior(self, shape, z0=None, verbose=False):
+        nc = self.cnum
+        with torch.no_grad():  # this is perhaps not needed here
+            act = torch.zeros(shape).to(self.prm_var.device)
+            pd_c = dstrs.OneHotCategorical(logits=act[:, 0:nc, :, :].movedim(1, -1))
+            z_c = pd_c.sample().movedim(-1, 1)
+            pd_b = dstrs.Bernoulli(logits=act[:, nc:, :, :])
+            z_b = pd_b.sample()
+            z = torch.cat((z_c, z_b), 1).detach().clone()
+            probs = torch.cat((pd_c.probs.movedim(-1, 1), pd_b.probs), 1)
+            if z0 is not None:
+                d = z0.shape[1]
+                z[:, 0:d, ...] = z0
+            z = z.detach().clone()
+        return (z, probs.detach().clone()) if verbose else z
+
+    def sample(self, acte, z0=None, stats=False, verbose=False):
+        nc = self.cnum
+        with torch.no_grad():
+            pd_c = dstrs.OneHotCategorical(logits=acte[:, 0:nc, :, :].movedim(1, -1))
+            z_c = pd_c.sample().movedim(-1, 1)
+            pd_b = dstrs.Bernoulli(logits=acte[:, nc:, :, :])
+            z_b = pd_b.sample()
+            z = torch.cat((z_c, z_b), 1).detach().clone()
+            probs = torch.cat((pd_c.probs.movedim(-1, 1), pd_b.probs), 1)
+            if z0 is not None:
+                d = z0.shape[1]
+                z[:, 0:d, ...] = z0
+            if stats:
+                self.update_stats(acte.detach().clone())
+        return (z, probs.detach().clone()) if verbose else z
+
+    def neg_llik(self, z_out, acte):
+        nc = self.cnum
+        acte_c = acte[:, 0:nc, ...]
+        acte_b = acte[:, nc:, ...]
+        z_out_c = z_out[:, 0:nc, ...]
+        z_out_b = z_out[:, nc:, ...]
+        nll_c = self.cel(acte_c, z_out_c).mean(dim=0).sum()
+        nll_b = self.bcel(acte_b, z_out_b).mean(dim=0).sum()
+        return nll_c + nll_b
+
+    def cat_neg_llik(self, z_out, acte):
+        nc = self.cnum
+        acte_c = acte[:, 0:nc, ...]
+        nll_c = self.cel(acte_c, z_out).mean(dim=0).sum()
+        return nll_c
 
 class HVAE(nn.Module):
     """High-level module for Hiarchical VAEs"""
@@ -830,6 +922,8 @@ class HVAE(nn.Module):
             bl = GaussPriorBlock(cfg)
         elif cfg['type'] == 'pcustom':
             bl = CustomPriorBlock(cfg)
+        elif cfg['type'] == 'pcb':
+            bl = CatBinPriorBlock(cfg)
         else:
             raise Exception("Requested prior block type missing/not implemented")
         self.sblock_list.append(bl)
@@ -952,17 +1046,16 @@ class HVAE(nn.Module):
             layer_inputs = self._get_layer_inputs(idx,enc_acts,is_encoder=True)
             
             # should be independent on npactivation
-            y = sblock.npactivation(layer_inputs) 
-            act = sblock.encoder.forward(y)
-            if sblock.cfg.e_skip:
-                act = act + sblock.enc_skip_net(y)
             
-            # if type(act) in (list, tuple):
-            #     act_shape = act[0].shape, act[1].shape
-            # else:
-            #     act_shape = act.shape
-            # print(f"{idx-1}. {layer_inputs.shape=}")
-            # print(f"{idx-1}. output_{act_shape=}")
+            y = sblock.npactivation(layer_inputs)     
+            act = sblock.encoder.forward(y)            
+            if sblock.cfg.e_skip: 
+                if type(act) in (list,tuple):
+                    skip_act = sblock.enc_skip_net.forward(y)
+                    act = [act[i] + skip_act[i] for i in range(len(act))]
+                else:
+                    act = act + sblock.enc_skip_net.forward(y)
+            
             
             enc_acts[idx-1] = act
             
@@ -970,7 +1063,7 @@ class HVAE(nn.Module):
         # Return encoder activations
         return enc_acts
 
-    def posterior_sample(self, x0_smpl, z0:Union[Tuple,torch.Tensor,None]=None, stats=False, expanded=False):
+    def posterior_sample(self, x0_smpl, z0:Union[Tuple,torch.Tensor,None]=None, stats=False, expanded=False,boris_flag=False):
         """
         Sample from posterior z ~ pi_(x) q_{theta,phi}(z|x) or pi_(x,z0) q_{theta,phi}(z>0|x,z0) if z0 provided
         
@@ -981,6 +1074,7 @@ class HVAE(nn.Module):
 
         WARNING: If type(z0) == Tuple,List it is assumed that it might contain only partiall initialization
                  If type(z0) == torch.Tensor, it assumes that z0 is provided in full initialization (z0 has simple structure)
+                 If boris flag, then z0 takes first n channels in posterior activation.
         """
         # notice that this function samples the latent variables and a new image
         self.eval()
@@ -999,7 +1093,10 @@ class HVAE(nn.Module):
             probs.append(p)
 
             # fill z0 if needed
-            if z0 is not None and type(z0) in (list, tuple):
+            if boris_flag:
+                d = z0.shape[1]
+                z[:, 0:d, ...] = z0
+            elif  z0 is not None and type(z0) in (list, tuple):
                 
                 assert type(z) in (list, tuple)
                 assert len(z) >= len(z0)
@@ -1010,6 +1107,8 @@ class HVAE(nn.Module):
 
             elif z0 is not None and type(z0) in (torch.Tensor):
                 z = z0.detach().clone() 
+            
+            
             
             z_all[0] = z
             
@@ -1030,11 +1129,11 @@ class HVAE(nn.Module):
             probs.append(cprobs.detach().clone())
         z0 = z_all[0]
 
-        self.z0_shape = z.shape if not (type(z0) in (list, tuple)) else [z0[i].shape for i in range(len(z0))]
+        self.z0_shape = z0.shape if not (type(z0) in (list, tuple)) else [z0[i].shape for i in range(len(z0))]
 
         return (z_all, probs) if expanded else (z, probs)
 
-    def decoder_learn_step(self, x0_smpl, z0=None):
+    def decoder_learn_step(self, x0_smpl, z0=None,boris_flag=False):
         """
         Compute nabla_{theta} of monte carlo estimator of  E_pi(x) E_q(z|x) log(p(x,z))
         or E_pi(x,z0) E_q(z_{>0}|x,z0) log(p(x,z)) if z0 not None 
@@ -1043,7 +1142,7 @@ class HVAE(nn.Module):
         Compute nll log(p(x,z_tilde)) and nabla_{theta}(nll)
         """
         # get posterior sample
-        (z_all, _) = self.posterior_sample(x0_smpl, z0=z0, stats=True, expanded=True)
+        (z_all, _) = self.posterior_sample(x0_smpl, z0=z0, stats=True, expanded=True,boris_flag=boris_flag)
         # replace last z by images:
         z_all[-1] = x0_smpl.detach()
         # set attributes
@@ -1064,7 +1163,7 @@ class HVAE(nn.Module):
 
     def encoder_learn_step(self, z0):
         """
-        Compute nabla_{phi} of monte carlo estimator of E_pi(z) E_p(x,z_{>0}|z0) log(q_{theta,phi}(z|x))
+        Compute nabla_{phi} of monte carlo estimator of E_pi(z0) E_p(x,z_{>0}|z0) log(q_{theta,phi}(z|x))
         
         Sample prior z_tilde ~ pi(z0) p_{theta}(x,z_{>0} | z0)
         Get activations act d_i which corresponds to  q_tilde_{phi} (z_i|x)
@@ -1095,7 +1194,7 @@ class HVAE(nn.Module):
     def encoder_supervised_learn_step(self, x0, z0):
         """
         Standard supervised learning, i.e.
-        Compute nabla_{theta} of monte carlo estimatior of E_pi(x,z0) q_tilde_{phi}(z_0|x)
+        Compute nabla_{theta} of monte carlo estimatior of E_pi(x,z0) log(q_tilde_{phi}(z_0|x))
         
         Get activations d_i for given x through equation d_{i} = NN_phi(d_{i+1}), d_{n} = x
         
@@ -1155,7 +1254,6 @@ class HVAE(nn.Module):
                     # print(f"{i},{j}: {bcfg[j].get('chi',float('nan'))=}")
                 
                 
-
             enc_chi = _get_first_convolution(cfg['enc'])['chi']
             dec_chi = _get_first_convolution(cfg['dec'])['chi']
            
@@ -1217,15 +1315,19 @@ class HVAE(nn.Module):
             for j in range(self.graph_matrix.shape[1]-1,-1,-1): 
                 if self.graph_matrix[idx,j] == 1:
                     #print(idx,j)
-                    all_acts.append(activations[j]) # z_{i} is the output of the i-th layer
+                    act = activations[j] # z_{i} is the output of the i-th layer
+                    
+                    if type(act) in (list,tuple):
+                        act = concatenate_z0(act)
 
-        if idx == 1 and is_decoder: # hot fix to pass special case from prior to first block, only one input, pop list
-            all_acts = all_acts[0]
-        else:
-            # for a in all_acts:
-            #     print(f"{a.shape=}")
-            all_acts = torch.cat(all_acts,dim=-3)
-            #print(f"{all_acts.shape=}")
+                    all_acts.append(act)
+
+        
+        # for a in all_acts:
+        #     print(f"{a.shape=}")
+        all_acts = torch.cat(all_acts,dim=-3)
+        # print(f"{all_acts.shape=}")
+
         return all_acts
 
             
@@ -1234,9 +1336,13 @@ def _get_first_convolution(block):
     for l in block:
         if l['type'] == 'c' or l['type'] == 't':
             return l 
-        elif l.type == 'myenc':
-            return _get_first_convolution(l.nets[0])
-        elif l.type == 'mydec':
+        elif l.type == 'myenc' or l.type == 'mysegenc':
+            if getattr(l,'core_net',None) is not None:
+                return _get_first_convolution(l.core_net)
+            else:
+                return _get_first_convolution(l.clf_nets[0])
+        elif l.type == 'mydec' or l.type == 'mysegdec':
             return _get_first_convolution(l.net)
-
     return None
+
+
