@@ -2,27 +2,80 @@
 /src/mixmatch/examples/*
 !/src/mixmatch/examples/*.ipynb
 
-/cifar10@*/*
-!/cifar10*/log.txt
+
+
+
+*.txt
+
+experiments/cifar10sup/cifar10@*/*
+
+!experiments/cifar10sup/cifar10@*/log.txt
+
+
 
 //*.pt
 nohup.out
-/CIFAR10
-/MNIST
+
 /svae/*
 !/svae/nets/
 !/svae/custom_func/
 
-
+/scripts/
+/shvae-cityscape/
+/shvae-cityscape-unsup/
+/svae-cifar10/
+/svae-cifar10/
+/svae-cifar10-boris/
+/svae-cifar10-boris-live/
 
 /svae-mnist/*
+/sym_vae/*
 
-/cityscape*/
+experiments/cityscape*/cityscape*/*
+!experiments/cityscape*/cityscape*/log.txt
+
+# https://stackoverflow.com/questions/987142/make-gitignore-ignore-everything-except-a-few-files
+!experiments/cityscape*/cityscape*/figs
+experiments/cityscape*/cityscape*/figs/*
+
+!experiments/cityscape8mix/cityscape_cat@mix10/figs/batch_trn-e8-a85.png
+!experiments/cityscape8mix/cityscape_cat@mix10/figs/batch_tst-e8-a85.png
+!experiments/cityscape8mix/cityscape_cat@mix100/figs/batch_trn-e8-a91.png
+!experiments/cityscape8mix/cityscape_cat@mix100/figs/batch_tst-e8-a91.png
+!experiments/cityscape8mix/cityscape_cat@mix500/figs/batch_trn-e19-a93.png
+!experiments/cityscape8mix/cityscape_cat@mix500/figs/batch_tst-e19-a93.png
+!experiments/cityscape8mix/cityscape_cat@mix1000/figs/batch_trn-e32-a94.png
+!experiments/cityscape8mix/cityscape_cat@mix1000/figs/batch_tst-e32-a94.png
+!experiments/cityscape8mix/cityscape_cat@mixall/figs/batch_trn-e106-a95.png
+!experiments/cityscape8mix/cityscape_cat@mixall/figs/batch_tst-e106-a95.png
+
+!experiments/cityscape8sup/cityscape_cat@sup10/figs/batch_trn-e970-a77.png
+!experiments/cityscape8sup/cityscape_cat@sup10/figs/batch_tst-e970-a77.png
+!experiments/cityscape8sup/cityscape_cat@sup100/figs/batch_trn-e883-a88.png
+!experiments/cityscape8sup/cityscape_cat@sup100/figs/batch_tst-e883-a88.png
+!experiments/cityscape8sup/cityscape_cat@sup500/figs/batch_trn-e979-a94.png
+!experiments/cityscape8sup/cityscape_cat@sup500/figs/batch_tst-e979-a94.png
+!experiments/cityscape8sup/cityscape_cat@sup1000/figs/batch_trn-e1017-a95.png
+!experiments/cityscape8sup/cityscape_cat@sup1000/figs/batch_tst-e1017-a95.png
+!experiments/cityscape8sup/cityscape_cat@supall/figs/batch_trn-e434-a96.png
+!experiments/cityscape8sup/cityscape_cat@supall/figs/batch_tst-e434-a96.png
+
+
+
+!experiments/cityscape19sup/cityscape_19@sup10/figs/batch_trn-e770-a67.png
+!experiments/cityscape19sup/cityscape_19@sup10/figs/batch_tst-e770-a67.png
+!experiments/cityscape19sup/cityscape_19@sup100/figs/batch_trn-e1024-a83.png
+!experiments/cityscape19sup/cityscape_19@sup100/figs/batch_tst-1024-a83.png
+!experiments/cityscape19sup/cityscape_19@sup500/figs/batch_trn-e1023-a90.png
+!experiments/cityscape19sup/cityscape_19@sup500/figs/batch_tst-e1023-a90.png
+!experiments/cityscape19sup/cityscape_19@sup1000/figs/batch_trn-e639-a91.png
+!experiments/cityscape19sup/cityscape_19@sup1000/figs/batch_tst-e639-a91.png
+
 
 _env.yml
 *.zip
 *.jpg
-*.txt
+
 
 /latex/*
 !/latex/_*.tex
