@@ -219,7 +219,7 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
         CityscapesClass("fence",                13,       2,  "construction",       2,          False,      False,   (190, 153, 153)),
         CityscapesClass("guard rail",           14,       2,  "construction",       2,          False,      True,    (180, 165, 180)),
         CityscapesClass("bridge",               15,       2,  "construction",       2,          False,      True,    (150, 100, 100)),
-        CityscapesClass("tunnel",               16,       2, "construction",        2,          False,      True,    (150, 120,  90)),
+        CityscapesClass("tunnel",               16,       2,  "construction",       2,          False,      True,    (150, 120,  90)),
         CityscapesClass("pole",                 17,       3, "object",              3,          False,      False,   (153, 153, 153)),
         CityscapesClass("polegroup",            18,       3, "object",              3,          False,      True,    (153, 153, 153)),
         CityscapesClass("traffic light",        19,       3, "object",              3,          False,      False,   (250, 170,  30)),
@@ -243,7 +243,7 @@ class CityScapeDataset(torchvision.datasets.Cityscapes):
     id2trainid = {label.id: label.train_id for label in classes}
     trainid2color = {label.train_id : label.color for label in reversed(classes)}
     trainid2names = {label.train_id : label.name for label in reversed(classes)}
-    num_classes = len(trainid2color.keys()) #- 1 #remove one if license_plate has '-1' (not valid class)
+    num_classes = len(trainid2color.keys())
     
 
     class_weights = [1] * num_classes
@@ -465,8 +465,6 @@ def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,ve
     num_workers = os.cpu_count() 
     if 'sched_getaffinity' in dir(os):
         num_workers = len(os.sched_getaffinity(0)) - 2
-    num_workers = 0 # if on servers
-    
 
     base_dataset = torchvision.datasets.CIFAR10(root,train=True,download=download,transform=transforms.ToTensor())
     t = base_dataset.targets
@@ -531,8 +529,8 @@ def get_CIFAR10(root:str,n_labeled:int,n_val:int,batch_size:int,download:bool,ve
                                 target_transform =_target_trans,
                                 download=False)
     
-    labeled_dataloader = data.DataLoader(labeled_cifar,batch_size,shuffle=True,num_workers=num_workers,drop_last=True)
-    unlabeled_dataloader = data.DataLoader(unlabeled_cifar,batch_size,shuffle=True,num_workers=num_workers,drop_last=True)
+    labeled_dataloader = data.DataLoader(labeled_cifar,batch_size,shuffle=True,num_workers=num_workers,drop_last=False)
+    unlabeled_dataloader = data.DataLoader(unlabeled_cifar,batch_size,shuffle=True,num_workers=num_workers,drop_last=False)
     test_dataloader = data.DataLoader(test_cifar,batch_size,shuffle=False,num_workers=num_workers)
 
     if verbose:

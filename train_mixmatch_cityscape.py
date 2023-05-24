@@ -35,7 +35,7 @@ def parse_cmdline_arguments()-> EasyDict:
     parser.add_argument('--kimg','--images_per_epoch',default=5,type=float,help='Number of images to see in each epoch (in thousands)')
     parser.add_argument('-K','--K', default = 2, type=int, help='Number of agumentations to apply')
     parser.add_argument('-T','--temperature', default = 0.5, type=float, help='Temperature T for sharpening the distribution, T > 0')
-    parser.add_argument('-a','--alpha',default = 0.3, type = int, help='Hyperparameter for Beta distribution B(alpha,alpha)')
+    parser.add_argument('-a','--alpha',default = 0.3, type = float, help='Hyperparameter for Beta distribution B(alpha,alpha)')
     parser.add_argument('-lam','--lambda_u',default= 116, type = float, help='Weight for loss corresponding to unlabeled data')
     parser.add_argument('-rampup','--rampup_length',default = 1024, type = int, help='Length of linear ramp which is applied to lambda_u (0->1) in epochs')
     parser.add_argument('-nx','--n_labeled',default = 500,type=int,help='Number of labeled samples (Rest is unlabeled)')
@@ -112,11 +112,15 @@ if __name__ == '__main__':
     args = parse_cmdline_arguments()
 
     # Create outdir and log 
-    if not os.path.isdir(args.out):
-        os.mkdir(args.out)
-
+    args.tensorboardpath =os.path.join(args.out,'tensorboard_summary')
     args.logpath = os.path.join(args.out,'log.txt')
     args.modelpath = os.path.join(args.out, 'model')
+ 
+    if not os.path.isdir(args.out):
+        os.mkdir(args.out)
+        os.mkdir(args.tensorboardpath)
+        
+    writer = SummaryWriter(args.tensorboardpath)
 
     # Report initlization
     print(f"# Starting at {datetime.now()}",file=open(args.logpath,'w'),flush=True)
@@ -128,8 +132,6 @@ if __name__ == '__main__':
 
 
     print(f"# Starting at {datetime.now()}")
-
-    writer = SummaryWriter(args.out)
 
     ### Augumentation, Datasets and dataloaders ###
     img_size = args.img_size

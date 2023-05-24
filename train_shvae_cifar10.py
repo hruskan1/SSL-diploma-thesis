@@ -20,13 +20,13 @@ from typing import Tuple
 from torch.utils.tensorboard import SummaryWriter
 from progress.bar import Bar 
 
-def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device):
+def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device,boris_flag=False):
     """
     Function to evalute model on data in loader
     
     ignore_class:int  class which should be ignored during evaluation
     """
-    cel = nn.CrossEntropyLoss(reduction='mean')
+    cel = nn.CrossEntropyLoss(reduction='none')
     numel = 0
     vloss = 0.0
     vacc = 0.0
@@ -37,7 +37,8 @@ def validate(mod: HVAE, loader: DataLoader, device:torch.cuda.device):
             t0_smpl = nn.functional.one_hot(tl, num_classes=10).to(device, dtype=torch.float)
             t0_smpl = t0_smpl.reshape(*t0_smpl.shape,1,1)
             enc_acts = mod.encoder_activations(x0_smpl)
-            scores = enc_acts[0][0]
+
+            scores = enc_acts[0][:,:10,:,:] if boris_flag else enc_acts[0][0] 
             vloss += cel(scores, t0_smpl).sum().item()
 
             acc_mask = torch.argmax(scores,dim=1) == torch.argmax(t0_smpl,dim=1)
@@ -81,17 +82,19 @@ def main(args):
     # prepare data loaders
     t = transforms.ToTensor()
     
+    num_workers = os.cpu_count() 
+    if 'sched_getaffinity' in dir(os):
+        num_workers = len(os.sched_getaffinity(0)) - 2
+    
     train_dataset = datasets.CIFAR10(args.data_path, train=True, download=False, 
                                 transform=t)
     train_dataloader = DataLoader(train_dataset,
                               batch_size=args.batch_size,
                               shuffle=True,
                               pin_memory=True,
-                              num_workers=args.batch_workers)
+                              num_workers=num_workers)
     
-    num_workers = os.cpu_count() 
-    if 'sched_getaffinity' in dir(os):
-        num_workers = len(os.sched_getaffinity(0)) - 2
+   
     
     val_dataset = datasets.CIFAR10(args.data_path, train=False, download=False,
                               transform=t)
@@ -99,7 +102,7 @@ def main(args):
                               batch_size=args.batch_size,
                               shuffle=False,
                               pin_memory=True,
-                              num_workers=args.batch_workers)
+                              num_workers=num_workers)
 
     print('# Starting', file=open(logpath, 'w'), flush=True)
 
@@ -136,13 +139,14 @@ def main(args):
 
     # learning preparation
     log_period = 1
-    save_period = 1
+    save_period = 10
     niterations = args.niterations
     count = 0
     start_acc = True
     acc_dt = 0.0
     acc_et = 0.0
     best_val_acc = 0
+    flag = getattr(args,'boris_flag',False)
 
 
     num_of_batches_seen = 0
@@ -163,13 +167,21 @@ def main(args):
             # if argument z0 is a  list of len n, the first n z0 are overidden by the input and rest is 
             # sampled from z0
             
-            dt = hvae.decoder_learn_step(x0_smpl,z0=[t0_smpl])
+
+            z0 = t0_smpl if flag else [t0_smpl]
+            
+            dt = hvae.decoder_learn_step(x0_smpl,z0=z0,boris_flag=flag)
             
             # =====  encoder learn step (unsupervised) ======
 
             #nabla_{phi} on MC estimator of  E_pi(z) log_p log(q(z|x)) 
-            zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) 
-            zu0_smpl[0] = t0_smpl
+            
+            if flag:
+                zu0_smpl = hvae.sblock_list[0].sample_prior(hvae.z0_shape, z0=t0_smpl)
+            else:
+                zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) 
+                zu0_smpl[0] = t0_smpl
+
             et = hvae.encoder_learn_step(zu0_smpl)
 
             # accumulate data terms
@@ -193,38 +205,35 @@ def main(args):
             bar.suffix  = f"#({num_of_batches_seen%len(train_dataloader)}/{len(train_dataloader)})#({count}/{niterations})|{bar.elapsed_td}|ETA:{bar.eta_td}|"+\
                     f"ewa_dt:{acc_dt:.4f}|ewa_et :{acc_et:.4f}|"
             bar.next()
-            break
         bar.finish()
 
         if (count % log_period == log_period-1) or (count == niterations-1):
-            jsdivs = hvae.sblock_list[0].jsdivs
-            cat_jsdivs =  jsdivs[0].mean().item()
-            bin_jsdivs =  jsdivs[1].mean().item()
+            # jsdivs = hvae.sblock_list[0].jsdivs
+            # cat_jsdivs =  jsdivs[0].mean().item()
+            # bin_jsdivs =  jsdivs[1].mean().item()
             strtoprint = 'epoch: '+ str(count + epoch)
             strtoprint += ' dt: {:.3}'.format(-acc_dt)
             strtoprint += ' et: {:.3}'.format(-acc_et)
 
-            trn_loss, trn_acc = validate(hvae,train_dataloader,args.device)
+            trn_loss, trn_acc = validate(hvae,train_dataloader,args.device,flag)
 
             strtoprint += ' trnloss: {:.4}'.format(trn_loss)
-            strtoprint += ' trnacc: {:.4}'.format(trn_acc)
+            strtoprint += ' trnacc: {:2.4}'.format(trn_acc*100)
             
-            val_loss, val_acc = validate(hvae, val_dataloader, args.device)
+            val_loss, val_acc = validate(hvae, val_dataloader, args.device,flag)
             strtoprint += ' valloss: {:.4}'.format(val_loss)
-            strtoprint += ' valacc: {:.4}'.format(val_acc)
+            strtoprint += ' valacc: {:2.4}'.format(val_acc*100)
 
             writer.add_scalars('Accuracy',{'trn_acc' : trn_acc,
                                          'val_acc' : val_acc},count)
 
             writer.add_scalars('Loss',{'trn_loss' : trn_loss,
                                          'val_loss' : val_loss},count)
-                                         
-
-            
+                                                     
             print(strtoprint, file=open(logpath, 'a'), flush=True)
 
 
-        if (save_period and ((count % save_period == save_period - 1) or (count == (args.epochs-1))) ) or val_acc > best_val_acc:
+        if (save_period and ((count % save_period == save_period - 1) or (count == (niterations-1))) ) or val_acc > best_val_acc:
             print('# Saving models ...', file=open(logpath, 'a'), flush=True)
             checkpoint = {
                 'model_state_dict': hvae.state_dict(),
@@ -239,12 +248,13 @@ def main(args):
             hvae.save_stats(stats_path)
 
             # update best_val_acc
-            best_val_acc = val_acc
+            if val_acc > best_val_acc:
+                best_val_acc = val_acc
                
             # save a few reconstructions
             with torch.no_grad():
                 # two batches (sup & unsup)
-                n = min(8,xl.shape[0])
+                n = min(16,xl.shape[0])
 
                 x0 = x0_smpl[0:n]
                 t0 = t0_smpl[0:n]
@@ -256,25 +266,14 @@ def main(args):
                 x1 = probs[-1] # img
                 x4 = probs[0] # z0 (classes)
 
-
-
-
-                
-                
-                z0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
-                print(f"{z0_smpl[0].shape=},{z0_smpl[1].shape=}")
-                z0_smpl[0] = t0
-                print(f"{z0_smpl[0].shape=},{z0_smpl[1].shape=}")
-
+                z0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent     
                 (x3, x2) = hvae.prior_sample(z0_smpl)
                 
                 # continue sampling (limiting marginal distrib)
                 for _ in range(100):
-                    (z_all, _) = hvae.posterior_sample(x3, expanded=True)
-                    z_all[0][0] = t0
-                    (x3, probs) = hvae.posterior_sample(x3, z0=z_all[0])
+                        (x3,mus) = hvae.posterior_sample(x3,t0 if flag else [t0],boris_flag=flag)
                 
-                x3 = probs[-1]
+                x3 = mus[-1]
 
  
                 # x0 & u0 original images
@@ -307,7 +306,7 @@ if __name__ == '__main__':
     if cmdl_args.config:
         cfg_name = cmdl_args.config
     else:
-        cfg_name = 'config-2.yaml'
+        cfg_name = 'config-3.yaml'
     with open(cfg_name, 'r') as ymlfile:
         cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     ed = EasyDict(cfg)

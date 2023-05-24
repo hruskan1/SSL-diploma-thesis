@@ -68,7 +68,8 @@ def ensure_onehot(targets:torch.Tensor,num_classes):
     if targets.ndim == 1 or targets.shape[1] == 1:
                 # [N,] or [N,1,..] -> [N,C,..]
                 N = targets.shape[0]
-                targets = F.one_hot(targets.reshape(N,*(targets.shape[2:])).to(torch.long),num_classes=num_classes).permute(0,3,1,2).to(torch.float32)
+                # targets = F.one_hot(targets.reshape(N,*(targets.shape[2:])).to(torch.long),num_classes=num_classes).permute(0,3,1,2).to(torch.float32)
+                targets = F.one_hot(targets.reshape(N,*(targets.shape[2:])).to(torch.long),num_classes=num_classes).permute(0,-1,*list(range(1,targets.ndim-1))).to(torch.float32)
     
     return targets
 

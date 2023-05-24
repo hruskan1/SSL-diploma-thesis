@@ -127,7 +127,7 @@ def main(args):
     os.makedirs(os.path.join(args.res_path,'logs'),exist_ok=True)
     os.makedirs(os.path.join(args.res_path,'models'),exist_ok=True)
     os.makedirs(os.path.join(args.res_path,'images'),exist_ok=True)
-    os.makedirs(summary_path,exist_ok=True)
+    os.makedirs(summary_path,exist_ok=False)
 
     writer = SummaryWriter(summary_path)    
     print('# Starting', file=open(logpath, 'w'), flush=True)
@@ -136,7 +136,7 @@ def main(args):
     mean = CityScapeDataset.mean
     std = CityScapeDataset.std
     size = args.img_size
-    num_classes =args.blocks[0].pc_block.cho
+    num_classes =args.blocks[0].blocks[0].cho
     _t = transforms.Compose([transforms.ToTensor(),
                              transforms.Normalize(mean,std),
                              transforms.Resize(size,interpolation=InterpolationMode.BICUBIC)]) 
@@ -197,7 +197,7 @@ def main(args):
 
     # learning preparation
     log_period = 1
-    save_period = 0
+    save_period = 5
     niterations = args.niterations
     count = 0
     start_acc = True
@@ -206,8 +206,6 @@ def main(args):
     best_val_acc = 0
 
     unlabeled_train_iter = iter(unlabeled_dataloader)
-
-    #print(f"{hvae.sblock_list=}")
 
     num_of_batches_seen = 0
     while True:
@@ -236,7 +234,7 @@ def main(args):
             unsup_dt = hvae.decoder_learn_step(xu)
 
             # =====  encoder learn step (unsupervised) ======
-            hvae.z0_shape
+    
             # E_pi(z) log_p log(q(z|x)) 
             zu0_smpl = hvae.z0_prior_sample(hvae.z0_shape) # random sample from latent 
             zu0_smpl[0] = tu 
@@ -305,7 +303,8 @@ def main(args):
             hvae.save_stats(stats_path)
 
             # update best_val_acc
-            best_val_acc = val_acc
+            if val_acc > best_val_acc:
+                best_val_acc = val_acc
 
             # evalute IoU
             # w = torch.Tensor(CityScapeDataset.class_weights).to(args.device)
@@ -330,11 +329,11 @@ def main(args):
                 t0l = tu[0:n]
                 
                 _s = torch.empty((n,*list(hvae.z0_shape[0][1:])))
-                _pl = torch.empty((n,*list(hvae.z0_shape[1][1:])))
-                _il = torch.empty((n,*list(hvae.z0_shape[2][1:])))
+                _l = torch.empty((n,*list(hvae.z0_shape[1][1:])))
                 
                 
-                z0_shape = (_s.shape,_pl.shape,_il.shape)
+                
+                z0_shape = (_s.shape,_l.shape)
                 
                 z0l_smpl = hvae.z0_prior_sample(z0_shape) # random sample from latent 
                 z0l_smpl[0] = t0l
@@ -389,7 +388,7 @@ def main(args):
             
                 vis.clamp_(0.0, 1.0)
                 
-                images = vutils.make_grid(vis,nrow=2*n)
+                images = vutils.make_grid(vis,nrow=2*n,)
 
                 writer.add_image(f'img-e{count}-a{val_acc*100:2.0f}', images, count)
                 vutils.save_image(images, viz_path + f'-img-e{count}-a{val_acc*100:2.0f}.png')

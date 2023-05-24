@@ -78,11 +78,15 @@ if __name__ == '__main__':
     args.device = utils.get_device(args.device)
     
     # Create outdir and log 
-    if not os.path.isdir(args.out):
-        os.mkdir(args.out)
-
+    args.tensorboardpath =os.path.join(args.out,'tensorboard_summary')
     args.logpath = os.path.join(args.out,'log.txt')
     args.modelpath = os.path.join(args.out, 'model')
+ 
+    if not os.path.isdir(args.out):
+        os.mkdir(args.out)
+        os.mkdir(args.tensorboardpath)
+        
+    writer = SummaryWriter(args.tensorboardpath)
 
     # Report initlization
     print(f"# Starting at {datetime.now()}",file=open(args.logpath,'w'),flush=True)
@@ -94,8 +98,6 @@ if __name__ == '__main__':
 
 
     print(f"# Starting at {datetime.now()}")
-
-    writer = SummaryWriter(args.out)
 
     ### Datasets and dataloaders ###
 

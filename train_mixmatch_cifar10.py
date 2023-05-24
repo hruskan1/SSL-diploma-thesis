@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
     parser.add_argument('--device',default=1, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
-    parser.add_argument('--dataset_path',default='./CIFAR10', type=str, help='Root directory for dataset') 
+    parser.add_argument('--dataset_path',default='mnt/personal/hruskan1/CIFAR10', type=str, help='Root directory for dataset') 
     parser.add_argument('-ewa', '--mean_teacher_coef', default = 0.999, type=utils._restricted_float, help='weight for exponential average of mean teacher model. Default is None and Mean teach is not used')
     parser.add_argument('--out', '--output_directory', default=f'./mix_cifar10_run_{datetime.now().strftime("%d-%m-%Y_%H:%M")}',type=str, help='root directory for results')
     parser.add_argument('--resume', default=None, type=utils._str, help='Path to model which is to be used to resume training')
@@ -81,12 +81,17 @@ if __name__ == '__main__':
     # Multiply kimg
     args.kimg = args.kimg * 1000
 
+    args.tensorboardpath =os.path.join(args.out,'tensorboard_summary')
+    args.logpath = os.path.join(args.out,'log.txt')
+    args.modelpath = os.path.join(args.out, 'model')
+
     # Create outdir and log 
     if not os.path.isdir(args.out):
         os.mkdir(args.out)
-
-    args.logpath = os.path.join(args.out,'log.txt')
-    args.modelpath = os.path.join(args.out, 'model')
+        os.mkdir(args.tensorboardpath)
+        
+        
+    writer = SummaryWriter(args.tensorboardpath)
 
     # Report initlization
     print(f"# Starting at {datetime.now()}",file=open(args.logpath,'w'),flush=True)
@@ -99,7 +104,7 @@ if __name__ == '__main__':
 
     print(f"# Starting at {datetime.now()}")
 
-    writer = SummaryWriter(args.out)
+    
 
     ### Datasets and dataloaders ###
     num_classes = 10 
