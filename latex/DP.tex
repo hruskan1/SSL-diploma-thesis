@@ -27,6 +27,7 @@
 	fieldofstudy-english = {Cybernetics and Robotics},
 	%subfieldofstudy-english = {Mathematical Modelling},
 	fieldofstudy-czech = {Kybernetika a robotika},
+	%study-program = {Kybernetika a robotika},
 	%subfieldofstudy-czech = {Matematické modelování},
 	keywords-czech = {Segmentace obrazu, SSL,HVAE,LVAE,symmetric learning, MixMatch,CityScape},
 	keywords-english = {Image segmentation, SSL, VAE,HVAE, LVAE, symetric learning, MixMatch, CityScape},
@@ -262,13 +263,11 @@ and paradigms they employ.
 Next, we will delve deeper into two specific approaches: MixMatch and Variational Autoencoders (VAEs). Section~\ref{sec:mix-match} 
 will provide an in-depth introduction to MixMatch, while section~\ref{sec:vae} will focus on the basics of Variational Autoencoders, 
 introducing the topic, its achievements, and recognized shortcomings. Following that, in section~\ref{sec:hiearchical-vae}, we will
-explore advanced variants of VAEs that partially overcome these shortcomings and represent the state-of-the-art in the field of VAE.
+explore advanced variants of VAEs that partially overcome the aforementioned shortcomings and represent the state-of-the-art in the field of VAE.
 
-These sections serve as a foundation for comprehending symmetric equilibrium learning in VAEs, which will be introduced in section~\ref{sec:symmetric_learning}.
-Additionally, section~\ref{sec:exp_family} provides an introduction to the family of exponential 
-distributions, which are extensively used in VAE and its advanced variants.
-\todo{Add reference to unpublished paper}
-
+These sections serve as a foundation for comprehending a novel algorithm based on symmetric equilibrium learning in VAEs, 
+which will be introduced in section~\ref{sec:symmetric_learning}. Additionally, section~\ref{sec:exp_family} provides an introduction 
+to the family of exponential distributions, which are extensively used in VAE and its advanced variants.
 % SotA SSL
 \input{_ssl}
 % VAE, HVAE,LVAE
@@ -292,16 +291,9 @@ distributions, which are extensively used in VAE and its advanced variants.
 \chapter{Experiments \& Results} 
 \label{results}
 \input{_experiments}
-
-\todo{Presentation of the results of the experiments}
-\todo{Comparison of the results of the ladder autovariational encoder with symmetrical learning and mixmatch models}
-\todo{Discussion of the results and analysis of the findings}
-
-
-
 \chapter{Conclusion}
 \label{conclusions}
-\todo{2-3 pages}	
+\input{_conclusions}
 \todo{Summary of the main findings and contributions}
 
 \printbibliography

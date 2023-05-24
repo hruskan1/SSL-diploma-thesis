@@ -1,6 +1,6 @@
 \section{Mixmatch experiments}
 As the original implementation of MixMatch is written in \texttt{TensorFlow} we have re-implemented it in \texttt{PyTorch}. To verify the correctness
- of our implementation, we have run tests on CIFAR10 and compared our results with those reported in ~\cite{mixmatch-2019} and ~\cite{wide-resnet-2017}. The 
+ of our implementation, we have run tests on CIFAR10~\cite{cifar10-2009} and compared our results with those reported in ~\cite{mixmatch-2019} and ~\cite{wide-resnet-2017}. The 
 comparison is shown in table~\ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. 
 The specific hyperparameters of all experiments are provided with the code and are available. We will not report any of them here.
  
@@ -16,7 +16,7 @@ The specific hyperparameters of all experiments are provided with the code and a
     Baseline & $38.42$ & $45.77$ & $50.42$ & $60.21$ & $79.57$ &  \\
     \hline
     \end{tabular}
-    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset ~\cite{cifar10-2009}. Labels row corresponds to number of labeled points available during trainig. 
+    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset. Labels row corresponds to number of labeled points available during trainig. 
     The last column ("All") corresponds to fully-supervised mode performance on whole dataset (50k images).
     We additionally provide the basline row, which contains the result of supervisied training on given number of images (Our code).
     Our results are based only on one run.}
@@ -45,7 +45,7 @@ like Cityscapes, as the network may ignore classes with a small representation r
     Supervised & $76.85$ & $87.59$ & $93.50$ & $94.71$ & $95.58$ \\
     \hline
     \end{tabular}
-    \caption[Mixmatch accuracy on CityScape]{Mixmatch accuracy rate (\%) on Citysacpe dataset~\cite{cityscapes-2016} compared to the supervised baseline. The 
+    \caption[Mixmatch accuracy on CityScape]{Mixmatch accuracy rate (\%) on Citysacpe dataset compared to the supervised baseline. The 
     "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
     column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
     The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
@@ -57,6 +57,7 @@ like Cityscapes, as the network may ignore classes with a small representation r
     \centering
     \includegraphics[width=\textwidth]{mix10_vizualization_stacked.png}
     \caption[Mixmatch result visualization (10)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on 10 images. 
+    The figure contains 12 examples, which were stacked into two blocks, each containg four rows. 
     The first two rows contains the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
     while the supervised baseline predictions are in the fourth row. \newline
      The colors used in the segmentation are as follows: flat (purple), human (red), vehicle (dark blue), construction (dark grey), 
@@ -68,8 +69,8 @@ like Cityscapes, as the network may ignore classes with a small representation r
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{mixall_vizualization_stacked.png}
-    \caption[Mixmatch result visualization (10)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on all available images.
-    See caption of~\ref{ig:mixmatch_visualization_10} for the legend.}
+    \caption[Mixmatch result visualization (All)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on all available images.
+    See caption of fig.~\ref{fig:mixmatch_visualization_10} for the legend.}
     \label{fig:mixmatch_visualization_all}
 \end{figure}
 
@@ -94,7 +95,7 @@ the MixMatch (on the labeled dataset only) and that even small number of images 
     Supervised & $41.78$ & $54.38$ & $68.25$ & $71.93$ & $73.84$ \\
     \hline
     \end{tabular}
-    \caption[Mixmatch average IoU on CityScape]{Mixmatch average IoU (\%) on Citysacpe dataset~\cite{cityscapes-2016} compared to the supervised baseline. The 
+    \caption[Mixmatch average IoU on CityScape]{Mixmatch average IoU (\%) on Citysacpe dataset compared to the supervised baseline. The 
     "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
     column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
     The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
@@ -104,4 +105,34 @@ the MixMatch (on the labeled dataset only) and that even small number of images 
      
 
 \section{Symmetric learning for HVAE}
-We
+In our experiment on the CityScape dataset, we adopt the following approach. We 
+divide the available dataset, which consists of images and their corresponding
+segmentations, into three distinct datasets:
+\begin{itemize}
+    \item  Labeled dataset $\mathcal{D}_l$: This dataset is a subset of the available dataset and contains both the 
+    images and their corresponding segmentations.
+    \item  Unlabeled dataset $\mathcal{D}^1_u$: This dataset includes the remaining images from the available dataset 
+    that were not included in the labeled dataset.
+    \item  Unlabeled dataset $\mathcal{D}^2_u$: This dataset comprises the remaining segmentations from the available 
+    dataset that were not included in the labeled dataset.
+\end{itemize}
+    
+In our scenario, we do not discard the segmentations, as done in MixMatch experiments. Instead, we utilize the 
+segmentations as described in sec.~\ref{sec:sym_learning_adaptation}.
+
+\todo{Report the results,add image,accuracy,etc.}
+
+During our experiments with symmetric learning on HVAE, we have encountered several issues. Specifically, we have observed
+challenges related to the decoder blocks situated between the layers, i.e. neural networks predicting the natural parameters:
+\begin{align*}
+    \boldsymbol{\eta} &= \mathrm{NeuralNet}_{\boldsymbol{\theta}}(\text{Pa}(\_z_{<t})) \\
+    p_{\boldsymbol{\theta}}(\mathbf{z}_t \mid \_z_{<t}) &= p_{\boldsymbol{\theta}}(\_z_t \mid \_\eta) =  p_{\boldsymbol{\theta}}(\_z_t \mid \mathrm{NeuralNet}_{\boldsymbol{\theta}}(\text{Pa}(\_z_t)))
+\end{align*}
+
+\todo{Wait until the final results }
+One observation is that these decoder blocks need to be deep enough and simultaneously incorporate simple local skip connections 
+(similar to those used in ResNet architectures).Additionally, we have noticed that when the latent variables  $z$, have
+nontrivial spatial dimensions, the generated images often lack overall coherence. Instead, they consist of multiple locally 
+coherent patches that fail to accurately represent the target images.
+\todo{provide figure} 
+This issue can be overcomed by introduction of the global skip connections (like those in the U-Net architecture).

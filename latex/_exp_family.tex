@@ -114,14 +114,14 @@ $$
 where $\delta(\boldsymbol{x},\boldsymbol{x}^\prime)$is Kronecker delta.  This distribuion places a point mass at each datapoint in dataset $\mathcal{D}$.
 We can utilize it for writting the log likelihood (in discrete case):
 \begin{align*}
-\sum_{\boldsymbol{x}} p_{\mathcal{D}} \log p(\boldsymbol{x} \mid \boldsymbol{\theta}) &= \sum_{\boldsymbol{x}} \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} | \boldsymbol{\theta}) \\
-    &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \sum_{\boldsymbol{x}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} | \boldsymbol{\theta})\\
-    &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \log  p(\boldsymbol{x}^\prime | \boldsymbol{\theta}) \\
+\sum_{\boldsymbol{x}} p_{\mathcal{D}} \log p(\boldsymbol{x} \mid \boldsymbol{\theta}) &= \sum_{\boldsymbol{x}} \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} \mid \boldsymbol{\theta}) \\
+    &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \sum_{\boldsymbol{x}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} \mid \boldsymbol{\theta})\\
+    &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \log  p(\boldsymbol{x}^\prime \mid \boldsymbol{\theta}) \\
     &= \frac{1}{|\mathcal{D}|} l(\boldsymbol{\theta} \mid \mathcal{D})
 \end{align*}
-where $l(\boldsymbol{\theta} \mid \mathcal{D}) = \log p(\mathcal{D} | \boldsymbol{\theta})$ is the log likelihood. So computing the cross entropy between empirical data distribution and model provides us with log likelihood.
-If we compute the KL divergence of the empirical data ditribution and model $p(\boldsymbol{x} | \boldsymbol{\theta})$, we obtain
+where $l(\boldsymbol{\theta} \mid \mathcal{D}) = \log p(\mathcal{D} \mid \boldsymbol{\theta})$ is the log likelihood. So computing the cross entropy between empirical data distribution and model provides us with log likelihood.
+If we compute the KL divergence of the empirical data ditribution and model $p(\boldsymbol{x} \mid \boldsymbol{\theta})$, we obtain
 $$
-\mathrm{KL}(p_{\mathcal{D}} || p(\boldsymbol{x} | \boldsymbol{\theta})) = \sum_{\boldsymbol{x}} p_{\mathcal{D}} \frac{p_{\mathcal{D}}}{p(\boldsymbol{x} | \boldsymbol{\theta})} = \EX_{p_{\mathcal{D}}} \log p_{\mathcal{D}} - \frac{1}{N} l(\boldsymbol{\theta} \mid \mathcal{D})
+\mathrm{KL}(p_{\mathcal{D}} || p(\boldsymbol{x} \mid \boldsymbol{\theta})) = \sum_{\boldsymbol{x}} p_{\mathcal{D}} \frac{p_{\mathcal{D}}}{p(\boldsymbol{x} \mid \boldsymbol{\theta})} = \EX_{p_{\mathcal{D}}} \log p_{\mathcal{D}} - \frac{1}{N} l(\boldsymbol{\theta} \mid \mathcal{D})
 $$ 
 the empirical data distribution is not depending on the model parameters $\boldsymbol{\theta}$ and thus \textit{by minimizing the KL divergence to the empirical distribuion, we maximize the (log) likelihood (of data under the model)}. 

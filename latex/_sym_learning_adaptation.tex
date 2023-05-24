@@ -1,4 +1,4 @@
-\section{Symetric learning for HVAE}
+\section{Symetric learning for HVAE}\label{sec:sym_learning_adaptation}
 We implement a hierarchical variational autoencoder (HVAE) that aims to provide a segmentation 
 $\mathbf{s}$ for a given image $\mathbf{x}$ and reconstruct the image if a ground truth segmentation is provided. 
 In our scenario, we only have access to samples from the unknown underlying distribution of images and
@@ -24,22 +24,66 @@ Both the encoder $q_{\boldsymbol{\phi}}$ and decoder $p_{\boldsymbol{\theta}}$ h
  code $\mathbf{l}$, are modeled using a Bernoulli distribution. For the image and segmentation, we utilize Gaussian
  and categorical distributions, respectively.
  
+We utilize the standard building blocks of the U-net architecture, which consist of convolutional layers and rescaling layers.
+These blocks are applied up to the last (first) layer of the encoder (decoder), due to the choice of the $\_z_0$. 
+We wish the segmentations $\_s$ to contain the local information corresponding to its spatial position and the latent code $\_l$ to
+contain global information at the same time.  To achieve this, we adapt the architecture of the last block of both the encoder and decoder:
 
-We apply the standard construction blocks of the U-net, up to the last (first) layer of encoder (decoder), where we 
-face a challenge when combining the segmentation $\mathbf{s}$ and latent code $\mathbf{l}$ since the latent code does
-not possess spatial dimensions.
 \begin{itemize}
-    \item The \textit{encoder} consists of two independent networks, meaning they do not share parameters. 
-    The first network is a standard convolutional block responsible for mapping the input to segmentation activations. 
-    The number of output channels in this block corresponds to the number of classes in the segmentation task. 
-    The second network is an extended convolutional block that incorporates an adaptive average pooling layer. 
-    This layer reduces the spatial dimensions to 1, generating the latent code activations.
+    \item The last block of the \textit{encoder} in our architecture comprises a shared core network,~which 
+    is common to both the segmentation and latent code branches. Following the core network, there 
+    are two independent heads (networks) with separate parameters, each tailored to produce the 
+    desired outputs.
 
-    \item The \textit{decoder} part comprises a single convolutional block. Initially, we replicate the latent
+    The network architectures for both heads and core network follow the standard convolutional block structure. 
+    In the segmentation head, the final layer is a convolutional layer with output channels corresponding 
+    to the number of classes in the segmentation task. This layer generates the segmentation predictions.
+    
+    On the other hand, the latent code head concludes with an adaptive average pooling layer. This layer
+    reduces the spatial dimensions of the output to 1,~resulting in a compact latent code representation
+    that captures global information.
+   
+
+    \item The last block of the \textit{decoder} is composed of a single convolutional block. Initially, we replicate the latent
     code activations in the spatial dimension to match the segmentation's spatial dimensions. Next, we concatenate
-    the replicated latent code and the segmentations along the channel dimension, creating a compact block. This
-    block serves as the input to the aforementioned convolutional block in the decoder.
+    the replicated latent code and the segmentations along the channel dimension, creating a compact block,~which 
+    serves as the input to the aforementioned convolutional block in the decoder.
+
+    By replicating the latent code in the spatial dimension and combining it with the segmentations,~we ensure that the
+    latent code $\mathbf{l}$ possesses complete information about the image and has a global influence. 
 \end{itemize}
-By replicating the latent code in the spatial dimension and combining it with the segmentations, we ensure that the
-latent code $\mathbf{l}$ possesses complete information about the image and has a global influence. 
+
+The overall architecture of both the encoder and decoder is inspired by the U-net architecture, incorporating skip connections. 
+The architecture exhibits a "symmetry" between the encoder and decoder, defined as follows: a skip connection exists from $\_z_i$ to $\_z_j$ in
+the decoder if and only if there is a skip connection from $\_z_j$ to $\_z_i$ in the encoder. 
+
+This architecture is our choice. In fact, HVAE permits any set of skip connections between the $\_z$ layers for the decoder, as long as a topological ordering exists 
+for such a set. In other words, the corresponding directed graph formed by the $m$ nodes representing layers $\_z_1,\dots,\_z_m$ should be acyclic. 
+Moreover it is worth noting that the encoder and decoder architecture are indepenedent up to the point that it provides the corresponding activations to the decoder layers
+as in LVAE. In addition, it is important to note that the encoder and decoder architectures are independet of each other up to the fact that the encoder 
+should supply the appropriate activations to the decoder layers, following the LVAE paradigm. 
+
+In the case of semi-supervised learning, the HVAE is trained using block-wise maximization of the following objective functions:
+\begin{align}
+    \mathcal{L}_{p}(\_\theta,\_\phi) &= 
+        \EX_{\pi(\_x,\_s)}\EX_{q_{\_\theta,\_\phi}(\_z_{>0},\_l \mid \_x, \_s)}\bigl[\log p_{\_\theta}(\_x,\_z)\bigr]+
+        \EX_{\pi(\_x)}\EX_{q_{\_\theta,\_\phi}(\_z \mid \_x)} \bigl[\log p_{\_\theta}(\_x,\_z)\bigr] \label{eq:hvae_decoder}\\
+    \mathcal{L}_{q}(\_\theta,\_\phi) &=
+        \EX_{\pi(\_x,\_s)}\bigl[\log q_{\_\phi}(\_s \mid \_x) \bigr] + 
+        \EX_{\pi(\_s)}\EX_{p(\_l)}\EX_{p_{\_\theta}(\_x,\_z_{>0} \mid \_z_{0})} \bigl[\log q_{\_\theta,\_\phi}(\_z_{>0} | \_x)\bigr] \label{eq:hvae_encoder}
+\end{align}
+Here, $\pi(\_x,\_s)$ represents the underlying distribution with marginals $\pi(\_x)$ and $\pi(\_s)$. 
+The distribution $p(\_l)$ is a uniform prior distribution for the latent code (model choice).
+The first terms in both objectives correspond to supervised learning, while the second terms correspond to unsupervised learning.
+
+During training, we sample from the corresponding distributions, apply the reparameterization trick, and compute the stochastic 
+gradient as in the standard VAE framework. The samples from $\pi(\_x,\_s)$ and $\pi(\_x)$ are provided in the labeled dataset $\mathcal{D}_l$ 
+and unlabeled dataset $\mathcal{D}_u$, respectively. If there is available segmentation information, we can incorporate it in 
+the unsupervised learning term of the encoder. In our case, we have access to segmentation information, but it is often not 
+available in practice, requiring the introduction of the model distribution $p(\_s)$ from which we can sample.
+
+In case of unsupervised learning, we simply drop the terms corresponding to supervised learning from eq. \ref{eq:hvae_decoder} 
+and eq. \ref{eq:hvae_encoder}.
+
+
 
