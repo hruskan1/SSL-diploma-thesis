@@ -27,6 +27,7 @@
 	fieldofstudy-english = {Cybernetics and Robotics},
 	%subfieldofstudy-english = {Mathematical Modelling},
 	fieldofstudy-czech = {Kybernetika a robotika},
+	%study-program = {Kybernetika a robotika},
 	%subfieldofstudy-czech = {Matematické modelování},
 	keywords-czech = {Segmentace obrazu, SSL,HVAE,LVAE,symmetric learning, MixMatch,CityScape},
 	keywords-english = {Image segmentation, SSL, VAE,HVAE, LVAE, symetric learning, MixMatch, CityScape},
@@ -82,12 +83,35 @@
 
 % Abstract in Czech
 \begin{abstract-czech}
-\todo{}
+Tato diplomová práce se zabývá využitím algoritmů částečného strojového učení s učitelem pro segmentaci
+lesních ploch ze satelitních snímků. Místo přímého vyhodnocování na satelitních snímcích budeme používat 
+veřejně dostupný dataset CityScape pro ověření výsledků, reprodukovatelnost a porovnání s jinými metodami. 
+
+První část diplomové práce zahrnuje rešerši state-of-the-art algoritmů v oblasti částečného strojového učení s učitelem. Představujeme
+dva vyhodnocované algoritmy: referenční MixMatch a nový algoritmus založený na symetrickém učení variačních autoenkoderů.
+Poskytujeme také samostatný úvod do variačních autoenkoderů, zahrnující jejich teoretické základy a rozšíření, aby čtenář
+porozuměl základním principům, na kterých nový algoritmus staví.
+
+Hlavním cílem je adaptovat a posoudit schopnosti obou nového a referenčního algoritmu v oblasti segmentace. V obou případech
+využíváme stejnou architekturu modelu založenou na U-net síti pro srovnatelnost a vyhodnocení.
+\todo{Rewrite once results are obtained}
 \end{abstract-czech}
 
 % Abstract in English
 \begin{abstract-english}
- \todo{}
+	This master's thesis explores the application of semi-supervised machine learning algorithms for segmenting 
+	forest land cover in satellite images. Instead of directly evaluating these algorithms on satellite imagery, we employ
+	the publicly available CityScape dataset to verify results, ensure reproducibility, and facilitate comparison with other 
+	existing methods.
+
+	The thesis begins with an in-depth review of the current state-of-the-art in semi-supervised machine learning algorithms. We 
+	introduce two evaluated algorithms: MixMatch, which serves as a reference, and a novel algorithm based on symmetric learning of
+	variational autoencoders. To provide readers with a comprehensive understanding, we also provide a self-contained introduction 
+	to variational autoencoders, covering their theoretical foundations and extensions.
+	
+	The primary objective of this work is to adapt and evaluate the capabilities and segmentation potential of both the new algorithm
+	and the reference algorithm. To ensure comparability, we employ a U-net network-based model architecture in both cases.
+	\todo{Rewrite once results are obtained}
 \end{abstract-english}
 
 % Acknowledgements / Podekovani
@@ -231,16 +255,19 @@ In Prague, 26th May, 2023
 
 \chapter{State of the art of SSL}
 \label{motivation-theory}
-In this chapter, we will present a brief introduction to semi-supervised learning in section \ref{sec:ssl-introduction}. 
+In this chapter, we will present a brief introduction to semi-supervised learning in section~\ref{sec:ssl-introduction}.
 We will discuss the key concepts and principles underlying semi-supervised learning and its significance in machine learning. 
-Furthermore, we will classify the algorithms used in semi-supervised learning into various groups based on the different 
-ideas and paradigms they employ.
+Furthermore, we will classify the algorithms used in semi-supervised learning into various groups based on the different ideas 
+and paradigms they employ.
 
-Additionally, we will provide a more detailed overview of MixMatch and Variational Autoencoders in sections \ref{sec:mix-match} and \ref{sec:vae}, with
-a particular focus on Variational Autoencoders and their variants as they are cornerstone of the novel approach proposed by \cite{sym-learning-2023}, which 
-we finally introduce section \ref{sec:symmetrical-learning}.
-\todo{Add reference to unpublished paper}
+Next, we will delve deeper into two specific approaches: MixMatch and Variational Autoencoders (VAEs). Section~\ref{sec:mix-match} 
+will provide an in-depth introduction to MixMatch, while section~\ref{sec:vae} will focus on the basics of Variational Autoencoders, 
+introducing the topic, its achievements, and recognized shortcomings. Following that, in section~\ref{sec:hiearchical-vae}, we will
+explore advanced variants of VAEs that partially overcome the aforementioned shortcomings and represent the state-of-the-art in the field of VAE.
 
+These sections serve as a foundation for comprehending a novel algorithm based on symmetric equilibrium learning in VAEs, 
+which will be introduced in section~\ref{sec:symmetric_learning}. Additionally, section~\ref{sec:exp_family} provides an introduction 
+to the family of exponential distributions, which are extensively used in VAE and its advanced variants.
 % SotA SSL
 \input{_ssl}
 % VAE, HVAE,LVAE
@@ -263,17 +290,10 @@ we finally introduce section \ref{sec:symmetrical-learning}.
 
 \chapter{Experiments \& Results} 
 \label{results}
-\input{_mixmatch_experiments}
-
-\todo{Presentation of the results of the experiments}
-\todo{Comparison of the results of the ladder autovariational encoder with symmetrical learning and mixmatch models}
-\todo{Discussion of the results and analysis of the findings}
-
-
-
+\input{_experiments}
 \chapter{Conclusion}
 \label{conclusions}
-\todo{2-3 pages}	
+\input{_conclusions}
 \todo{Summary of the main findings and contributions}
 
 \printbibliography

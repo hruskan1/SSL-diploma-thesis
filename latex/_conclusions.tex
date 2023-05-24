@@ -1,0 +1,23 @@
+Throughout this thesis, we have conducted a thorough investigation and comparison of two key approaches: MixMatch
+and the novel symmetrical equilibrium learning algorithm, within the context of segmentation tasks. In this final chapter, we
+will reflect on our findings, discuss the implications of our work, and outline potential avenues for future research.
+
+We acknowledge that our deviation from the original assignment, specifically the absence of experiments conducted on the actual 
+time series of multi-spectral satellite data for the national park Bohemian Switzerland, may raise questions regarding the validity 
+and applicability of our findings to this specific task. However, we would like to provide a comprehensive explanation for this 
+decision and offer reasoning as to why our experiments and resulting findings remain valuable and relevant.
+
+Instead of utilizing satellite imagery, we chose to work with the (almost) publicly available Cityscape dataset, which is widely
+used and established. This decision was motivated by two factors: ensuring reproducibility and saving time. Although the Cityscape 
+dataset primarily consists of urban street scenes, we believe that the complexity of segmentation in this dataset is comparable to, or
+even higher than, the challenges encountered in land-coverage segmentation of forests. Additionally, we consider the convolution 
+process, whether in 2D or 3D, to be fundamentally similar from the perspective of the network and training process. Therefore, we 
+can extrapolate the results obtained on the Cityscape dataset to the task of land cover classification.
+
+In light of these considerations, we focused on exploring and evaluating the effectiveness of MixMatch and 
+Symmetric Equilibrium Learning for VAE for the segmentation task in general. By examining their
+advantages and shortcomings, we aimed to gain insights into their applicability and performance.
+
+Our experiments with MixMatch have demonstrated its efficacy, especially in scenarios where labeled data is scarce. The integration of 
+consistency regularization and proxy-labeling methods in MixMatch has proven effective in leveraging unlabeled data to enhance segmentation
+performance and promote visually coherent model predictions.

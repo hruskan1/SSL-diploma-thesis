@@ -1,10 +1,10 @@
-\section{Symetric leaning in VAE}
+\section{Symmetric leaning in VAE}
 \label{sec:symmetric_learning}
-The authors of \cite{sym-learning-2023} present an alternative approach to maximizing the evidence lower bound (ELBO)
+The authors of~\cite{sym-learning-2023} present an alternative approach to maximizing the evidence lower bound (ELBO)
 in Variational Autoencoders (VAEs). The traditional ELBO optimization imposes restrictions on the architectures of 
 VAEs, as it requires the latent distributions to be in closed form while only providing data samples. This asymmetry in
-the ELBO formulation contributes to the issue of blurriness in generated images (discussed in \ref{item:blurriness-of-img}),
-which has been partially addressed by methods like normalizing flows \cite{nf-2015} and LVAE \cite{lvae-2016}.
+the ELBO formulation contributes to the issue of blurriness in generated images (discussed in~\ref{item:blurriness-of-img}),
+which has been partially addressed by methods like normalizing flows~\cite{nf-2015} and LVAE~\cite{lvae-2016}.
 
 The proposed symmetric learning approach relaxes these restrictions and enables VAE learning when both the data and 
 latent distributions are accessible only through sampling. This approach is also applicable to more complex models, such 
@@ -37,27 +37,27 @@ decoder $p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z})$ in case of
 
 The encoder and decoder belong to the exponential family and allow for tractable computation of log density and its derivatives.
 \begin{align*}
-    p_{\boldsymbol{\theta}}(\boldsymbol{x} | \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Theta}(\boldsymbol{x}) \cdot \boldsymbol{f}_{\boldsymbol{\theta}}(\boldsymbol{z}) \bigr] \\
-    p_{\boldsymbol{\phi}}(\boldsymbol{x} | \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Phi}(\boldsymbol{z}) \cdot \boldsymbol{g}_{\boldsymbol{\phi}}(\boldsymbol{x}) \bigr]
+    p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Theta}(\boldsymbol{x}) \cdot \boldsymbol{f}_{\boldsymbol{\theta}}(\boldsymbol{z}) \bigr] \\
+    p_{\boldsymbol{\phi}}(\boldsymbol{x} \mid \boldsymbol{z}) &\propto \exp \bigl[ \boldsymbol{\Phi}(\boldsymbol{z}) \cdot \boldsymbol{g}_{\boldsymbol{\phi}}(\boldsymbol{x}) \bigr]
 \end{align*} 
 where $\boldsymbol{\Theta}(\boldsymbol{x}) \in \mathbb{R}^n$ and $ \boldsymbol{\Phi}(\boldsymbol{z}) \in \mathbb{R}^m$ are sufficient
 statistics. The variables $\boldsymbol{x}$ and $\boldsymbol{z}$ can be either discrete or continous depending on the choice of exponential family (e.g. Bernoulli or Gaussian). 
 
 The authors provide new optimization function, which is motivated through finding a \textit{Nash equilibrium} for two-player game 
 where players' strategies are represented through the encoder and decoder distributions respectively and utility function is
-a sum of the player expectation w.r.t his strategy \cite{sym-learning-2023}. 
+a sum of the player expectation w.r.t his strategy~\cite{sym-learning-2023}. 
 The objectives are 
 \begin{align*}
     \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x},\boldsymbol{z})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr]+
                     \EX_{\pi(\boldsymbol{z})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{z})\bigr] +
-                    \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} |\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr]\\
-    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x},\boldsymbol{z})}\bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr] + 
-    \EX_{\pi(\boldsymbol{z})}\EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x} |\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr]
+                    \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr]\\
+    \mathcal{L}_{q}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x},\boldsymbol{z})}\bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})\bigr] + 
+    \EX_{\pi(\boldsymbol{z})}\EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})\bigr]
 \end{align*}
 for semi-supervised training and 
 \begin{align}
-    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} |\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr] \label{eq:unsup_objective_theta}\\
-    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} | \boldsymbol{x})\bigr] \label{eq:unsup_objective_phi}
+    \mathcal{L}_{p}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{\pi(\boldsymbol{x})}\EX_{q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid\boldsymbol{x})}\bigl[\log p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})\bigr] \label{eq:unsup_objective_theta}\\
+    \mathcal{L}_{q}(\boldsymbol{\theta},\boldsymbol{\phi}) &= \EX_{p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})} \bigl[\log q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})\bigr] \label{eq:unsup_objective_phi}
 \end{align}
 for unsupervised training with following interpretation: We maximize the decoder likelihood and encoder likelihood of the training data at same time. The mixed 
 terms reinforce the encoder decoder consistency. This corresponds to maximization of the ELBO objective, since we can 
@@ -72,19 +72,19 @@ simultaneously.
 \subsection{Hiearchical VAEs}
 The algorithm can be also adopted for hiearchical VAE. Let us assume that we have HVAE with $M+1$ layers, i.e. $\boldsymbol{z}$ consists of 
 $\boldsymbol{z}_0,\boldsymbol{z}_1,\dots,\boldsymbol{z}_m$, where the encoder models corresponds to the LVAE and we can sample $\boldsymbol{x} \sim \pi(\boldsymbol{x})$.
-The encoder and decoder factorizes (the ordering is in reverse to the one in eq. \ref{eq:hvae_prior} and eq. \ref{eq:hvae_posterior}):
+The encoder and decoder factorizes (the ordering is in reverse to the one in eq.~\ref{eq:hvae_prior} and eq.~\ref{eq:hvae_posterior}):
 \begin{align*}
     p_{\boldsymbol{\theta}}(\boldsymbol{x},\boldsymbol{z})&=p_{\boldsymbol{\theta}}(\boldsymbol{z}_{0}) \prod_{t=1}^{M}\bigl[p_{\boldsymbol{\theta}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t}) \bigr]  p_{\boldsymbol{\theta}}(\boldsymbol{x}\mid\boldsymbol{z})  \\
     q_{\boldsymbol{\phi}}(\boldsymbol{x},\boldsymbol{z}) &=\pi(\boldsymbol{x})q_{\boldsymbol{\phi}}(\boldsymbol{z}_{0}\mid\boldsymbol{x}) \prod_{t=1}^{M}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t},\boldsymbol{x}) 
 \end{align*}
-where the encoder shares the parameter as described in \ref{eq:lvae_encoder}. The objectives remain as in unsupervised case (eq. \ref{eq:unsup_objective_theta} and eq. \ref{eq:unsup_objective_phi}).
+where the encoder shares the parameter as described in~\ref{eq:lvae_encoder}. The objectives remain as in unsupervised case (eq.~\ref{eq:unsup_objective_theta} and eq.~\ref{eq:unsup_objective_phi}).
 The terms can be decomposed due to the factorization of decoder and encoder and are thus tractable.  If there is 
 acess to the samples $(\boldsymbol{x},\boldsymbol{z}_0) \sim \pi(\boldsymbol{x},\boldsymbol{z}_0)$,e.g. segmentation task with target masks, we can utilize them 
 by addding terms
 $$
-\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)}\EX_{q(\boldsymbol{z}_{>0} |\boldsymbol{z},\boldsymbol{x})} \log p(\boldsymbol{x},\boldsymbol{z}) 
+\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)}\EX_{q(\boldsymbol{z}_{>0} \mid\boldsymbol{z}_0,\boldsymbol{x})} \log p_{\_\theta}(\boldsymbol{x},\boldsymbol{z}) 
 \quad\text{and}\quad
-\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)} \log q(\boldsymbol{z}_0|\boldsymbol{x})
+\EX_{\pi(\boldsymbol{x},\boldsymbol{z}_0)} \log q_{\_\phi}(\boldsymbol{z}_0\mid\boldsymbol{x})
 $$
 to the decoder and encoder respectively. 
 

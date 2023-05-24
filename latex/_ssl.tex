@@ -16,7 +16,7 @@ Typically the training dataset $\mathcal{D}$ can be divided into two subsets $\m
 In this \textit{standard} setting, SSL can be viewed as supervised learning, where 
 the \textit{unlabeled} data provide additional information on the underlying distribution of the examples $\mathbf{x}$.
 We will refer to this setting in this thesis, however there are also different formulations of the SSL problem, such as \textit{SSL with constraints}
-and others\cite[p. 1]{ssl-book-2006}.
+and others~\cite[p. 1]{ssl-book-2006}.
 
 \begin{quote}
     \textit{
@@ -27,11 +27,11 @@ and others\cite[p. 1]{ssl-book-2006}.
     distribution of examples, which the unlabeled data will help elucidate, be relevant
     for the classification problem.
     \dots One should thus not be too surprised that for semi-supervised learning to work,
-    certain assumptions will have to hold.}''~--~Chappele et \textit{al}\cite[p. 4]{ssl-book-2006}
+    certain assumptions will have to hold.}''~--~Chappele~et~\textit{al}~\cite[p. 4]{ssl-book-2006}
 \end{quote}
 
 \subsection{Assumptions in SSL}
-As stated in the quote above, several assumptions are necessary for SSL algorithms to work \cite[p. 5]{ssl-book-2006}. 
+As stated in the quote above, several assumptions are necessary for SSL algorithms to work~\cite[p. 5]{ssl-book-2006}. 
 Some of them are well known from unsupervised learning:
 \begin{itemize}
     \item \textbf{The Smoothness Assumption}: \textit{If two points $\mathbf{x}_1$ and $\mathbf{x}_2$ lies nearby in high-density region, 
@@ -71,13 +71,13 @@ Some of them are well known from unsupervised learning:
 % insightful discussion with different viewpoints is available in \cite[chap. 25]{ssl-book-2006} and the idea of the transduction and its effect on SSL is still open.
 
 \subsection{SSL methods}
-SSL algorithms can be categorized into these following groups based on their motivation, making it easier to navigate and understand them\cite{ssl-overview-2020}:
+SSL algorithms can be categorized into these following groups based on their motivation, making it easier to navigate and understand them~\cite{ssl-overview-2020}:
 \begin{itemize}
         \item \textbf{Consistency Regularization}: According to the smoothness assumption, if the input $\mathbf{x}$ and its perturbed version $\tilde{\mathbf{x}}$, 
         are close to each other, their corresponding outputs, $\mathbf{y}$ and $\tilde{\mathbf{y}}$, should also be similar. By minimising the 
         distance between the model outputs$f_\theta(\mathbf{x})$ and $f_\theta(\tilde{\mathbf{x}})$, where the distance can be measured using 
         a variety of techniques, such as mean square error (MSE) or Kullback-Leibler (KL) divergence, we can train the model to make consistent
-        predictions on both the original and perturbed inputs \cite{temporal-ensembling-2017,regularization-&-pertrubations-2016}.
+        predictions on both the original and perturbed inputs~\cite{temporal-ensembling-2017,regularization-&-pertrubations-2016}.
         We can also use other divergence techniques, such as Jeffrys divergence or Jensen-Shanon (JSD) divergence, which have the advantage of 
         being symmetric with respect to the inputs.  This leads to an expanded loss objective, where a new term is introduced for consistency 
         regularization:
@@ -87,7 +87,7 @@ SSL algorithms can be categorized into these following groups based on their mot
         where $l(\mathbf{x},y)$ corresponds to the standard supervised loss for given task and $d(\cdot,\cdot)$ corresponds to the one of the mentioned metrics. 
 
     \item \textbf{Proxy-label Methods}: These methods are based on an (iterative) scheme, where the model generates the proxy label on unlabeled data (or parts 
-        thereof) using the prediction function itself or some variant of it \cite{psuedo-label-2013}. These labels are then taken as targets for the next iteration.
+        thereof) using the prediction function itself or some variant of it~\cite{psuedo-label-2013}. These labels are then taken as targets for the next iteration.
         Although the proxy labels are often and/or weak, the methods can provide additional information for training. These methods can be divided into two groups: 
         self-training, where the model produces the proxy label itself, and \textit{multi-view learning}, where the proxy labels are produced by (multiple) models
         trained on different views of the training data. The idea of multi-view learning is exactly the same as bootstrapping.
@@ -120,28 +120,28 @@ SSL algorithms can be categorized into these following groups based on their mot
     \item \textbf{Graph-Based Methods}:
     Semi-supervised methods that are based on graphs establish a graph structure where the labeled and unlabeled examples in the dataset constitute the nodes, and the 
     similarity between examples is reflected by edges that may be weighted. Typically, these methods presume label smoothness throughout the graph. Graph-based 
-    approaches are characterized as nonparametric, discriminative, and transductive in nature\cite{another-survey-2008}.
+    approaches are characterized as nonparametric, discriminative, and transductive in nature~\cite{another-survey-2008}.
 \end{itemize}
 
-When talking about \textit{consistency regularization}, one should mention also \textbf{Entropy minimization}\cite{entropy-min-2004} as it shares the same underlying concept
+When talking about \textit{consistency regularization}, one should mention also \textbf{Entropy minimization}~\cite{entropy-min-2004} as it shares the same underlying concept
 of \textit{smoothness assumption} and aims at same result: Moving the decision boundary into low-density region. The entropy minimization encourage the 
 network to make confident (i.e. low-entropy) predictions on unlabled data regardless of the predicted class and thus moving the decision boundary away from any point in dataset.
 This can be obtained by adding an entropy minimization term:
 \begin{equation*}
     H(p) = -\sum_{k=1}^{C} p_\mathbf{\theta}(y|\mathbf{x})_k \log p_\mathbf{\theta}(y|\mathbf{x})_k
 \end{equation*}
-Nevertheless, the neural networks (NN) can quickly overfit to low confident points early on in the learning process. This is caused by their high capacity \cite{how-to-evalute-ssl-2018}.
-The Entropy minimization on its now does not lead to strong results, however it is often combined with different approaches to improve their performance \cite{ssl-overview-2020}.
+Nevertheless, the neural networks (NN) can quickly overfit to low confident points early on in the learning process. This is caused by their high capacity~\cite{how-to-evalute-ssl-2018}.
+The Entropy minimization on its now does not lead to strong results, however it is often combined with different approaches to improve their performance~\cite{ssl-overview-2020}.
 
 \section{MixMatch}
 \label{sec:mix-match}
 We have selected the MixMatch algorithm as a reference algorithm for the comparison as it yielded state of the art results. This \textit{holistic} approach
-was proposed by David Berthelot et \textit{al.} in 2019 \cite{mixmatch-2019} and combines several ideas and components from classical dominant paradigms of SSL.
-It is the cornerstone for a whole branch of new algorithms such as ReMixMatch \cite{remixmatch-2020} and FixMatch \cite{fixmatch-2020}. Namely, it combines 
+was proposed by David Berthelot et \textit{al.} in 2019~\cite{mixmatch-2019} and combines several ideas and components from classical dominant paradigms of SSL.
+It is the cornerstone for a whole branch of new algorithms such as ReMixMatch~\cite{remixmatch-2020} and FixMatch~\cite{fixmatch-2020}. Namely, it combines 
 \textit{consistency regularization} and \textit{proxy-labeling} with \textit{entropy minimization}.It also utilizes other forms of regularizations, such as
-\textit{data augmentation}, \textit{exponentially weighted average of network weights}\cite{mean-teacher-2018},\textit{weight decay} \cite{weight-decay-2019} and 
-\textit{MixUp} procedure \cite{mixup-2018}. The consistency regularization is obtained through loss term, the proxy-labeling occures in stage of label guessing 
-(\ref{label-guessing}) and the entropy minimization is applied in form of sharpening procedure (\ref{sharpening}).
+\textit{data augmentation}, \textit{exponentially weighted average of network weights}~\cite{mean-teacher-2018},\textit{weight decay}~\cite{weight-decay-2019} and 
+\textit{MixUp} procedure~\cite{mixup-2018}. The consistency regularization is obtained through loss term, the proxy-labeling occures in stage of label 
+guessing ~(\ref{label-guessing}) and the entropy minimization is applied in form of sharpening procedure~(\ref{sharpening}).
 
 The algorithm itself is composed of several steps and provides augmented inputs to the model with \textit{guessed} labels. The batched augmented inputs are propagated 
 through the network and the standard semi-supervised loss containing the supervised and unsupervised term is computed from outputs of the model and the (guessed) 
@@ -183,7 +183,7 @@ The MixMatch algorithm consists of the following steps:
         where $q_{j,c}$ corresponds to $c$-th element of vector $q_{j}$, representing the probability of $c$-th class. 
         The hyperparameter $T \in \mathbb{R}_{>0}$ is the \textit{temperature}. As $T\to 0$, the $\text{Sharpen}(p,T)$ approaches Dirac (one-hot) distribution, 
         therefore lowering the $T$ minimizes the entropy of $p$. We obtain the sharpened $q_{j}$ and we replicate it to each of $K$ views of feature $u_{j}$.
-    \item \textbf{MixUp}: Before we continue in further description, we define the slightly alternated version of the vannila MixUp \cite{mixup-2018}.
+    \item \textbf{MixUp}: Before we continue in further description, we define the slightly alternated version of the vannila MixUp~\cite{mixup-2018}.
             For a pair of two features with their corresponding class probabilities $(x_1,p_1)$ and $(x_2,p_2)$, we define MixUp operation as following:
             \begin{align*}
                 \lambda &\sim \text{Beta}(\alpha,\alpha) \\
@@ -226,7 +226,7 @@ The MixMatch algorithm consists of the following steps:
     \includegraphics[width=\textwidth]{mixmatch_label_guessing.png}
     \caption[Mixmatch label guessing]{Data augmentation, label guessing and sharpening procedure visualized for unlabeled datapoint. The unlabeled image is at first $K$ 
     times augmented, each augmentation is then classified by the current model. The predictions are then averaged and sharpened. 
-    Source \cite{mixmatch-2019}}
+    Source~\cite{mixmatch-2019}}
     \label{fig:mixmatch}
 \end{figure}
 

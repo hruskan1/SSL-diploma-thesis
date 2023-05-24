@@ -17,7 +17,7 @@ Finally, the MixUp procedure requires adaptation to ensure that cropped images a
 the empty parts further down the stream while keeping the output of MixMatch ($\mathbf{x}^\prime,\mathbf{p}^\prime$) 
 closer to the first argument $(\mathbf{x}^1,\mathbf{p}^1)$.
 
-The proposed changes have been incorporated into algorithm \ref{alg:mixmatch-seg} and are commented there. In MixUp, we 
+The proposed changes have been incorporated into algorithm~\ref{alg:mixmatch-seg} and are commented there. In MixUp, we 
 ensure that the cropped out parts of the images are suppressed so that they do not influence the MixUp process. 
 Additionally, we aim to keep the output image closer to the first argument. The modified MixUp procedure is as follows
 \begin{align}
@@ -56,7 +56,7 @@ Here, $\odot$ represents element-wise multiplication, and the upper index is use
       \State $X^\star = ((\bar{\_x}_i, \_p_i); i \in (1, \dots, n))$ 
       \State $U^\star = ((\bar{\_u}_{i,k}, \_q_{i,k}); i \in (1, \dots, n), k \in (1, \dots, K))$ 
       \State $W = \text{Shuffle}(\text{Concat}(X^\star, U^\star))$ 
-      \State $X^\prime = (\text{MixUp}(\bar{\_x}_i, \_w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp described in \ref{eq:mixup_alternated}}
+      \State $X^\prime = (\text{MixUp}(\bar{\_x}_i, \_w_i); i \in (1, \dots, |X^\star|))$ \Comment{Apply MixUp described in~\ref{eq:mixup_alternated}}
       \State $U^\prime = (\text{MixUp}(\bar{\_u}_{i}, \_w_{i+|X^\star|}); i \in (1, \dots, |U^\star|))$ 
       \State \textbf{return} $X^\prime, U^\prime$
       
