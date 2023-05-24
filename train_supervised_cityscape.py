@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser.add_argument('-c','--current_count',default=0,type=int,help="Current counter of images. Total length of training is always given by 'e - c' ")
     parser.add_argument('-e','--epochs', default = 1024, type=int, help='Number of epochs to train')
     parser.add_argument('-BS','--batch_size',default = 4,type = int,help='mini batch size')
-    parser.add_argument('-lr','--learning_rate',default=0.001,type=utils._float,help='learning rate of Adam Optimizer, if None, lr will be found')
+    parser.add_argument('-lr','--learning_rate',default=0.0001,type=utils._float,help='learning rate of Adam Optimizer, if None, lr will be found')
     parser.add_argument('--lr_scheduler',default=False,type=bool,help='Use One Cycle LR scheduler')
     parser.add_argument('--loss_ewa_coef', default = 0.98, type=utils._restricted_float, help='weight for exponential weighted average of training loss')
     parser.add_argument('--device',default=0, type = int, help='id(s) for CUDA_VISIBLE_DEVICES')
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # not public
     # test_dataset = tv.datasets.Cityscapes(args.dataset_path,split='test', mode= "fine",target_type='semantic', transform=_t,target_transform=_tt)
     test_dataset = None
-    
+
     print("Datasets sizes: (respectively)")
     if test_dataset is not None:
         print(len(train_dataset),len(validation_dataset),len(test_dataset),file=open(args.logpath,'a'),flush=True)

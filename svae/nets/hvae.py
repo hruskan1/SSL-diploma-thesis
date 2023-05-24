@@ -14,12 +14,12 @@ from ..custom_func.stoch_func import StochHeavi, ReSigm
 from kornia.geometry.transform import Rescale,Resize
 import warnings
 
-from typing import Optional
+from typing import Optional,List,Tuple,Union
 
 def append_conv_block(mlist: nn.ModuleList, cfg: EasyDict, activation, **kwargs):
-    chi = cfg.chi
-    cho = cfg.cho
-    kernel_size = cfg.k_size
+    chi = cfg['chi']
+    cho = cfg['cho']
+    kernel_size = cfg['k_size']
     num_layer = getattr(cfg, 'num_l', 1)
     stride = getattr(cfg, 'stride', 1)
     pd = getattr(cfg, 'pad', 0)
@@ -102,23 +102,23 @@ def append_rescale_block(mlist: nn.ModuleList, cfg: EasyDict, **kwargs):
 
 def append_blocks(mlist: nn.ModuleList, bcfg: EasyDict, activation, **kwargs):
     for cfg in bcfg:
-        if cfg.type == 'c':
+        if cfg['type'] == 'c':
             mlist = append_conv_block(mlist, cfg, activation, **kwargs)
-        elif cfg.type == 't':
+        elif cfg['type'] == 't':
             mlist = append_conv_transpose_block(mlist, cfg, activation, **kwargs)
-        elif cfg.type == 'i':
+        elif cfg['type'] == 'i':
             mlist = append_interpolation_block(mlist, cfg, **kwargs)
-        elif cfg.type == 'id':
+        elif cfg['type'] == 'id':
             mlist.append(nn.Identity())
-        elif cfg.type == 'myenc':
+        elif cfg['type'] == 'myenc':
             mlist.append(MyEnc(cfg=cfg,**kwargs))
-        elif cfg.type == 'mydec':
+        elif cfg['type'] == 'mydec':
             mlist.append(MyDec(cfg=cfg,**kwargs))
-        elif cfg.type == 'resize':
+        elif cfg['type'] == 'resize':
             mlist = append_resize_block(mlist,cfg,**kwargs)
-        elif cfg.type == 'rescale':
+        elif cfg['type'] == 'rescale':
             mlist = append_rescale_block(mlist,cfg,**kwargs)
-        elif cfg.type == 'a2dpool':
+        elif cfg['type'] == 'a2dpool':
             mlist.append(nn.AdaptiveAvgPool2d(cfg.spatial_size))
         else:
             raise Exception("Requested block type missing/not implemented")
@@ -129,44 +129,30 @@ def append_blocks(mlist: nn.ModuleList, bcfg: EasyDict, activation, **kwargs):
 
 def choose_activation(cfg: EasyDict):
     activation = None
-    if cfg.activ == 'relu':
+    if cfg['activ'] == 'relu':
         activation = nn.ReLU()
-    elif cfg.activ == 'softmax':
+    elif cfg['activ'] == 'softmax':
         activation = nn.Softmax2d()
-    elif cfg.activ == 'sigmoid':
+    elif cfg['activ'] == 'sigmoid':
         activation = nn.Sigmoid()
-    elif cfg.activ == 'resigm':
+    elif cfg['activ'] == 'resigm':
         activation = ReSigm()
     else:    
         raise NotImplementedError(f"Requested activation {cfg.active} not implemented")
     return activation
 
+
+# Ugly hot fix
 class MyDec(nn.Module):
-    """ad-hoc decoder for enabling input of different shape"""
+    """adhoc for cifar10"""
     def __init__(self,cfg,**kwargs):
         super(MyDec, self).__init__()
-        
-        self.net = nn.Sequential(
-            *append_conv_block(nn.ModuleList(),cfg,activation=nn.ReLU())
-        )
+        self.net = nn.Sequential(*append_blocks(nn.ModuleList(),cfg.net,activation=choose_activation(cfg)))
 
     def forward(self,input:list):
-        #categorical is the first
-        assert  len(input) == 2
-
-        cat,bin = input[0],input[1]
-
-        assert bin.ndim == 4 and bin.shape[2] == 1 and bin.shape[3] == 1
-        assert cat.ndim == 4
-
-        N,_,H,W = cat.shape
-        bin_replicated = bin.repeat(1,1,H,W)
-
-        z0 = torch.cat([cat,bin_replicated],dim=1)
+        z0 = torch.cat(input,dim=1)
         output = self.net(z0)
-
         #print(f"{output.shape=}")
-        
         return output
 
 class MyEnc(nn.Module):
@@ -174,23 +160,72 @@ class MyEnc(nn.Module):
     def __init__(self,cfg,**kwargs):
         super(MyEnc, self).__init__()
         
+        self.nets = nn.ModuleList()
+        for net_config in cfg.nets:
         #categorical is the first
-        self.cat = nn.Sequential(
-            *append_blocks(nn.ModuleList(),cfg.cat,activation=choose_activation(cfg))
-        )
-        
-        self.bin = nn.Sequential(
-            *append_blocks(nn.ModuleList(),cfg.bin,activation=choose_activation(cfg)),
-            
-        )
+            self.nets.append(
+                nn.Sequential(
+                *append_blocks(nn.ModuleList(),net_config,activation=choose_activation(cfg))
+                )
+            )
 
     def forward(self,x):
-        
-        cat_output = self.cat(x)
-        bin_output = self.bin(x)
-    
         #categorical is the first
-        return [cat_output , bin_output]
+        outputs = []
+        
+        for net, in self.nets:
+            outputs.append(net(x))
+   
+        return outputs
+
+# class MySegDec(nn.Module):
+#     """ad-hoc decoder for enabling input of different shape"""
+#     def __init__(self,cfg,**kwargs):
+#         super(MySegDec, self).__init__()
+        
+#         self.net = nn.Sequential(
+#             *append_conv_block(nn.ModuleList(),cfg,activation=nn.ReLU())
+#         )
+
+#     def forward(self,input:list):
+#         #categorical is the first
+#         assert  len(input) == 2
+
+#         cat,bin = input[0],input[1]
+
+#         assert bin.ndim == 4 and bin.shape[2] == 1 and bin.shape[3] == 1
+#         assert cat.ndim == 4 
+
+#         N,_,H,W = cat.shape
+#         bin_img_replicated = bin.repeat(1,1,H,W)
+
+#         z0 = torch.cat([cat,bin],dim=1)
+#         output = self.net(z0)
+
+#         #print(f"{output.shape=}")
+        
+#         return output
+
+# class MySegEnc(nn.Module):
+#     """ad-hoc decoder for enabling input of different shape"""
+#     def __init__(self,cfg,**kwargs):
+#         super(MySegEnc, self).__init__()
+        
+#         #categorical is the first
+#         self.cat = nn.Sequential(
+#             *append_blocks(nn.ModuleList(),cfg.cat,activation=choose_activation(cfg))
+#         )
+
+#         self.bin_pixel = nn.Sequential(
+#             *append_blocks(nn.ModuleList(),cfg.bin_pixel,activation=choose_activation(cfg))
+#         ) 
+
+#     def forward(self,x):
+        
+#         cat_output = self.cat(x)
+#         bin_pixel_output = self.bin_pixel(x)
+#         #categorical is the first
+#         return [cat_output , bin_pixel_output]
 
 
 class GaussNPactivation(nn.Module):
@@ -582,8 +617,8 @@ class CatPriorBlock(nn.Module):
         self.cfg = cfg
         # define cel & npactivation
         
-        if 'class_weights' in kwargs:
-            self.cel = nn.CrossEntropyLoss(reduction='none',weight=kwargs['class_weights'])
+        if 'class_weights' in cfg:
+            self.cel = nn.CrossEntropyLoss(reduction='none',weight=cfg['class_weights'])
         else:
             self.cel = nn.CrossEntropyLoss(reduction='none')
 
@@ -694,50 +729,76 @@ class GaussPriorBlock(nn.Module):
         return nll
 
 class CustomPriorBlock(nn.Module):
-    """Custom prior block for combination of segmentation (categorical) and latent (binary) variables
-    
-        categorical is the first
-        bernulli is the second
+    """
+    Custom prior block for combination of multiple blocks variables
+
+    ordering of the blocks is responsibility of the user
     """
     def __init__(self,cfg):
 
         super(CustomPriorBlock, self).__init__()
         self.cfg = EasyDict(cfg)
-        self.cat = CatPriorBlock(cfg.pc_block,class_weights=cfg.class_weights)
-        self.bin = BinPriorBlock(cfg.bin_block)
 
-        self.jsdivs = (self.cat.jsdivs, self.bin.jsdivs)
-        self.jsdivs_av = (self.cat.jsdivs_av,self.bin.jsdivs_av)
+        self.blocks = nn.ModuleList()
+        for block_cfg in cfg.blocks:
+            if block_cfg['type'] == 'pc':
+                bl = CatPriorBlock(block_cfg)
+            elif block_cfg['type'] == 'pb':
+                bl = BinPriorBlock(block_cfg)
+            elif cfg['type'] == 'pg':
+                bl = GaussPriorBlock(block_cfg)
+            else:
+                raise Exception("Requested prior block type missing/not implemented")
+            
+            self.blocks.append(bl)
+
+        self.jsdivs = [bl.jsdivs for bl in self.blocks]
+        self.jsdivs_av = [bl.jsdivs_av for bl in self.blocks]
 
 
-    def update_stats(self, acte):
-        cat_acte,bin_acte = acte[0],acte[1]
-        self.cat.update_stats(cat_acte)
-        self.bin.update_stats(bin_acte)
+    def update_stats(self, acte:list)->None:
+        assert len(acte) == len(self.blocks)
+        for i in range(len(self.blocks)):
+            self.block.update_stats(acte[i])
 
     
-    def sample_prior(self, shapes):
-        cat_shape,bin_shape = shapes[0],shapes[1]
-        z0_cat = self.cat.sample_prior(cat_shape)
-        z0_bin = self.bin.sample_prior(bin_shape)
-        return [z0_cat, z0_bin]
+    def sample_prior(self, shapes:list)->list:
+        assert len(shapes) == len(self.blocks)
+        prior_samples = [] 
+        for i in range(len(self.blocks)):
+            prior_samples.append(self.blocks[i].sample_prior(shapes[i]))
+        
+        return prior_samples
 
     def sample(self, acte, stats=False, verbose=False):
-        cat = self.cat.sample(acte[0], stats, verbose)
-        bin = self.bin.sample(acte[1], stats, verbose)
+        assert len(acte) == len(self.blocks)
+        samples = [] 
         if verbose:
-            z0_cat,cat_probs = cat
-            z0_bin,bin_probs = bin
+            probs = []
+        for i in range(len(self.blocks)):
+            x = self.blocks[i].sample(acte[i],stats,verbose)
+            
+            if verbose:
+                samples.append(x[0])
+                probs.append(x[1])
+            else:
+                samples.append(x)
 
-            return [z0_cat,z0_bin],[cat_probs,bin_probs]
+        if verbose:
+
+            return samples,probs
         else:
-            return [cat,bin]
+            return samples
         
         
     def neg_llik(self, z_out, acte):
-        nll = self.cat.neg_llik(z_out[0],acte=acte[0])
-        nll += self.bin.neg_llik(z_out[1],acte=acte[1])
+        assert len(acte) == len(self.blocks)
+        assert len(z_out) == len(self.blocks)
 
+        nll = self.blocks[0].neg_llik(z_out[0],acte=acte[0])
+        for i in range(1,len(self.blocks)):
+            nll += self.blocks[i].neg_llik(z_out[i],acte=acte[i])
+    
         return nll
     
 
@@ -823,12 +884,16 @@ class HVAE(nn.Module):
            sblock.decoder.requires_grad_(on)    
 
     def z0_prior_sample(self, shape):
+        """Sample z0 (uniform distribution)"""
         sblock = self.sblock_list[0]
         z = sblock.sample_prior(shape)
         return z
 
     def prior_sample(self, z0, expanded=False):
-        """Function which samples x (all latent zs) the prior for given z0 """
+        """Function which samples x (all latent zs) the prior for given z0 
+        
+        Sample from prior  z ~ pi(z0) p_{theta}(x,z_{>0}|z0)
+        """
         self.eval()
         num_blocks = len(self.sblock_list)
         z_all = [None] * num_blocks
@@ -850,7 +915,16 @@ class HVAE(nn.Module):
         return (z_all, cprobs) if expanded else (z, cprobs)
 
     def encoder_activations(self, x):
-        """Function which activates the encoder with input x (going in reverse direction)"""
+        """
+        Compute (deterministic) activations d_i for input x (i=1,...,n). (where x=d_n, i.e. reversed order)
+        This acitvation d_i correspond to natural parameters of distribution q_tilde_{phi}(z_i|x).
+        The actual posterior distribution of the model is 
+            q_{theta,phi}(z_t|z_{<t},x) = p_{theta}(z_t |z_{<t})q_tilde_{phi}(z_t|x)
+        i.e 
+        The eta_t = NN_{theta}(z_{<t}) coresponds to the natural parameters of p_{theta}(z_t |z_{<t})
+        The d_t and eta_t are summed together
+        """
+
 
         # Intilize enc_activations to None
         num_blocks = len(self.sblock_list)
@@ -896,7 +970,18 @@ class HVAE(nn.Module):
         # Return encoder activations
         return enc_acts
 
-    def posterior_sample(self, x0_smpl, z0=None, stats=False, expanded=False):
+    def posterior_sample(self, x0_smpl, z0:Union[Tuple,torch.Tensor,None]=None, stats=False, expanded=False):
+        """
+        Sample from posterior z ~ pi_(x) q_{theta,phi}(z|x) or pi_(x,z0) q_{theta,phi}(z>0|x,z0) if z0 provided
+        
+        feed forward x0_smpl through encoder q(z|x) and obtain activations act (z_q)
+        Sample z0 given act or take z0 if provided
+        Sample q(z_tilde|x) or q(z_tilde|x,z0) if z0 provided
+        Return z|x or z|x,z0
+
+        WARNING: If type(z0) == Tuple,List it is assumed that it might contain only partiall initialization
+                 If type(z0) == torch.Tensor, it assumes that z0 is provided in full initialization (z0 has simple structure)
+        """
         # notice that this function samples the latent variables and a new image
         self.eval()
         num_blocks = len(self.sblock_list)
@@ -908,14 +993,24 @@ class HVAE(nn.Module):
             # sample latents
             # prior layer
             sblock = self.sblock_list[0]
-            if z0 is None:
-                z, p = sblock.sample(enc_acts[0], stats=stats, verbose=True)
+
+            z, p = sblock.sample(enc_acts[0], stats=stats, verbose=True)  
+            cprobs = p.detach().clone() if not (type(p) in (list, tuple)) else [p[i].detach().clone() for i in range(len(p))]
+            probs.append(p)
+
+            # fill z0 if needed
+            if z0 is not None and type(z0) in (list, tuple):
                 
-                cprobs = p.detach().clone() if not (type(p) in (list, tuple)) else [p[0].detach().clone(),p[1].detach().clone()]
-                probs.append(p)
-            else:
-                # if z0 from multiple blocks (in list/tuple)
-                z = z0.detach().clone() if not (type(z0) in (list, tuple)) else [z0[0].detach().clone(),z0[1].detach().clone()]
+                assert type(z) in (list, tuple)
+                assert len(z) >= len(z0)
+                
+                for i in range(len(z0)):
+                    z[i] = z0[i].detach().clone() 
+                    probs[-1][i] = None # remove the probs for 
+
+            elif z0 is not None and type(z0) in (torch.Tensor):
+                z = z0.detach().clone() 
+            
             z_all[0] = z
             
 
@@ -934,11 +1029,19 @@ class HVAE(nn.Module):
             z_all[-1] = z
             probs.append(cprobs.detach().clone())
         z0 = z_all[0]
-        self.z0_shape = z.shape if not (type(z0) in (list, tuple)) else [z0[0].shape,z0[1].shape]
+
+        self.z0_shape = z.shape if not (type(z0) in (list, tuple)) else [z0[i].shape for i in range(len(z0))]
 
         return (z_all, probs) if expanded else (z, probs)
 
     def decoder_learn_step(self, x0_smpl, z0=None):
+        """
+        Compute nabla_{theta} of monte carlo estimator of  E_pi(x) E_q(z|x) log(p(x,z))
+        or E_pi(x,z0) E_q(z_{>0}|x,z0) log(p(x,z)) if z0 not None 
+
+        Obtain sample q_{theta,phi}(z_tilde|x) 
+        Compute nll log(p(x,z_tilde)) and nabla_{theta}(nll)
+        """
         # get posterior sample
         (z_all, _) = self.posterior_sample(x0_smpl, z0=z0, stats=True, expanded=True)
         # replace last z by images:
@@ -960,6 +1063,13 @@ class HVAE(nn.Module):
         return loss.detach()
 
     def encoder_learn_step(self, z0):
+        """
+        Compute nabla_{phi} of monte carlo estimator of E_pi(z) E_p(x,z_{>0}|z0) log(q_{theta,phi}(z|x))
+        
+        Sample prior z_tilde ~ pi(z0) p_{theta}(x,z_{>0} | z0)
+        Get activations act d_i which corresponds to  q_tilde_{phi} (z_i|x)
+        Compute nll  log(q_{theta,phi}(z=z_tilde|x) ) and nabla_{phi}(nll)
+        """
         # get prior sample
         (z_all, _) = self.prior_sample(z0, expanded=True)
         # set attributes
@@ -976,7 +1086,6 @@ class HVAE(nn.Module):
         # other latent blocks
         for idx,sblock, z_out, acte in zip(range(1,len(self.sblock_list)-1), self.sblock_list[1:-1], z_all[1:], enc_act[1:-1]):
             z_in = self._get_layer_inputs(idx,z_all,is_encoder=False)
-            #print(f"{idx=},{z_in.shape=}")
             nll = sblock.neg_llik(z_in, z_out, acte=acte)
             loss = loss + nll
         loss.backward()
@@ -984,6 +1093,15 @@ class HVAE(nn.Module):
         return loss.detach()
     
     def encoder_supervised_learn_step(self, x0, z0):
+        """
+        Standard supervised learning, i.e.
+        Compute nabla_{theta} of monte carlo estimatior of E_pi(x,z0) q_tilde_{phi}(z_0|x)
+        
+        Get activations d_i for given x through equation d_{i} = NN_phi(d_{i+1}), d_{n} = x
+        
+        Compute nll log (q_tilde_{{phi}(z0=z0|d0) = q_tilde_{{phi}(z0=z0|x=x0)) and compute nabla_{phi}(nll)
+        """
+        
         # set attributes
         self.encoder_train()
         self.enc_optimizer.zero_grad()
@@ -1031,34 +1149,37 @@ class HVAE(nn.Module):
 
                 if self.graph_matrix[j,i] == 1:
                     enc_channels += bcfg[j].get('chi',float('nan'))
-
+                    # print(f"{i},{j}: {bcfg[j].get('chi',float('nan'))=}")
                 if self.graph_matrix[i,j] == 1:
                     dec_channels += bcfg[j].get('cho',float('nan'))
+                    # print(f"{i},{j}: {bcfg[j].get('chi',float('nan'))=}")
+                
+                
 
-            enc_chi = _get_first_convolution(cfg.enc).chi
-            dec_chi = _get_first_convolution(cfg.dec).chi
+            enc_chi = _get_first_convolution(cfg['enc'])['chi']
+            dec_chi = _get_first_convolution(cfg['dec'])['chi']
            
 
             if enc_chi != enc_channels and i < (len(bcfg) - 1): # last block's encoder accepts x. 
                 warnings.warn(f'{i}. block: encoder first layer input channels do not correspond to graph matrix: {enc_chi} instead of {enc_channels}')
-                _get_first_convolution(cfg.enc).chi = enc_channels
+                _get_first_convolution(cfg['enc'])['chi'] = enc_channels
  
 
             if dec_chi != dec_channels:
                 warnings.warn(f'{i}. block: decoder first layer input channels do not correspond to graph matrix: {dec_chi} instead of {dec_channels}')
-                _get_first_convolution(cfg.dec).chi = dec_channels
+                _get_first_convolution(cfg['dec'])['chi'] = dec_channels
             
-            if cfg.e_skip:
-                enc_skip_conv = _get_first_convolution(cfg.enc_skip)
-                if enc_skip_conv is not None and enc_skip_conv.chi != enc_channels  and i < (len(bcfg) - 1): # last block's encoder accepts x.
+            if cfg['e_skip']:
+                enc_skip_conv = _get_first_convolution(cfg['enc_skip'])
+                if enc_skip_conv is not None and enc_skip_conv['chi'] != enc_channels  and i < (len(bcfg) - 1): # last block's encoder accepts x.
                     warnings.warn(f'{i}. block: encoder skip network first layer input channels do not correspond to graph matrix: {enc_skip_conv.chi} instead of {enc_channels}')
-                    enc_skip_conv.chi = enc_channels
+                    enc_skip_conv['chi'] = enc_channels
             
-            if cfg.d_skip:
-                dec_skip_conv = _get_first_convolution(cfg.dec_skip)
-                if dec_skip_conv is not None and dec_skip_conv.chi != dec_channels:
+            if cfg['d_skip']:
+                dec_skip_conv = _get_first_convolution(cfg['dec_skip'])
+                if dec_skip_conv is not None and dec_skip_conv['chi'] != dec_channels:
                     warnings.warn(f'{i}. block: decoder skip network first layer input channels do not correspond to graph matrix: {dec_skip_conv.chi} instead of {dec_channels}')
-                    dec_skip_conv.chi = dec_channels
+                    dec_skip_conv['chi'] = dec_channels
                 
 
             # To be removed
@@ -1111,8 +1232,11 @@ class HVAE(nn.Module):
 def _get_first_convolution(block):
     """Returns first convolution (or transposed convolution) for a block. If not found, returns None"""
     for l in block:
-        if l.type == 'c' or l.type == 't' or l.type == 'mydec':
+        if l['type'] == 'c' or l['type'] == 't':
             return l 
         elif l.type == 'myenc':
-            return _get_first_convolution(l.cat)
+            return _get_first_convolution(l.nets[0])
+        elif l.type == 'mydec':
+            return _get_first_convolution(l.net)
+
     return None

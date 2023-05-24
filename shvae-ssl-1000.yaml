@@ -1,9 +1,9 @@
-# Hierarchical VAE with symmetric learning for MNIST
+# Hierarchical VAE with symmetric learning for CityScape
 # images: Bernoulli, latent: Bernoulli/Categorical
 
-blocks: [{type: pcustom, cho : 108,
-          pc_block: {type:  pc, cho: 8},
-          bin_block: {type: pb, cho: 100}},
+blocks: [{type: pcustom, cho : 208,
+          blocks: [{type: pc, cho: 8},
+                   {type: pb, cho: 100}]},
 # size 8, chan 64
          {type: sb, chi: 8, cho: 64, in_size: 8, out_size: 8, d_skip: False, e_skip: False, activ: relu,
           # DECODER is large conv net taking cat and binary together (chi = cho)
@@ -83,30 +83,30 @@ graph_matrix:
 - [0, 0, 0, 1, 0, 0, 1, 0, 0]
 - [0, 0, 1, 0, 0, 0, 0, 1, 0]
 
-kimg  : 100
+kimg  : 5000
 n_val : 0
-n_labeled : 500
-img_size : [128,256]
+n_labeled : 1000
+img_size : [256,512]
 
-device : 1
-
-
+device : 'cuda'
 
 
 
-lparm:   {enc_stepsize: 1.e-5, dec_stepsize: 1.e-5, parallel: False}
 
-batch_size:         4
+
+lparm:   {enc_stepsize: 1.e-4, dec_stepsize: 1.e-4, parallel: False}
+
+batch_size:         16
 batch_workers:      0
-niterations:        5000
-call_prefix:        '1'
-load_prefix:        
+niterations:        10000
+call_prefix:        '@1000'
+load_prefix:        '@1000-e9-a87-m'
 basename:           cityscape-shbvae-
-dataset_path:      /datagrid/public_datasets/CityScapes
-res_path:          /datagrid/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
+dataset_path:      /mnt/personal/hruskan1/CityScapes
+res_path:          /mnt/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
 
 generate:
-    folder:         images_1
+    folder:         images_2
     batch_size:     1
     b_num:          1
     repeats:        30
