@@ -1,15 +1,14 @@
 \section{Mixmatch adaptation}
-The current implementation of MixMatch algorithm is limited as it only allows for augmentations that do not alter the labels of given features. 
-However, this limitation poses a problem for image segmentation tasks because most commonly used augmentations do apply spatial transformations 
-that affect image segmentations. To address this issue, we propose an extension of the MixMatch algorithm specifically designed for image s
-egmentation tasks.
+The current implementation of the MixMatch algorithm is limited as it only allows for augmentations that do not alter the labels of given features. 
+However, this limitation poses a problem for image segmentation tasks because most commonly used augmentations apply spatial transformations 
+that affect image segmentations. To address this issue, we propose an extension of the MixMatch algorithm specifically designed for image segmentation tasks.
 
 Our approach involves adapting the data augmentation and proxy-labeling procedure to allow for augmentations that modify the corresponding 
 segmentation masks. Specifically, we suggest using affine transformations for the data augmentations, as they are easily invertible and widely
 applicable.
 
 To combine predictions across multiple views of an image, we align the predictions with the original image by applying the inverse augmentation
-and then apply the original augmentation to assign the averaged predictions to each view. However, it's important to note that care must be taken
+and then apply the original augmentation to assign the averaged predictions to each view. However, it is important to note that care must be taken
 while averaging because a part of the original image may be cropped while keeping the spatial dimensions. Thus, the segmentation prediction is 
 only valid on the uncropped region of the image.
 
@@ -17,9 +16,9 @@ Finally, the MixUp procedure requires adaptation to ensure that cropped images a
 the empty parts further down the stream while keeping the output of MixMatch ($\mathbf{x}^\prime,\mathbf{p}^\prime$) 
 closer to the first argument $(\mathbf{x}^1,\mathbf{p}^1)$.
 
-The proposed changes have been incorporated into algorithm~\ref{alg:mixmatch-seg} and are commented there. In MixUp, we 
-ensure that the cropped out parts of the images are suppressed so that they do not influence the MixUp process. 
-Additionally, we aim to keep the output image closer to the first argument. The modified MixUp procedure is as follows
+The proposed changes have been incorporated into algorithm~\ref{alg:mixmatch-seg} and are commented on there. In MixUp, we 
+ensure that the cropped-out parts of the images are suppressed so that they do not influence the MixUp process. 
+Additionally, we aim to keep the output image closer to the first argument. The modified MixUp procedure is as follows:
 \begin{align}
   &\lambda \sim \text{Beta}(\alpha,\alpha) \notag\\
   &\lambda^\prime = \max(\lambda,1-\lambda) \notag\\

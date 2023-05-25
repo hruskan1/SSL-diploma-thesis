@@ -1,7 +1,7 @@
 \section{Mixmatch experiments}
 As the original implementation of MixMatch is written in \texttt{TensorFlow} we have re-implemented it in \texttt{PyTorch}. To verify the correctness
  of our implementation, we have run tests on CIFAR10~\cite{cifar10-2009} and compared our results with those reported in ~\cite{mixmatch-2019} and ~\cite{wide-resnet-2017}. The 
-comparison is shown in table~\ref{tab:mixmatch-cifar10}. For details of reported results, see respecitve papers. 
+comparison is shown in table~\ref{tab:mixmatch-cifar10}. For details of reported results, see respective papers. 
 The specific hyperparameters of all experiments are provided with the code and are available. We will not report any of them here.
  
 \begin{table}[tbh]
@@ -16,24 +16,24 @@ The specific hyperparameters of all experiments are provided with the code and a
     Baseline & $38.42$ & $45.77$ & $50.42$ & $60.21$ & $79.57$ &  \\
     \hline
     \end{tabular}
-    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset. Labels row corresponds to number of labeled points available during trainig. 
-    The last column ("All") corresponds to fully-supervised mode performance on whole dataset (50k images).
-    We additionally provide the basline row, which contains the result of supervisied training on given number of images (Our code).
-    Our results are based only on one run.}
+    \caption[Mixmatch accuracy on CIFAR10]{Mixmatch accuracy rate (\%) on CIFAR10 dataset. Labels row corresponds to a number of labeled points available during training. 
+    The last column ("All") corresponds to fully-supervised mode performance on the whole dataset (50k images).
+    We additionally provide the baseline row, which contains the result of supervised training on a given number of images (Our code).
+    Our results are based only on one run}
     \label{tab:mixmatch-cifar10}
 \end{table}
 
 We have conducted another experiment on CityScape dataset. The classes and labelling policy of the CityScape
-dataset is well described in ~\cite{cityscapes-2016} and on their website. In our setting, we want to predict only 
-7 valid classes and 1 void class corresponding to the CityScape ``categories''. The prediction on the void class \
+dataset are well described in ~\cite{cityscapes-2016} and on their website. In our setting, we want to predict only 
+seven valid classes and one void class corresponding to the CityScape ``categories''. The prediction on the void class \
 is ignored during the training and evaluation. In tab.~\ref{tab:mixmatch-cityscapes}, we report the plain accuracy for 
-the MixMatch and supervised baseline and in tab.~\ref{tab:mixmatch-cityscapes-iou} we provide the average $\mathrm{IoU}$ metric. 
-The hyperparameters of the MixMatch were found with help of \texttt{Optuna} framework~\cite{optuna-2019}.
-The applied augmentation is simple combination of padding, crop and horizontal flip as in original paper~\cite{mixmatch-2019}, even
-tough the framework is able to use any affine transformations. The original image are rescaled to the $256 \times 512$ size.
-We provide few images for visualization in fig.~\ref{fig:mixmatch_visualization_10} and fig.~\ref{fig:mixmatch_visualization_all}. 
+the MixMatch and supervised baseline and in tab.~\ref{tab:mixmatch-cityscapes-iou}, we provide the average $\mathrm{IoU}$ metric. 
+The MixMatch hyperparameters were found with the help of \texttt{Optuna} framework~\cite{optuna-2019}.
+The applied augmentation is a simple combination of padding, crop and horizontal flip as in original paper~\cite{mixmatch-2019}, even
+though the framework can use any affine transformations. The original images are rescaled to the $256 \times 512$ size.
+We provide a few images for visualization in fig.~\ref{fig:mixmatch_visualization_10} and fig.~\ref{fig:mixmatch_visualization_all}. 
 MixMatch tends to "regularize and smooth" the predictions. However, this can be a disadvantage for unbalanced datasets 
-like Cityscapes, as the network may ignore classes with a small representation ratio.
+like CityScapes, as the network may ignore classes with a small representation ratio.
 
 \begin{table}[tbh]
     \begin{tabular}{|c|c|c|c|c|c|}
@@ -45,10 +45,10 @@ like Cityscapes, as the network may ignore classes with a small representation r
     Supervised & $76.85$ & $87.59$ & $93.50$ & $94.71$ & $95.58$ \\
     \hline
     \end{tabular}
-    \caption[Mixmatch accuracy on CityScape]{Mixmatch accuracy rate (\%) on Citysacpe dataset compared to the supervised baseline. The 
-    "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
+    \caption[Mixmatch accuracy on CityScape]{Mixmatch accuracy rate (\%) on CityScape dataset compared to the supervised baseline. The 
+    "Labels" row indicates the number of labeled points available for training across eight class categories. The last 
     column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
-    The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
+    In this case, the MixMatch algorithm utilizes the entire training dataset for labeled and unlabeled data.
     Our results are based only on one run.}
     \label{tab:mixmatch-cityscapes}
 \end{table}
@@ -56,34 +56,33 @@ like Cityscapes, as the network may ignore classes with a small representation r
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{mix10_vizualization_stacked.png}
-    \caption[Mixmatch result visualization (10)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on 10 images. 
-    The figure contains 12 examples, which were stacked into two blocks, each containg four rows. 
-    The first two rows contains the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
-    while the supervised baseline predictions are in the fourth row. \newline
+    \caption[Mixmatch CityScape visualization (10)]{Evaluation of MixMatch and supervised baseline on CityScape for eight classes. Models were trained on ten images. 
+    The figure contains 12 examples stacked into two blocks, each containing four rows. 
+    The first two rows contain the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
+    while the supervised baseline predictions are in the fourth. \newline
      The colors used in the segmentation are as follows: flat (purple), human (red), vehicle (dark blue), construction (dark grey), 
-     object (light gray), nature (green), sky (light blue), and void (black). The predictions on the "void"
-    class are not penalized nor evaluated.}
+     object (light gray), nature (green), sky (light blue), and void (black). The predictions on the "void" class are not penalized nor evaluated.}
     \label{fig:mixmatch_visualization_10}
 \end{figure}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{mixall_vizualization_stacked.png}
-    \caption[Mixmatch result visualization (All)]{Evaluation of MixMatch and supervised baseline for 8 classes. Models were trained on all available images.
-    See caption of fig.~\ref{fig:mixmatch_visualization_10} for the legend.}
+    \caption[Mixmatch CityScape visualization (All)]{Evaluation of MixMatch and supervised baseline on CityScape for eight classes. Models were trained on all available images.
+    See the caption of fig.~\ref{fig:mixmatch_visualization_10} for the legend.}
     \label{fig:mixmatch_visualization_all}
 \end{figure}
 
-We can see that the MixMatch do improve the results for the small amount of data and can produce comparable results to supervised basline 
-for more images available. However, it has been obsereved that the best results achived were obtained during the early stage of training for low $\lambda_u$
-parameter (which is linearly ramped up). This means that the unsupervised loss term $\mathcal{L}_{\mathcal{U}}$ worsenes the learning. 
-As its main role is to regularize the model, we believe that the worsening effect is mainly caused by the fact that the model is not yet fully 
-trained on labeled dataset $\mathcal{X}$. This could also fit well with the better accuracy for the small size of $\mathcal{X}$ as the model 
-has enough capacity to obtain 100\% training accuracy. As the MixMatch is complex model, it is hard to determine, which of its
-component was most significant in this task. The paper does provide an ablatation study~\cite{mixmatch-2019}, however I was not able to 
-conduct the similar study for this experiment due to a limited time available. We would also like to note, that the supervised experiment utilized the same augmentation as 
-the MixMatch (on the labeled dataset only) and that even small number of images contain a lot of information, which can be destiled by the network
-(contrary to the classification task) due to the fact that we use the convolutional neural network (CNN). 
+We can see that the MixMatch improve the results for the small amount of data and can produce comparable results to the supervised baseline 
+for more images available. However, it has been observed that the best results achieved were obtained during the early stage of training for low $\lambda_u$
+parameter (which is linearly ramped up). This means that the unsupervised loss term $\mathcal{L}_{\mathcal{U}}$ worsens the learning. 
+As its primary role is to regularize the model, we believe that the worsening effect is mainly caused by the fact that the model is not yet fully 
+trained on labeled dataset $\mathcal{X}$. This could also fit well with better accuracy for the small size of $\mathcal{X}$ as the model 
+has enough capacity to obtain 100\% training accuracy. As the MixMatch is a complex model, it is hard to determine which 
+component was most significant in this task. The paper does provide an ablation study~\cite{mixmatch-2019}. However, I was not able to 
+conduct a similar study for this experiment due to the limited time available. We would also like to note that the supervised experiment utilized the same augmentation as 
+the MixMatch (on the labeled dataset only) and that even a small number of images contain much information, which can be distilled by the network
+(contrary to the classification task) since we use the convolutional neural network (CNN). 
 
 \begin{table}[tbh]
     \begin{tabular}{|c|c|c|c|c|c|}
@@ -95,7 +94,7 @@ the MixMatch (on the labeled dataset only) and that even small number of images 
     Supervised & $41.78$ & $54.38$ & $68.25$ & $71.93$ & $73.84$ \\
     \hline
     \end{tabular}
-    \caption[Mixmatch average IoU on CityScape]{Mixmatch average IoU (\%) on Citysacpe dataset compared to the supervised baseline. The 
+    \caption[Mixmatch average IoU on CityScape]{Mixmatch average IoU (\%) on CityScape dataset compared to the supervised baseline. The 
     "Labels" row indicates the number of labeled points available for training across 8 class categories. The last 
     column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images. 
     The MixMatch algorithm utilizes the entire training dataset for both labeled and unlabeled data in this case.
@@ -107,7 +106,7 @@ the MixMatch (on the labeled dataset only) and that even small number of images 
 \section{Symmetric learning for HVAE}
 In our experiment on the CityScape dataset, we adopt the following approach. We 
 divide the available dataset, which consists of images and their corresponding
-segmentations, into three distinct datasets:
+segmentations into three distinct datasets:
 \begin{itemize}
     \item  Labeled dataset $\mathcal{D}_l$: This dataset is a subset of the available dataset and contains both the 
     images and their corresponding segmentations.
@@ -117,22 +116,62 @@ segmentations, into three distinct datasets:
     dataset that were not included in the labeled dataset.
 \end{itemize}
     
-In our scenario, we do not discard the segmentations, as done in MixMatch experiments. Instead, we utilize the 
-segmentations as described in sec.~\ref{sec:sym_learning_adaptation}.
+We do not discard the segmentations in our scenario, unlike the MixMatch experiments. Instead, we utilize the segmentations
+as described in Section~\ref{sec:sym_learning_adaptation}. The achieved accuracy for the symmetric learning of HVAE is provided 
+in tab.~\ref{tab:hvae-cityscapes-acc}. When comparing the HVAE's accuracies with the supervised baseline from 
+tab.~\ref{tab:mixmatch-cityscapes}, it is important to note that the HVAE's encoder architecture is not the same 
+as the supervised baseline's. Specifically, they differ in the number of channels in their respective layers. 
+Also, contrary to the baseline, the HVAE does not include batch normalization (BN) layers. This BN absence arises from the experimental observation
+that batch normalization is unsuitable for the HVAE. Figure \ref{fig:hvae-cs} presents the visualizations of HVAE segmentations and reconstructed 
+images. The decoder demonstrates the ability to distinguish the brightness and shapes of objects. However, it lacks the capability to reconstruct the 
+colors of the original images.
+\begin{table}[tbh]
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Labels [\#]  & 10 & 100 & 500 & 1000 & All \\
+    \hline
+    HVAE & $48.10$ & $61.98$ & $69.24$ & $71.97$ & $73.08$ \\
+    \hline
+    \end{tabular}
+    \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%) on CityScape dataset for epoch \todo{}. The 
+    "Labels" row indicates the number of labeled points available for training across eight class categories, e.i. size of the dataset $\mathcal{D}_l$. The last 
+    column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images}
+    \label{tab:hvae-cityscapes-acc}
+\end{table}
 
-\todo{Report the results,add image,accuracy,etc.}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{shbvae_cs_vizualization.png}
+    \caption[Symmetric learning HVAE CityScape results]{Evaluation of HVAE on CityScape for eight classes. The first row contains the original image. The second row is filled with the reconstructed
+    images from encoding the original image into $\mathbf{z}_0$ and decoding. The third and fourth rows contain model and ground truth segmentation, respectively.
+    See the caption of fig.~\ref{fig:mixmatch_visualization_10} for the segmentation legend.}
+    \label{fig:hvae-cs}
+\end{figure}
 
-During our experiments with symmetric learning on HVAE, we have encountered several issues. Specifically, we have observed
-challenges related to the decoder blocks situated between the layers, i.e. neural networks predicting the natural parameters:
+
+\subsubsection*{Known issues}
+During our experiments with symmetric learning on HVAE, we encountered several issues. Specifically, we have noticed that when the latent variables 
+$\_z$ have nontrivial spatial dimensions, the generated images often lack global spatial coherence. Instead, they consist of multiple locally coherent 
+patches that fail to represent the target images accurately. This is visualized in the fig. \ref{fig:cifar10-exp}.The issue with global coherence can be overcome by introducing global skip connections (like those in the U-Net architecture).
+This can be seen by the absence of such blobs in reconstructed images of fig.~\ref{fig:hvae-cs}
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=\textwidth]{shbvae_cifar10.png}
+    \caption[Issues with spatial coherence]{CIFAR10 experiments for HVAE. The first and third rows contain the original images. The second and fourth rows contain the reconstructed images.
+    The model used for the second row has latent variables $\_z$ with a nontrivial spatial dimension. We can see that the reconstructed images for this model contain blobs. The spatial resolution 
+    in latent variables prohibits the decoder from learning the overall image., This results in a significant drop in encoder accuracy and failure of the process.
+    The model in the fourth row has (almost) identical architecture but without latent variables with a spatial dimension. We can see that the decoder is able to learn the overall image, which 
+    enables the encoder to classify correctly. This positive feedback allows for the algorithm to be successful.}
+    \label{fig:cifar10-exp}
+\end{figure}
+
+
+Additionally, we have encountered issues related to the decoder blocks situated between the layers, i.e. neural networks predicting the natural parameters:
 \begin{align*}
     \boldsymbol{\eta} &= \mathrm{NeuralNet}_{\boldsymbol{\theta}}(\text{Pa}(\_z_{<t})) \\
     p_{\boldsymbol{\theta}}(\mathbf{z}_t \mid \_z_{<t}) &= p_{\boldsymbol{\theta}}(\_z_t \mid \_\eta) =  p_{\boldsymbol{\theta}}(\_z_t \mid \mathrm{NeuralNet}_{\boldsymbol{\theta}}(\text{Pa}(\_z_t)))
 \end{align*}
+We have observed that the decoder blocks need to be deep enough and simultaneously incorporate simple local skip connections 
+(similar to those used in ResNet architectures) to be able to learn meaningful representations. Specifically, if we introduce too shallow networks into first blocks
+of decoder, the decoder can not provide any reasonable reconstruction and outputs only the constant noise. 
 
-\todo{Wait until the final results }
-One observation is that these decoder blocks need to be deep enough and simultaneously incorporate simple local skip connections 
-(similar to those used in ResNet architectures).Additionally, we have noticed that when the latent variables  $z$, have
-nontrivial spatial dimensions, the generated images often lack overall coherence. Instead, they consist of multiple locally 
-coherent patches that fail to accurately represent the target images.
-\todo{provide figure} 
-This issue can be overcomed by introduction of the global skip connections (like those in the U-Net architecture).
