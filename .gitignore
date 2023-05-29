@@ -80,6 +80,7 @@ _env.yml
 /latex/*
 !/latex/_*.tex
 !/latex/DP.tex
+!/latex/DP.pdf
 !/latex/Diploma Thesis.bib
 
 
