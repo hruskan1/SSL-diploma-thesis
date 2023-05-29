@@ -122,7 +122,7 @@ in tab.~\ref{tab:hvae-cityscapes-acc}. When comparing the HVAE's accuracies with
 tab.~\ref{tab:mixmatch-cityscapes}, it is important to note that the HVAE's encoder architecture is not the same 
 as the supervised baseline's. Specifically, they differ in the number of channels in their respective layers. 
 Also, contrary to the baseline, the HVAE does not include batch normalization (BN) layers. This BN absence arises from the experimental observation
-that batch normalization is unsuitable for the HVAE. Figure \ref{fig:hvae-cs} presents the visualizations of HVAE segmentations and reconstructed 
+that batch normalization is unsuitable for the HVAE. Figure \ref{fig:hvae-cs} presents the cherrypicked visualizations of HVAE segmentations and reconstructed 
 images. The decoder demonstrates the ability to distinguish the brightness and shapes of objects. However, it lacks the capability to reconstruct the 
 colors of the original images.
 \begin{table}[tbh]
@@ -130,10 +130,10 @@ colors of the original images.
     \hline
     Labels [\#]  & 10 & 100 & 500 & 1000 & All \\
     \hline
-    HVAE & $48.10$ & $61.98$ & $69.24$ & $71.97$ & $73.08$ \\
+    HVAE & $72.33$ & $85.42$ & $89.77$ & $89.77$ & $93.01$ \\
     \hline
     \end{tabular}
-    \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%) on CityScape dataset for epoch \todo{}. The 
+    \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%) on CityScape dataset for epoch 180. The 
     "Labels" row indicates the number of labeled points available for training across eight class categories, e.i. size of the dataset $\mathcal{D}_l$. The last 
     column ("All") represents the performance of the fully-supervised mode on the entire dataset consisting of 2975 images}
     \label{tab:hvae-cityscapes-acc}
@@ -142,7 +142,7 @@ colors of the original images.
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{shbvae_cs_vizualization.png}
-    \caption[Symmetric learning HVAE CityScape results]{Evaluation of HVAE on CityScape for eight classes. The first row contains the original image. The second row is filled with the reconstructed
+    \caption[Symmetric learning HVAE CityScape results]{The cherrypicked reconstructions and segmentations of HVAE on CityScape for eight classes. The first row contains the original image. The second row is filled with the reconstructed
     images from encoding the original image into $\mathbf{z}_0$ and decoding. The third and fourth rows contain model and ground truth segmentation, respectively.
     See the caption of fig.~\ref{fig:mixmatch_visualization_10} for the segmentation legend.}
     \label{fig:hvae-cs}
@@ -150,10 +150,10 @@ colors of the original images.
 
 
 \subsubsection*{Known issues}
-During our experiments with symmetric learning on HVAE, we encountered several issues. Specifically, we have noticed that when the latent variables 
-$\_z$ have nontrivial spatial dimensions, the generated images often lack global spatial coherence. Instead, they consist of multiple locally coherent 
-patches that fail to represent the target images accurately. This is visualized in the fig. \ref{fig:cifar10-exp}.The issue with global coherence can be overcome by introducing global skip connections (like those in the U-Net architecture).
-This can be seen by the absence of such blobs in reconstructed images of fig.~\ref{fig:hvae-cs}
+During our experiments with symmetric learning on HVAE, we encountered a number of issues. Specifically, we observed that when the latent variables $\mathbf{z}$ had nontrivial
+spatial dimensions, the generated images often lacked global spatial coherence. Instead, they consisted of multiple locally coherent patches that failed to accurately represent 
+the target images. This issue is visualized in Figure \ref{fig:cifar10-exp}. However, we found that the problem of global coherence could be mitigated by introducing global skip
+connections, similar to those used in the U-Net architecture. This observation is supported by the absence of such patches in the reconstructed images shown in Figure \ref{fig:hvae-cs}.
 \begin{figure}[b]
     \centering
     \includegraphics[width=\textwidth]{shbvae_cifar10.png}
