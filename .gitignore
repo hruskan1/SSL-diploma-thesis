@@ -71,6 +71,15 @@ experiments/cityscape*/cityscape*/figs/*
 !experiments/cityscape19sup/cityscape_19@sup1000/figs/batch_trn-e639-a91.png
 !experiments/cityscape19sup/cityscape_19@sup1000/figs/batch_tst-e639-a91.png
 
+experiments/cityscape8shvae/*
+!experiments/cityscape8shvae/logs
+experiments/cityscape8shvae/logs/*
+!experiments/cityscape8shvae/logs/log-cityscape-shbvae-ssl-1*.txt
+
+!experiments/cityscape8shvae/images
+experiments/cityscape8shvae/images/*
+
+
 
 _env.yml
 *.zip
