@@ -1,0 +1,154 @@
+# Hierarchical VAE with symmetric learning for CityScape
+# images: Bernoulli, latent: Bernoulli/Categorical
+
+blocks: [{type: pcustom, cho : 128,
+          blocks: [{type: pc, cho: 8},
+                   {type: pb, cho: 120}]},
+# size 8, chan 128
+      {type: sb, chi: 128, cho: 128, d_skip: True, e_skip: True, activ: sigmoid,
+          dec: [{type: 'mysegdec',  activ : sigmoid ,
+                net : [{type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                       {type: 'c', chi: 256, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                       {type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: False}]}],
+                
+          enc: [{type: 'mysegenc', activ : sigmoid , 
+                core_net : [{type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                         {type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}],
+
+                clf_nets: [
+                        [{type: 'c', chi: 128, cho: 8, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: False}],
+
+                        [{type: 'c', chi: 128, cho: 120, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: False},
+                         {type: 'a2dpool', spatial_size: 1}]]
+                  }],
+          dec_skip : [{type: 'mysegdec',  activ : sigmoid ,
+                  net: [{type: 'c', chi: 128, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]
+                     }],
+
+          enc_skip: [{type: 'mysegenc', activ : sigmoid , 
+                   clf_nets: [     [{type: 'c', chi: 128, cho: 8, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+
+                                   [{type: 'c', chi: 128, cho: 120, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                                    {type: 'a2dpool', spatial_size: 1}]
+                         ]
+                  }]
+ 
+            },
+# size 8, chan 128         
+         {type: sb, chi: 128, cho: 128, d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False}],
+          enc_skip: [{type: 'c', chi: 128, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                     {type: 'rescale', factor: 2.}],
+          dec_skip: [{type: 'rescale',  factor: 0.5},
+                     {type: 'c', chi: 128, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]},
+#size 4, chan 128
+         {type: sb, chi: 128, cho: 128, in_size: 4, out_size: 2, d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False}],
+          enc_skip: [{type: 'c', chi: 128, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                     {type: 'rescale', factor: 2.}],
+          dec_skip: [{type: 'rescale',  factor: 0.5},
+                     {type: 'c', chi: 128, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]},
+# size 2, chan 256
+         {type: sb, chi: 128, cho: 256, d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'rescale', factor: 2.}],
+          dec: [{type: 'rescale', factor: 0.5},
+                {type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False}],
+          enc_skip: [{type: 'c', chi: 256, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                     {type: 'rescale', factor: 2.}],
+          dec_skip: [{type: 'rescale', factor: 0.5},
+                     {type: 'c', chi: 128, cho: 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}] 
+          },
+# size 1,chan 256   # bottleneck     
+         {type: sb, chi: 256, cho: 256, d_skip: True, e_skip: True, activ: sigmoid,
+          dec: [{type: 'c', chi: 256, cho: 512, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: False}],
+          enc: [{type: 'c', chi: 256, cho: 512, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 512, cho: 256, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: False}],
+      
+          enc_skip: [{type: 'c', chi : 256, cho : 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          dec_skip: [{type: 'c', chi : 256, cho : 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]
+                },
+# size 2, chan 128
+         {type: sb, chi: 256, cho: 128,  d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 128, cho: 256, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 256, cho: 128, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False}], 
+          enc_skip: [{type: 'c', chi: 128, cho: 256, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                {type: 'rescale', factor: 0.5}],
+          dec_skip: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 256, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}],
+          },
+# size 4 chan 64
+         {type: sb, chi: 128, cho: 64,  d_skip: True, e_skip: True, activ: sigmoid,
+          enc: [{type: 'c', chi: 64, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 128, cho: 128, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 128, cho: 64, k_size: 3, num_l: 2, stride: 1, pad: 1, bn: False, ll_act: False}],
+          
+          enc_skip: [{type: 'c', chi: 64, cho: 128, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False},
+                {type: 'rescale', factor: 0.5}],
+          dec_skip: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 128, cho: 64, k_size: 1, num_l: 1, stride: 1, pad: 0, bn: False, ll_act: False}]
+          },
+
+# size 8 chan 3 (image)
+         {type: sg, chi: 64, cho: 3, in_size: 4, out_size: 8, d_skip: False, e_skip: False, activ: sigmoid,
+          enc: [{type: 'c', chi: 3, cho: 64, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True},
+                {type: 'c', chi: 64, cho: 64, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},    
+                {type: 'rescale', factor: 0.5}],
+          dec: [{type: 'rescale', factor: 2.},
+                {type: 'c', chi: 64, cho: 64, k_size: 3, num_l: 3, stride: 1, pad: 1, bn: False, ll_act: False},
+                {type: 'c', chi: 64, cho: 6, k_size: 3, num_l: 1, stride: 1, pad: 1, bn: False, ll_act: True}]
+                }]
+
+graph_matrix:
+# matrix.yml
+- [0, 0, 0, 0, 0, 0, 0, 0, 0]
+- [1, 0, 0, 0, 0, 0, 0, 0, 0]
+- [0, 1, 0, 0, 0, 0, 0, 0, 0]
+- [0, 0, 1, 0, 0, 0, 0, 0, 0]
+- [0, 0, 0, 1, 0, 0, 0, 0, 0]
+- [0, 0, 0, 0, 1, 0, 0, 0, 0]
+- [0, 0, 0, 0, 1, 1, 0, 0, 0]
+- [0, 0, 0, 1, 0, 0, 1, 0, 0]
+- [0, 0, 1, 0, 0, 0, 0, 1, 0]
+
+kimg  : 1000
+
+n_val : 0
+n_labeled : 100
+img_size : [256,512]
+
+device : 0
+
+
+
+
+
+lparm:   {enc_stepsize: 1.e-4, dec_stepsize: 1.e-4, parallel: False}
+
+batch_size:         2
+batch_workers:      0
+niterations:        10000
+call_prefix:        '@100-2'
+load_prefix:        '@100-e489-a86-m'   
+basename:           cityscape-shbvae-ssl-1
+dataset_path:      /mnt/personal/hruskan1/CityScapes
+res_path:          /mnt/personal/hruskan1/SSL-diploma-thesis/shvae-cityscape
+
+generate:
+    folder:         images_2
+    batch_size:     1
+    b_num:          1
+    repeats:        30
+    samples:        100
