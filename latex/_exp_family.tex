@@ -1,5 +1,5 @@
 \section{Exponential family} \label{sec:exp_family}
-The exponential family is a parametric set of probability distribuions, whose probability densities or masses can be expressed in form:
+An exponential family is a parametric set of probability distribuions, whose probability densities or masses can be expressed in form:
 \begin{equation}
     p(\boldsymbol{x}\mid \boldsymbol{\eta}) = h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \label{eq:exp-fam}
 \end{equation}
@@ -8,9 +8,9 @@ where $h(\boldsymbol{x})$ is a base measure, $\boldsymbol{\eta}$ is vector of \t
 $\boldsymbol{T}(\boldsymbol{x})$ are \textit{suffient statistics} and  $A(\boldsymbol{\eta})$ is \textit{cumulant function} 
 also known as \textit{log normalizer} (see eq.~\ref{eq:log_norm} for explanation).
 
-Many common distributions, such as normal distribution, categorical distribution, 
-Bernoulli distribuion, gamma distribution, Dirichlet distribution, etc belong to the exponential family. We show the reparametrization of some 
-distribuions so they correspond to eq.~\ref{eq:exp-fam} in table~\ref{tab:exp-fam-reparametrization}
+Many common distributions, such as normal distribution, categorical distribution, Bernoulli distribution, gamma distribution, 
+Dirichlet distribution, etc., are the exponential family. We show the reparametrization of some 
+distributions so they correspond to eq.~\ref{eq:exp-fam} in table~\ref{tab:exp-fam-reparametrization}.
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -24,12 +24,12 @@ distribuions so they correspond to eq.~\ref{eq:exp-fam} in table~\ref{tab:exp-fa
       Gaussian & $\begin{array}{c} \mu \\ \sigma^2 \end{array}$ & $\begin{bmatrix} \frac{\mu}{\sigma^2}\\ -\frac{1}{2\sigma^2} \end{bmatrix}$  & $\frac{1}{2\pi}$ & $\begin{bmatrix} x \\ x^2 \end{bmatrix} $  & $-\frac{\eta_1^2}{4\eta_2} - \frac{\log(-2\eta_2)}{2}$& $\frac{\mu^2}{2\sigma^2} + \log \sigma$\\
       \hline
     \end{tabular}
-  \caption[Representatives of Exponential Family]{Some members of Exponential family. $\theta$ represents the standard parameter.Other symbols are described in eq.~\ref{eq:exp-fam}.}
+  \caption[Representatives of Exponential Family]{Some members of the Exponential family. $\theta$ represents the standard parameter. Other symbols are described in eq.~\ref{eq:exp-fam}.}
   \label{tab:exp-fam-reparametrization}
   \end{table}
   
 \subsubsection{Cumulant function}
-Because the $p(\boldsymbol{x}\mid \boldsymbol{\eta})$ is a probability density, the integral of it equalls one:
+Because the $p(\boldsymbol{x}\mid \boldsymbol{\eta})$ is a probability density, the integral of it equals one:
 \begin{align}
     \int_{\boldsymbol{x}} p(\boldsymbol{x}\mid \boldsymbol{\eta}) \d \boldsymbol{x} &= \int_{\boldsymbol{x}} h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \d\boldsymbol{x} \notag  \\
     &=  \frac{ \int_{\boldsymbol{x}}  h(\boldsymbol{x})\exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta})}{\exp(A(\boldsymbol{\eta}))}  \d\boldsymbol{x} = 1  \notag\\
@@ -43,19 +43,19 @@ this is easy to see since:
 \begin{align*}
     \frac{d}{d \boldsymbol{\eta}} \int_{\boldsymbol{x}} p(\boldsymbol{x}\mid \boldsymbol{\eta}) \d \boldsymbol{x}&= \frac{d}{d \boldsymbol{\eta}}   \int_{\boldsymbol{x}} h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \d\boldsymbol{x} \\
     &=\int_{\boldsymbol{x}}  \frac{\partial}{\partial \boldsymbol{\eta}} \bigl[h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \d\boldsymbol{x} \bigr]  \\
-    &=\int_{\boldsymbol{x}}  \bigl[h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \d\boldsymbol{x} \bigr] \bigl[ \boldsymbol{T}(\boldsymbol{x}) - \frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta}) \bigr]\d\boldsymbol{x} \\
+    &=\int_{\boldsymbol{x}}  \bigl[h(\boldsymbol{x}) \exp( \boldsymbol{T}(\boldsymbol{x}) \cdot \boldsymbol{\eta} - A(\boldsymbol{\eta})) \bigr] \bigl[ \boldsymbol{T}(\boldsymbol{x}) - \frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta}) \bigr]\d\boldsymbol{x} \\
     &=\int_{\boldsymbol{x}}  \bigl[\boldsymbol{T}(\boldsymbol{x}) - \frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta})\bigr] p(\boldsymbol{x}\mid \boldsymbol{\eta}) \d\boldsymbol{x}  \\
     &=\EX_{\boldsymbol{x} \sim p(\boldsymbol{x}\mid \boldsymbol{\eta})}\bigl[\boldsymbol{T}(\boldsymbol{x}) - \frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta}) \bigr] = 0 \\
     \EX_{\boldsymbol{x} \sim p(\boldsymbol{x}\mid \boldsymbol{\eta})}\bigl[\boldsymbol{T}(\boldsymbol{x})\bigr] &= \EX_{\boldsymbol{x} \sim p(\boldsymbol{x}\mid \boldsymbol{\eta})} \bigl[\frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta}) \bigr] = \frac{d}{d\boldsymbol{\eta}} A(\boldsymbol{\eta}).
 \end{align*}
-The second derivative of cumulant function with respect to natural parameter is variance of sufficient statistic~\cite{exp-family-jorden-2009}:
+The second derivative of the cumulant function with respect to natural parameters is the variance of sufficient statistic~\cite{exp-family-jorden-2009}:
 $$
 \frac{d^2}{d \boldsymbol{\eta}^2} A(\boldsymbol{\eta}) = \mathbb{V}_{\boldsymbol{x} \sim p(\boldsymbol{x}\mid \boldsymbol{\eta})} [\boldsymbol{T}(\boldsymbol{x})]
 $$
 Another important theorem about the convexity of the exponential family~\cite{exp-family-jorden-2009} states:
 \begin{theorem}
-The natural parameter space $\mathcal{N}$ is convex (as a set) and the cumulant function $A(\boldsymbol{\eta})$ is convex (as a function). 
-If the family is minimal then $A(\boldsymbol{\eta})$ is strictly convex.
+The natural parameter space $\mathcal{N}$ is convex (as a set), and the cumulant function $A(\boldsymbol{\eta})$ is convex (as a function). 
+If the family is minimal, then $A(\boldsymbol{\eta})$ is strictly convex.
 \end{theorem}
 % \subsection{Exponential family and conjugate priors}
 % Within bayes network, we assume that the prior $\boldsymbol{\theta}$ is a random variable (r.v.) and thus we need to specify its \textit{prior distribution} $p(\boldsymbol{\theta})$.
@@ -100,7 +100,7 @@ $$
 \mathrm{KL}(p(\boldsymbol{x}) || q(\boldsymbol{x})) = \int_x p(\boldsymbol{x}) \log \frac{p(\boldsymbol{x})}{q(\boldsymbol{x})} \d \boldsymbol{x} 
 = \EX_{p(\boldsymbol{x})} \log \frac{p(\boldsymbol{x})}{q(\boldsymbol{x})} 
 $$
-however for the distribuions of the family, one can obtain a closed formula:
+however for the distributions of the family, one can obtain a closed formula:
 \begin{align*}
     \mathrm{KL}(p(\boldsymbol{x}) || q(\boldsymbol{x})) &= \EX_{p(\boldsymbol{x})} (\boldsymbol{\eta}_p - \boldsymbol{\eta}_q) \cdot  \boldsymbol{T}(\boldsymbol{x}) - A(\boldsymbol{\eta}_p) + A(\boldsymbol{\eta}_q) \\
     &= (\boldsymbol{\eta}_p - \boldsymbol{\eta}_q) \cdot  \boldsymbol{\mu}_p - A(\boldsymbol{\eta}_p) + A(\boldsymbol{\eta}_q) \\
@@ -111,17 +111,17 @@ We define the \textit{empirical data distribution}
 $$
 p_{\mathcal{D}} = \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime)
 $$
-where $\delta(\boldsymbol{x},\boldsymbol{x}^\prime)$is Kronecker delta.  This distribuion places a point mass at each datapoint in dataset $\mathcal{D}$.
-We can utilize it for writting the log likelihood (in discrete case):
+where $\delta(\boldsymbol{x},\boldsymbol{x}^\prime)$is Kronecker delta.  This distribution places a point mass at each datapoint in dataset $\mathcal{D}$.
+We can utilize it for writing the log-likelihood (in discrete case):
 \begin{align*}
 \sum_{\boldsymbol{x}} p_{\mathcal{D}} \log p(\boldsymbol{x} \mid \boldsymbol{\theta}) &= \sum_{\boldsymbol{x}} \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} \mid \boldsymbol{\theta}) \\
     &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \sum_{\boldsymbol{x}} \delta(\boldsymbol{x},\boldsymbol{x}^\prime) \log  p(\boldsymbol{x} \mid \boldsymbol{\theta})\\
     &= \frac{1}{|\mathcal{D}|} \sum_{\boldsymbol{x}^\prime \in \mathcal{D}} \log  p(\boldsymbol{x}^\prime \mid \boldsymbol{\theta}) \\
     &= \frac{1}{|\mathcal{D}|} l(\boldsymbol{\theta} \mid \mathcal{D})
 \end{align*}
-where $l(\boldsymbol{\theta} \mid \mathcal{D}) = \log p(\mathcal{D} \mid \boldsymbol{\theta})$ is the log likelihood. So computing the cross entropy between empirical data distribution and model provides us with log likelihood.
-If we compute the KL divergence of the empirical data ditribution and model $p(\boldsymbol{x} \mid \boldsymbol{\theta})$, we obtain
+where $l(\boldsymbol{\theta} \mid \mathcal{D}) = \log p(\mathcal{D} \mid \boldsymbol{\theta})$ is the log likelihood. So computing the cross entropy between empirical data distribution and the model provides us with log-likelihood.
+If we compute the KL divergence of the empirical data distribution and model $p(\boldsymbol{x} \mid \boldsymbol{\theta})$, we obtain
 $$
 \mathrm{KL}(p_{\mathcal{D}} || p(\boldsymbol{x} \mid \boldsymbol{\theta})) = \sum_{\boldsymbol{x}} p_{\mathcal{D}} \frac{p_{\mathcal{D}}}{p(\boldsymbol{x} \mid \boldsymbol{\theta})} = \EX_{p_{\mathcal{D}}} \log p_{\mathcal{D}} - \frac{1}{N} l(\boldsymbol{\theta} \mid \mathcal{D})
 $$ 
-the empirical data distribution is not depending on the model parameters $\boldsymbol{\theta}$ and thus \textit{by minimizing the KL divergence to the empirical distribuion, we maximize the (log) likelihood (of data under the model)}. 
+the empirical data distribution is not depending on the model parameters $\boldsymbol{\theta}$ and thus \textit{by minimizing the KL divergence to the empirical distribution, we maximize the (log) likelihood (of data under the model)}. 

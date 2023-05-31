@@ -18,24 +18,24 @@ surrounding types, pedestrians, cars, etc.). The hierarchical model consists of 
     q_{\boldsymbol{\phi}}(\boldsymbol{x},\boldsymbol{z}) &=\pi(\boldsymbol{x})q_{\boldsymbol{\phi}}(\boldsymbol{z}_{0}\mid\boldsymbol{x}) \prod_{t=1}^{M}  q_{\boldsymbol{\phi}}(\boldsymbol{z}_{t}\mid\boldsymbol{z}_{<t},\boldsymbol{x}) 
 \end{align*}
 Both the encoder $q_{\boldsymbol{\phi}}$ and decoder $p_{\boldsymbol{\theta}}$ have a U-Net-like architecture. Since
- the U-Net is a feedforward network, sampling from the decoder is tractable and we truly can construct the HVAE. 
+ the U-Net is a feedforward network, sampling from the decoder is tractable, and we can construct the HVAE. 
  The conditional models in the HVAE belong to different distributions within the exponential family, depending on the 
  specific case. The hidden layers $\mathbf{z}_1, \dots, \mathbf{z}_{m-1}$, as well as the latent 
  code $\mathbf{l}$, are modeled using a Bernoulli distribution. For the image and segmentation, we utilize Gaussian
  and categorical distributions, respectively.
  
-We utilize the standard building blocks of the U-net architecture, which consist of convolutional layers and rescaling layers.
-These blocks are applied up to the last (first) layer of the encoder (decoder), due to the choice of the $\_z_0$. 
-We wish the segmentations $\_s$ to contain the local information corresponding to its spatial position and the latent code $\_l$ to
-contain global information at the same time.  To achieve this, we adapt the architecture of the last block of both the encoder and decoder:
+ We utilize the U-net architecture's standard building blocks, consisting of convolutional layers and rescaling layers.
+ These blocks are applied up to the last (first) layer of the encoder (decoder), due to the $\_z_0$ choice. 
+ We wish the segmentations $\_s$ to contain the local information corresponding to its spatial position and the latent code $\_l$ to
+ contain global information at the same time. To achieve this, we adapt the architecture of the last block of both the encoder and decoder:
 
-\begin{itemize}
+ \begin{itemize}
     \item The last block of the \textit{encoder} in our architecture comprises a shared core network,~which 
     is common to both the segmentation and latent code branches. Following the core network, there 
     are two independent heads (networks) with separate parameters, each tailored to produce the 
     desired outputs.
 
-    The network architectures for both heads and core network follow the standard convolutional block structure. 
+    The network architectures for heads and core networks follow the standard convolutional block structure. 
     In the segmentation head, the final layer is a convolutional layer with output channels corresponding 
     to the number of classes in the segmentation task. This layer generates the segmentation predictions.
     
@@ -44,7 +44,7 @@ contain global information at the same time.  To achieve this, we adapt the arch
     that captures global information.
    
 
-    \item The last block of the \textit{decoder} is composed of a single convolutional block. Initially, we replicate the latent
+    \item The first block of the \textit{decoder} is composed of a single convolutional block. Initially, we replicate the latent
     code activations in the spatial dimension to match the segmentation's spatial dimensions. Next, we concatenate
     the replicated latent code and the segmentations along the channel dimension, creating a compact block,~which 
     serves as the input to the aforementioned convolutional block in the decoder.
@@ -59,8 +59,7 @@ the decoder if and only if there is a skip connection from $\_z_j$ to $\_z_i$ in
 
 This architecture is our choice. In fact, HVAE permits any set of skip connections between the $\_z$ layers for the decoder, as long as a topological ordering exists 
 for such a set. In other words, the corresponding directed graph formed by the $m$ nodes representing layers $\_z_1,\dots,\_z_m$ should be acyclic. 
-Moreover it is worth noting that the encoder and decoder architecture are indepenedent up to the point that it provides the corresponding activations to the decoder layers
-as in LVAE. In addition, it is important to note that the encoder and decoder architectures are independet of each other up to the fact that the encoder 
+Moreover, it is worth noting that the encoder and decoder architectures are independent of each other up to the fact that the encoder 
 should supply the appropriate activations to the decoder layers, following the LVAE paradigm. 
 
 In the case of semi-supervised learning, the HVAE is trained using block-wise maximization of the following objective functions:
@@ -76,14 +75,15 @@ Here, $\pi(\_x,\_s)$ represents the underlying distribution with marginals $\pi(
 The distribution $p(\_l)$ is a uniform prior distribution for the latent code (model choice).
 The first terms in both objectives correspond to supervised learning, while the second terms correspond to unsupervised learning.
 
-During training, we sample from the corresponding distributions, apply the reparameterization trick, and compute the stochastic 
-gradient as in the standard VAE framework. The samples from $\pi(\_x,\_s)$ and $\pi(\_x)$ are provided in the labeled dataset $\mathcal{D}_l$ 
+During training, we sample from the corresponding distributions and compute the stochastic gradient as in the standard VAE framework. 
+The samples from $\pi(\_x,\_s)$ and $\pi(\_x)$ are provided in the labeled dataset $\mathcal{D}_l$ 
 and unlabeled dataset $\mathcal{D}_u$, respectively. If there is available segmentation information, we can incorporate it in 
-the unsupervised learning term of the encoder. In our case, we have access to segmentation information, but it is often not 
+the unsupervised learning term of the encoder. In our case, we have access to segmentation information. However, it is often not 
 available in practice, requiring the introduction of the model distribution $p(\_s)$ from which we can sample.
 
-In case of unsupervised learning, we simply drop the terms corresponding to supervised learning from eq. \ref{eq:hvae_decoder} 
+In the case of unsupervised learning, we drop the terms corresponding to supervised learning from eq. \ref{eq:hvae_decoder} 
 and eq. \ref{eq:hvae_encoder}.
+
 
 
 

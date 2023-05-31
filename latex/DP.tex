@@ -29,8 +29,8 @@
 	fieldofstudy-czech = {Kybernetika a robotika},
 	%study-program = {Kybernetika a robotika},
 	%subfieldofstudy-czech = {Matematické modelování},
-	keywords-czech = {Segmentace obrazu, SSL,HVAE,LVAE,symmetric learning, MixMatch,CityScape},
-	keywords-english = {Image segmentation, SSL, VAE,HVAE, LVAE, symetric learning, MixMatch, CityScape},
+	keywords-czech = {Segmentace obrazu, SSL, hiearchický VAE, ladder VAE, symmetric equilibrium learning, MixMatch, CityScape},
+	keywords-english = {Image segmentation, SSL, VAE, hiearchical VAE, ladder VAE,symmetric equilibrium learning, MixMatch, CityScape},
 	day = 26,
 	month = 5,
 	year = 2023,
@@ -83,35 +83,29 @@
 
 % Abstract in Czech
 \begin{abstract-czech}
-Tato diplomová práce se zabývá využitím algoritmů částečného strojového učení s učitelem pro segmentaci
-lesních ploch ze satelitních snímků. Místo přímého vyhodnocování na satelitních snímcích budeme používat 
-veřejně dostupný dataset CityScape pro ověření výsledků, reprodukovatelnost a porovnání s jinými metodami. 
-
-První část diplomové práce zahrnuje rešerši state-of-the-art algoritmů v oblasti částečného strojového učení s učitelem. Představujeme
-dva vyhodnocované algoritmy: referenční MixMatch a nový algoritmus založený na symetrickém učení variačních autoenkoderů.
-Poskytujeme také samostatný úvod do variačních autoenkoderů, zahrnující jejich teoretické základy a rozšíření, aby čtenář
-porozuměl základním principům, na kterých nový algoritmus staví.
-
-Hlavním cílem je adaptovat a posoudit schopnosti obou nového a referenčního algoritmu v oblasti segmentace. V obou případech
-využíváme stejnou architekturu modelu založenou na U-net síti pro srovnatelnost a vyhodnocení.
-\todo{Rewrite once results are obtained}
+Tato práce zkoumá použitelnost algoritmů  částečného strojového učení s učitelem pro segmentaci
+lesních ploch ze satelitních snímků. Namísto přímého vyhodnocování na satelitních snímcích budeme používat 
+CityScape dataset pro ověření výsledků a reprodukovatelnost. Poskytujeme přehled algoritmů v oblasti částečného
+strojového učení a představujeme vyhodnocované algoritmy: referenční MixMatch a nový algoritmus založený na symetrickém
+učení variačních autoenkodérů. Uvádíme také náhled do variačních autoenkodérů, zahrnující jejich teoretické základy a rozšíření,
+aby čtenář porozuměl základním principům. Hlavním cílem je porovnat segmentační schopnosti obou algoritmů. V obou případech
+využíváme stejnou architekturu modelů založenou na U-net síti.
+MixMatch účinně zvyšuje přesnost segmentace, zejména ve scénářích s velmi malým množstvím dostupných dat. Přestože 
+symetrické učení hierarchického autoenkodéru nepřekonává základní model s učitelem, experimenty prokazují použitelnost
+symetrického učení a zároveň identifikují oblasti pro zlepšení.
 \end{abstract-czech}
 
 % Abstract in English
 \begin{abstract-english}
-	This master's thesis explores the application of semi-supervised machine learning algorithms for segmenting 
-	forest land cover in satellite images. Instead of directly evaluating these algorithms on satellite imagery, we employ
-	the publicly available CityScape dataset to verify results, ensure reproducibility, and facilitate comparison with other 
-	existing methods.
-
-	The thesis begins with an in-depth review of the current state-of-the-art in semi-supervised machine learning algorithms. We 
-	introduce two evaluated algorithms: MixMatch, which serves as a reference, and a novel algorithm based on symmetric learning of
-	variational autoencoders. To provide readers with a comprehensive understanding, we also provide a self-contained introduction 
-	to variational autoencoders, covering their theoretical foundations and extensions.
-	
-	The primary objective of this work is to adapt and evaluate the capabilities and segmentation potential of both the new algorithm
-	and the reference algorithm. To ensure comparability, we employ a U-net network-based model architecture in both cases.
-	\todo{Rewrite once results are obtained}
+This thesis investigates the applicability of semi-supervised machine learning algorithms for forest land cover
+segmentation in satellite images. Instead of directly evaluating satellite imagery, the CityScape dataset is 
+utilized for result verification and reproducibility. We review the semi-supervised machine learning algorithms, introduce
+MixMatch as a reference method and a novel algorithm based on symmetric learning of variational autoencoders, along with 
+a self-contained introduction to variational autoencoders. The research aims to compare the segmentation potential and capabilities
+of both the new and the reference algorithms using a U-net network-based model architecture.
+The results show that MixMatch effectively enhances segmentation performance to supervised baseline, particularly
+in scenarios with limited labeled data. Although the symmetrical learning does not exceed the supervised baseline, the
+experiments still serve as a proof of concept, highlighting areas for further investigation.
 \end{abstract-english}
 
 % Acknowledgements / Podekovani
@@ -122,7 +116,7 @@ využíváme stejnou architekturu modelu založenou na U-net síti pro srovnatel
 	I would also like to extend my heartfelt thanks to all the teachers, lecturers, and individuals who generously
 	 dedicated their time, effort, and passion to teach me new things and propel me forward. 
 
-	 I am also grateful for the access to the computational infrastructure of the OP VVV funded project CZ.$02.1.01/0.0/0.0/16\_019/0000765$. 
+	 I am also grateful for the access to the computational infrastructure of the OP VVV funded project CZ.02.1.01/0.0/0.0/16{\textunderscore}019/0000765. 
 	 The support provided by the "Research Center for Informatics" through this project is sincerely acknowledged and appreciated.
 
 	 In addition, I would like to express my gratitude to my family, partner, and close friends who have been unwavering 
@@ -286,21 +280,18 @@ to the family of exponential distributions, which are extensively used in VAE an
 % HVAE design and choice 
 \input{_sym_learning_adaptation}
 
-
-
 \chapter{Experiments \& Results} 
 \label{results}
 \input{_experiments}
 \chapter{Conclusion}
 \label{conclusions}
 \input{_conclusions}
-\todo{Summary of the main findings and contributions}
 
 \printbibliography
 
 %\ctutemplate{specification.as.chapter}
 
-\chapter*{List of used symbols, notations}
-\input{_list_of_symbols}
+% \chapter*{List of used symbols, notations}
+% \input{_list_of_symbols}
 
 \end{document}
