@@ -91,6 +91,10 @@ _env.yml
 !/latex/DP.tex
 !/latex/DP.pdf
 !/latex/Diploma Thesis.bib
+!/latex/presentation
+/latex/presentation/*
+!/latex/presentation/presentation.pdf
+!/latex/presentation/presentation.tex
 
 
 # Python generic gitignore
