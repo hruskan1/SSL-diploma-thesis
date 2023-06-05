@@ -1,0 +1,1139 @@
+# Starting at 2023-06-02 15:23:31.122400
+with args:
+current_count : 0
+epochs : 1024
+batch_size : 4
+learning_rate : 0.0001
+lr_scheduler : False
+loss_ewa_coef : 0.98
+device : cuda:0
+dataset_path : /mnt/personal/hruskan1/CityScapes/
+out : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100
+resume : None
+from_yml : None
+log_period : 1
+save_period : 0
+debug : True
+seed : 0
+model_architecture : {'blocks': [{'type': 'encoder', 'use_kornia': True, 'scale': 0.5, 'interpolation': 'bilinear', 'niters': 4, 'in_ch': 3, 'mid_ch': 64, 'out_ch': 64, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'encoder', 'niters': 3, 'use_kornia': True, 'scale': 0.5, 'interpolation': 'bilinear', 'in_ch': 64, 'mid_ch': 128, 'out_ch': 128, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'encoder', 'niters': 3, 'use_kornia': True, 'scale': 0.5, 'interpolation': 'bilinear', 'in_ch': 128, 'mid_ch': 256, 'out_ch': 256, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'bottleneck', 'niters': 2, 'in_ch': 256, 'mid_ch': 512, 'out_ch': 256, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'decoder', 'niters': 3, 'use_kornia': True, 'scale': 2.0, 'interpolation': 'bilinear', 'in_ch': 512, 'mid_ch': 128, 'out_ch': 128, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'decoder', 'niters': 3, 'use_kornia': True, 'scale': 2.0, 'interpolation': 'bilinear', 'in_ch': 256, 'mid_ch': 128, 'out_ch': 128, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'decoder', 'niters': 3, 'use_kornia': True, 'scale': 2.0, 'interpolation': 'bilinear', 'in_ch': 192, 'mid_ch': 128, 'out_ch': 128, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'decoder', 'niters': 2, 'use_kornia': True, 'scale': 1.0, 'interpolation': 'nearest', 'in_ch': 128, 'mid_ch': 256, 'out_ch': 256, 'conv_kernel': [3, 3], 'conv_stride': [1, 1], 'conv_paddings': [1, 1], 'normalization_type': 'none'}, {'type': 'classifier', 'in_ch': 256, 'out_ch': 8, 'conv_kernel': [1, 1], 'normalization_type': 'none'}]}
+img_size : [256, 512]
+n_total : 100
+tensorboardpath : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/tensorboard_summary
+logpath : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/log.txt
+modelpath : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model
+No resume point provided, will start from scratch!
+100 500
+Creating new network!
+    Total params: 7.20M
+epoch: 1 train loss: 2.4849 train acc: 15.5658 val loss: 0.0000 val acc: 0.0000 test loss: 2.4770 test acc: 18.0272 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e1-a18-m.pt
+epoch: 2 train loss: 2.1763 train acc: 25.7385 val loss: 0.0000 val acc: 0.0000 test loss: 2.2677 test acc: 23.3507 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e2-a23-m.pt
+epoch: 3 train loss: 2.2139 train acc: 25.7385 val loss: 0.0000 val acc: 0.0000 test loss: 2.2477 test acc: 23.3507 LR0.00010000
+epoch: 4 train loss: 1.7983 train acc: 9.8362 val loss: 0.0000 val acc: 0.0000 test loss: 1.8351 test acc: 8.5553 LR0.00010000
+epoch: 5 train loss: 1.6214 train acc: 42.8888 val loss: 0.0000 val acc: 0.0000 test loss: 1.6309 test acc: 43.3689 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e5-a43-m.pt
+epoch: 6 train loss: 1.6666 train acc: 9.4571 val loss: 0.0000 val acc: 0.0000 test loss: 1.6811 test acc: 8.1641 LR0.00010000
+epoch: 7 train loss: 1.6268 train acc: 25.7841 val loss: 0.0000 val acc: 0.0000 test loss: 1.6508 test acc: 23.3846 LR0.00010000
+epoch: 8 train loss: 1.6961 train acc: 23.0043 val loss: 0.0000 val acc: 0.0000 test loss: 1.7262 test acc: 19.6537 LR0.00010000
+epoch: 9 train loss: 1.4529 train acc: 44.8120 val loss: 0.0000 val acc: 0.0000 test loss: 1.4904 test acc: 44.9910 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e9-a45-m.pt
+epoch: 10 train loss: 1.4054 train acc: 45.9206 val loss: 0.0000 val acc: 0.0000 test loss: 1.4587 test acc: 45.7519 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e10-a46-m.pt
+epoch: 11 train loss: 1.4309 train acc: 26.8996 val loss: 0.0000 val acc: 0.0000 test loss: 1.4934 test acc: 23.4063 LR0.00010000
+epoch: 12 train loss: 1.4261 train acc: 46.0073 val loss: 0.0000 val acc: 0.0000 test loss: 1.4628 test acc: 46.0464 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e12-a46-m.pt
+epoch: 13 train loss: 1.5053 train acc: 44.1437 val loss: 0.0000 val acc: 0.0000 test loss: 1.5492 test acc: 43.9988 LR0.00010000
+epoch: 14 train loss: 1.5424 train acc: 25.7622 val loss: 0.0000 val acc: 0.0000 test loss: 1.5763 test acc: 23.3822 LR0.00010000
+epoch: 15 train loss: 1.5218 train acc: 25.7851 val loss: 0.0000 val acc: 0.0000 test loss: 1.5456 test acc: 23.3853 LR0.00010000
+epoch: 16 train loss: 1.5690 train acc: 27.7497 val loss: 0.0000 val acc: 0.0000 test loss: 1.6639 test acc: 24.2948 LR0.00010000
+epoch: 17 train loss: 1.6310 train acc: 25.6992 val loss: 0.0000 val acc: 0.0000 test loss: 1.6434 test acc: 23.2773 LR0.00010000
+epoch: 18 train loss: 1.4130 train acc: 45.3571 val loss: 0.0000 val acc: 0.0000 test loss: 1.4229 test acc: 45.4798 LR0.00010000
+epoch: 19 train loss: 1.4773 train acc: 44.2186 val loss: 0.0000 val acc: 0.0000 test loss: 1.5425 test acc: 45.5314 LR0.00010000
+epoch: 20 train loss: 1.4688 train acc: 45.3192 val loss: 0.0000 val acc: 0.0000 test loss: 1.5421 test acc: 45.0374 LR0.00010000
+epoch: 21 train loss: 1.5461 train acc: 43.0306 val loss: 0.0000 val acc: 0.0000 test loss: 1.6071 test acc: 43.4802 LR0.00010000
+epoch: 22 train loss: 1.4080 train acc: 44.3171 val loss: 0.0000 val acc: 0.0000 test loss: 1.4184 test acc: 45.6385 LR0.00010000
+epoch: 23 train loss: 1.4046 train acc: 45.5506 val loss: 0.0000 val acc: 0.0000 test loss: 1.4420 test acc: 45.9671 LR0.00010000
+epoch: 24 train loss: 1.4178 train acc: 27.2959 val loss: 0.0000 val acc: 0.0000 test loss: 1.4801 test acc: 24.0231 LR0.00010000
+epoch: 25 train loss: 1.4038 train acc: 45.9322 val loss: 0.0000 val acc: 0.0000 test loss: 1.4346 test acc: 46.4364 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e25-a46-m.pt
+epoch: 26 train loss: 1.4292 train acc: 45.8191 val loss: 0.0000 val acc: 0.0000 test loss: 1.4826 test acc: 45.6613 LR0.00010000
+epoch: 27 train loss: 1.4651 train acc: 43.5356 val loss: 0.0000 val acc: 0.0000 test loss: 1.5075 test acc: 44.7707 LR0.00010000
+epoch: 28 train loss: 1.6036 train acc: 42.8888 val loss: 0.0000 val acc: 0.0000 test loss: 1.6024 test acc: 43.3689 LR0.00010000
+epoch: 29 train loss: 1.4481 train acc: 44.8505 val loss: 0.0000 val acc: 0.0000 test loss: 1.4621 test acc: 44.9206 LR0.00010000
+epoch: 30 train loss: 1.5749 train acc: 27.1311 val loss: 0.0000 val acc: 0.0000 test loss: 1.6611 test acc: 23.2849 LR0.00010000
+epoch: 31 train loss: 1.5141 train acc: 42.8928 val loss: 0.0000 val acc: 0.0000 test loss: 1.5374 test acc: 43.5749 LR0.00010000
+epoch: 32 train loss: 1.4237 train acc: 43.8628 val loss: 0.0000 val acc: 0.0000 test loss: 1.4328 test acc: 45.3014 LR0.00010000
+epoch: 33 train loss: 1.3915 train acc: 46.4697 val loss: 0.0000 val acc: 0.0000 test loss: 1.4495 test acc: 46.5223 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e33-a47-m.pt
+epoch: 34 train loss: 1.4459 train acc: 18.3004 val loss: 0.0000 val acc: 0.0000 test loss: 1.4605 test acc: 20.8794 LR0.00010000
+epoch: 35 train loss: 1.4332 train acc: 45.9400 val loss: 0.0000 val acc: 0.0000 test loss: 1.5043 test acc: 46.3281 LR0.00010000
+epoch: 36 train loss: 1.3760 train acc: 45.6412 val loss: 0.0000 val acc: 0.0000 test loss: 1.4158 test acc: 45.5907 LR0.00010000
+epoch: 37 train loss: 1.4269 train acc: 45.8615 val loss: 0.0000 val acc: 0.0000 test loss: 1.4661 test acc: 46.0017 LR0.00010000
+epoch: 38 train loss: 1.4048 train acc: 44.1825 val loss: 0.0000 val acc: 0.0000 test loss: 1.4170 test acc: 45.5551 LR0.00010000
+epoch: 39 train loss: 1.4076 train acc: 34.9234 val loss: 0.0000 val acc: 0.0000 test loss: 1.4786 test acc: 31.7944 LR0.00010000
+epoch: 40 train loss: 1.5744 train acc: 27.9300 val loss: 0.0000 val acc: 0.0000 test loss: 1.6311 test acc: 24.5248 LR0.00010000
+epoch: 41 train loss: 1.4323 train acc: 45.5160 val loss: 0.0000 val acc: 0.0000 test loss: 1.4590 test acc: 45.7117 LR0.00010000
+epoch: 42 train loss: 1.4204 train acc: 45.4272 val loss: 0.0000 val acc: 0.0000 test loss: 1.4826 test acc: 45.2272 LR0.00010000
+epoch: 43 train loss: 1.5950 train acc: 42.8888 val loss: 0.0000 val acc: 0.0000 test loss: 1.6388 test acc: 43.3689 LR0.00010000
+epoch: 44 train loss: 1.4370 train acc: 43.7641 val loss: 0.0000 val acc: 0.0000 test loss: 1.4482 test acc: 45.0394 LR0.00010000
+epoch: 45 train loss: 1.4028 train acc: 47.3503 val loss: 0.0000 val acc: 0.0000 test loss: 1.4501 test acc: 47.3252 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e45-a47-m.pt
+epoch: 46 train loss: 1.3721 train acc: 45.6954 val loss: 0.0000 val acc: 0.0000 test loss: 1.4066 test acc: 46.3442 LR0.00010000
+epoch: 47 train loss: 1.3930 train acc: 46.0996 val loss: 0.0000 val acc: 0.0000 test loss: 1.4645 test acc: 46.4755 LR0.00010000
+epoch: 48 train loss: 1.5514 train acc: 25.7965 val loss: 0.0000 val acc: 0.0000 test loss: 1.5723 test acc: 23.3898 LR0.00010000
+epoch: 49 train loss: 1.4551 train acc: 46.6257 val loss: 0.0000 val acc: 0.0000 test loss: 1.5088 test acc: 46.9303 LR0.00010000
+epoch: 50 train loss: 1.3928 train acc: 46.4553 val loss: 0.0000 val acc: 0.0000 test loss: 1.4043 test acc: 46.9022 LR0.00010000
+epoch: 51 train loss: 1.4371 train acc: 45.9682 val loss: 0.0000 val acc: 0.0000 test loss: 1.4696 test acc: 45.9438 LR0.00010000
+epoch: 52 train loss: 1.5648 train acc: 25.7853 val loss: 0.0000 val acc: 0.0000 test loss: 1.6050 test acc: 23.3853 LR0.00010000
+epoch: 53 train loss: 1.4095 train acc: 45.8789 val loss: 0.0000 val acc: 0.0000 test loss: 1.4154 test acc: 45.9416 LR0.00010000
+epoch: 54 train loss: 1.3933 train acc: 43.6596 val loss: 0.0000 val acc: 0.0000 test loss: 1.3964 test acc: 44.5823 LR0.00010000
+epoch: 55 train loss: 1.4616 train acc: 35.2451 val loss: 0.0000 val acc: 0.0000 test loss: 1.5292 test acc: 33.2623 LR0.00010000
+epoch: 56 train loss: 1.5166 train acc: 43.1457 val loss: 0.0000 val acc: 0.0000 test loss: 1.5067 test acc: 44.1181 LR0.00010000
+epoch: 57 train loss: 1.3737 train acc: 44.1799 val loss: 0.0000 val acc: 0.0000 test loss: 1.4087 test acc: 45.6011 LR0.00010000
+epoch: 58 train loss: 1.3462 train acc: 45.7314 val loss: 0.0000 val acc: 0.0000 test loss: 1.3724 test acc: 45.6803 LR0.00010000
+epoch: 59 train loss: 1.4249 train acc: 43.1590 val loss: 0.0000 val acc: 0.0000 test loss: 1.4552 test acc: 43.5883 LR0.00010000
+epoch: 60 train loss: 1.4480 train acc: 45.7007 val loss: 0.0000 val acc: 0.0000 test loss: 1.4736 test acc: 45.5898 LR0.00010000
+epoch: 61 train loss: 1.4451 train acc: 43.7394 val loss: 0.0000 val acc: 0.0000 test loss: 1.4554 test acc: 48.2679 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e61-a48-m.pt
+epoch: 62 train loss: 1.3466 train acc: 46.1060 val loss: 0.0000 val acc: 0.0000 test loss: 1.3879 test acc: 46.1008 LR0.00010000
+epoch: 63 train loss: 1.4438 train acc: 25.6617 val loss: 0.0000 val acc: 0.0000 test loss: 1.4742 test acc: 23.2321 LR0.00010000
+epoch: 64 train loss: 1.3901 train acc: 45.8286 val loss: 0.0000 val acc: 0.0000 test loss: 1.4145 test acc: 46.0730 LR0.00010000
+epoch: 65 train loss: 1.3079 train acc: 46.6500 val loss: 0.0000 val acc: 0.0000 test loss: 1.3476 test acc: 47.3020 LR0.00010000
+epoch: 66 train loss: 1.4037 train acc: 39.7086 val loss: 0.0000 val acc: 0.0000 test loss: 1.4311 test acc: 39.4244 LR0.00010000
+epoch: 67 train loss: 1.3439 train acc: 46.2087 val loss: 0.0000 val acc: 0.0000 test loss: 1.3752 test acc: 46.4609 LR0.00010000
+epoch: 68 train loss: 1.3552 train acc: 46.5217 val loss: 0.0000 val acc: 0.0000 test loss: 1.3790 test acc: 46.6898 LR0.00010000
+epoch: 69 train loss: 1.2969 train acc: 47.1716 val loss: 0.0000 val acc: 0.0000 test loss: 1.3018 test acc: 48.3954 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e69-a48-m.pt
+epoch: 70 train loss: 1.7208 train acc: 18.8226 val loss: 0.0000 val acc: 0.0000 test loss: 1.7339 test acc: 20.9146 LR0.00010000
+epoch: 71 train loss: 1.4905 train acc: 43.3434 val loss: 0.0000 val acc: 0.0000 test loss: 1.5251 test acc: 44.3781 LR0.00010000
+epoch: 72 train loss: 1.3604 train acc: 46.3259 val loss: 0.0000 val acc: 0.0000 test loss: 1.3829 test acc: 46.5991 LR0.00010000
+epoch: 73 train loss: 1.3799 train acc: 44.4789 val loss: 0.0000 val acc: 0.0000 test loss: 1.3965 test acc: 45.9070 LR0.00010000
+epoch: 74 train loss: 1.3848 train acc: 46.4578 val loss: 0.0000 val acc: 0.0000 test loss: 1.4603 test acc: 46.5599 LR0.00010000
+epoch: 75 train loss: 1.3834 train acc: 46.0769 val loss: 0.0000 val acc: 0.0000 test loss: 1.3932 test acc: 46.4130 LR0.00010000
+epoch: 76 train loss: 1.3504 train acc: 46.7067 val loss: 0.0000 val acc: 0.0000 test loss: 1.3729 test acc: 46.8512 LR0.00010000
+epoch: 77 train loss: 1.3439 train acc: 46.7123 val loss: 0.0000 val acc: 0.0000 test loss: 1.3800 test acc: 46.8612 LR0.00010000
+epoch: 78 train loss: 1.2933 train acc: 50.6364 val loss: 0.0000 val acc: 0.0000 test loss: 1.3056 test acc: 51.9677 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e78-a52-m.pt
+epoch: 79 train loss: 1.3973 train acc: 44.1701 val loss: 0.0000 val acc: 0.0000 test loss: 1.4199 test acc: 45.2347 LR0.00010000
+epoch: 80 train loss: 1.3809 train acc: 41.4831 val loss: 0.0000 val acc: 0.0000 test loss: 1.4055 test acc: 43.0662 LR0.00010000
+epoch: 81 train loss: 1.4888 train acc: 46.5613 val loss: 0.0000 val acc: 0.0000 test loss: 1.5262 test acc: 46.7935 LR0.00010000
+epoch: 82 train loss: 1.4805 train acc: 43.0557 val loss: 0.0000 val acc: 0.0000 test loss: 1.5173 test acc: 43.5192 LR0.00010000
+epoch: 83 train loss: 1.3470 train acc: 44.9242 val loss: 0.0000 val acc: 0.0000 test loss: 1.3616 test acc: 46.5019 LR0.00010000
+epoch: 84 train loss: 1.3386 train acc: 50.1959 val loss: 0.0000 val acc: 0.0000 test loss: 1.3406 test acc: 51.5928 LR0.00010000
+epoch: 85 train loss: 1.3033 train acc: 47.5373 val loss: 0.0000 val acc: 0.0000 test loss: 1.3554 test acc: 47.5786 LR0.00010000
+epoch: 86 train loss: 1.3945 train acc: 43.9521 val loss: 0.0000 val acc: 0.0000 test loss: 1.4117 test acc: 45.1557 LR0.00010000
+epoch: 87 train loss: 1.3692 train acc: 48.0016 val loss: 0.0000 val acc: 0.0000 test loss: 1.3838 test acc: 51.4631 LR0.00010000
+epoch: 88 train loss: 1.2463 train acc: 49.6372 val loss: 0.0000 val acc: 0.0000 test loss: 1.2489 test acc: 50.5018 LR0.00010000
+epoch: 89 train loss: 1.4758 train acc: 27.9876 val loss: 0.0000 val acc: 0.0000 test loss: 1.4821 test acc: 28.9660 LR0.00010000
+epoch: 90 train loss: 1.3250 train acc: 46.1215 val loss: 0.0000 val acc: 0.0000 test loss: 1.3532 test acc: 46.1392 LR0.00010000
+epoch: 91 train loss: 1.2994 train acc: 51.7051 val loss: 0.0000 val acc: 0.0000 test loss: 1.2948 test acc: 53.3685 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e91-a53-m.pt
+epoch: 92 train loss: 1.2483 train acc: 51.8782 val loss: 0.0000 val acc: 0.0000 test loss: 1.2564 test acc: 55.4166 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e92-a55-m.pt
+epoch: 93 train loss: 1.4854 train acc: 39.7094 val loss: 0.0000 val acc: 0.0000 test loss: 1.4339 test acc: 44.5461 LR0.00010000
+epoch: 94 train loss: 1.4601 train acc: 46.7679 val loss: 0.0000 val acc: 0.0000 test loss: 1.5269 test acc: 47.2863 LR0.00010000
+epoch: 95 train loss: 1.6993 train acc: 15.3871 val loss: 0.0000 val acc: 0.0000 test loss: 1.7413 test acc: 15.1361 LR0.00010000
+epoch: 96 train loss: 1.3589 train acc: 46.5569 val loss: 0.0000 val acc: 0.0000 test loss: 1.3719 test acc: 47.4166 LR0.00010000
+epoch: 97 train loss: 1.3473 train acc: 46.6945 val loss: 0.0000 val acc: 0.0000 test loss: 1.3838 test acc: 47.0795 LR0.00010000
+epoch: 98 train loss: 1.3642 train acc: 44.6749 val loss: 0.0000 val acc: 0.0000 test loss: 1.3747 test acc: 46.2254 LR0.00010000
+epoch: 99 train loss: 1.3467 train acc: 47.1693 val loss: 0.0000 val acc: 0.0000 test loss: 1.3904 test acc: 47.5536 LR0.00010000
+epoch: 100 train loss: 1.3485 train acc: 46.8593 val loss: 0.0000 val acc: 0.0000 test loss: 1.3609 test acc: 47.5106 LR0.00010000
+epoch: 101 train loss: 1.3333 train acc: 47.7026 val loss: 0.0000 val acc: 0.0000 test loss: 1.3624 test acc: 48.3664 LR0.00010000
+epoch: 102 train loss: 1.3409 train acc: 46.7819 val loss: 0.0000 val acc: 0.0000 test loss: 1.3638 test acc: 47.2542 LR0.00010000
+epoch: 103 train loss: 1.3316 train acc: 47.5437 val loss: 0.0000 val acc: 0.0000 test loss: 1.3587 test acc: 48.2330 LR0.00010000
+epoch: 104 train loss: 1.2945 train acc: 48.5113 val loss: 0.0000 val acc: 0.0000 test loss: 1.2992 test acc: 49.1258 LR0.00010000
+epoch: 105 train loss: 1.4319 train acc: 27.9997 val loss: 0.0000 val acc: 0.0000 test loss: 1.4791 test acc: 24.4383 LR0.00010000
+epoch: 106 train loss: 1.3693 train acc: 46.4145 val loss: 0.0000 val acc: 0.0000 test loss: 1.3849 test acc: 46.9436 LR0.00010000
+epoch: 107 train loss: 1.5410 train acc: 27.7808 val loss: 0.0000 val acc: 0.0000 test loss: 1.6009 test acc: 24.0144 LR0.00010000
+epoch: 108 train loss: 1.4275 train acc: 45.7659 val loss: 0.0000 val acc: 0.0000 test loss: 1.4353 test acc: 45.8903 LR0.00010000
+epoch: 109 train loss: 1.3948 train acc: 27.5432 val loss: 0.0000 val acc: 0.0000 test loss: 1.4604 test acc: 23.7278 LR0.00010000
+epoch: 110 train loss: 1.3281 train acc: 46.7501 val loss: 0.0000 val acc: 0.0000 test loss: 1.3440 test acc: 48.0017 LR0.00010000
+epoch: 111 train loss: 1.3662 train acc: 47.3326 val loss: 0.0000 val acc: 0.0000 test loss: 1.4082 test acc: 47.5808 LR0.00010000
+epoch: 112 train loss: 1.4441 train acc: 43.4124 val loss: 0.0000 val acc: 0.0000 test loss: 1.4609 test acc: 43.8726 LR0.00010000
+epoch: 113 train loss: 1.3564 train acc: 46.5119 val loss: 0.0000 val acc: 0.0000 test loss: 1.4154 test acc: 46.6205 LR0.00010000
+epoch: 114 train loss: 1.3619 train acc: 46.8021 val loss: 0.0000 val acc: 0.0000 test loss: 1.3856 test acc: 47.4445 LR0.00010000
+epoch: 115 train loss: 1.3459 train acc: 47.2916 val loss: 0.0000 val acc: 0.0000 test loss: 1.3812 test acc: 47.6399 LR0.00010000
+epoch: 116 train loss: 1.3353 train acc: 46.6606 val loss: 0.0000 val acc: 0.0000 test loss: 1.3611 test acc: 47.0768 LR0.00010000
+epoch: 117 train loss: 1.3267 train acc: 47.5567 val loss: 0.0000 val acc: 0.0000 test loss: 1.3528 test acc: 48.0983 LR0.00010000
+epoch: 118 train loss: 1.3214 train acc: 47.7152 val loss: 0.0000 val acc: 0.0000 test loss: 1.3518 test acc: 48.0287 LR0.00010000
+epoch: 119 train loss: 1.3644 train acc: 43.0905 val loss: 0.0000 val acc: 0.0000 test loss: 1.4025 test acc: 42.4693 LR0.00010000
+epoch: 120 train loss: 1.3119 train acc: 46.6504 val loss: 0.0000 val acc: 0.0000 test loss: 1.3223 test acc: 47.0883 LR0.00010000
+epoch: 121 train loss: 1.3530 train acc: 47.2759 val loss: 0.0000 val acc: 0.0000 test loss: 1.3914 test acc: 47.7357 LR0.00010000
+epoch: 122 train loss: 1.3315 train acc: 37.6106 val loss: 0.0000 val acc: 0.0000 test loss: 1.3574 test acc: 36.5828 LR0.00010000
+epoch: 123 train loss: 1.3110 train acc: 47.1550 val loss: 0.0000 val acc: 0.0000 test loss: 1.2990 test acc: 47.6219 LR0.00010000
+epoch: 124 train loss: 1.3466 train acc: 46.7717 val loss: 0.0000 val acc: 0.0000 test loss: 1.3684 test acc: 47.3637 LR0.00010000
+epoch: 125 train loss: 1.3292 train acc: 47.3729 val loss: 0.0000 val acc: 0.0000 test loss: 1.3505 test acc: 48.1503 LR0.00010000
+epoch: 126 train loss: 1.3292 train acc: 47.4706 val loss: 0.0000 val acc: 0.0000 test loss: 1.3527 test acc: 48.0788 LR0.00010000
+epoch: 127 train loss: 1.3236 train acc: 47.6203 val loss: 0.0000 val acc: 0.0000 test loss: 1.3441 test acc: 48.3481 LR0.00010000
+epoch: 128 train loss: 1.3190 train acc: 47.9625 val loss: 0.0000 val acc: 0.0000 test loss: 1.3419 test acc: 48.6720 LR0.00010000
+epoch: 129 train loss: 1.3199 train acc: 47.7385 val loss: 0.0000 val acc: 0.0000 test loss: 1.3480 test acc: 48.1450 LR0.00010000
+epoch: 130 train loss: 1.3362 train acc: 48.3765 val loss: 0.0000 val acc: 0.0000 test loss: 1.3643 test acc: 49.3950 LR0.00010000
+epoch: 131 train loss: 1.3598 train acc: 46.8722 val loss: 0.0000 val acc: 0.0000 test loss: 1.4026 test acc: 47.0975 LR0.00010000
+epoch: 132 train loss: 1.3904 train acc: 43.9595 val loss: 0.0000 val acc: 0.0000 test loss: 1.4113 test acc: 45.2332 LR0.00010000
+epoch: 133 train loss: 1.3376 train acc: 47.4392 val loss: 0.0000 val acc: 0.0000 test loss: 1.3589 test acc: 48.4247 LR0.00010000
+epoch: 134 train loss: 1.3344 train acc: 46.8687 val loss: 0.0000 val acc: 0.0000 test loss: 1.3631 test acc: 47.1712 LR0.00010000
+epoch: 135 train loss: 1.3598 train acc: 46.4936 val loss: 0.0000 val acc: 0.0000 test loss: 1.3786 test acc: 47.0503 LR0.00010000
+epoch: 136 train loss: 1.3277 train acc: 47.6175 val loss: 0.0000 val acc: 0.0000 test loss: 1.3540 test acc: 48.0000 LR0.00010000
+epoch: 137 train loss: 1.3296 train acc: 47.5744 val loss: 0.0000 val acc: 0.0000 test loss: 1.3515 test acc: 48.0510 LR0.00010000
+epoch: 138 train loss: 1.3222 train acc: 47.8974 val loss: 0.0000 val acc: 0.0000 test loss: 1.3300 test acc: 48.5870 LR0.00010000
+epoch: 139 train loss: 1.3294 train acc: 47.5878 val loss: 0.0000 val acc: 0.0000 test loss: 1.3617 test acc: 48.2072 LR0.00010000
+epoch: 140 train loss: 1.3126 train acc: 48.0018 val loss: 0.0000 val acc: 0.0000 test loss: 1.3401 test acc: 48.8717 LR0.00010000
+epoch: 141 train loss: 1.2927 train acc: 48.2156 val loss: 0.0000 val acc: 0.0000 test loss: 1.3262 test acc: 49.0087 LR0.00010000
+epoch: 142 train loss: 1.2844 train acc: 48.0006 val loss: 0.0000 val acc: 0.0000 test loss: 1.2965 test acc: 49.2892 LR0.00010000
+epoch: 143 train loss: 1.3225 train acc: 48.1147 val loss: 0.0000 val acc: 0.0000 test loss: 1.3731 test acc: 48.3429 LR0.00010000
+epoch: 144 train loss: 1.3293 train acc: 47.5252 val loss: 0.0000 val acc: 0.0000 test loss: 1.3482 test acc: 47.2383 LR0.00010000
+epoch: 145 train loss: 1.2993 train acc: 48.4654 val loss: 0.0000 val acc: 0.0000 test loss: 1.3263 test acc: 48.7297 LR0.00010000
+epoch: 146 train loss: 1.3051 train acc: 47.9457 val loss: 0.0000 val acc: 0.0000 test loss: 1.3265 test acc: 48.7893 LR0.00010000
+epoch: 147 train loss: 1.2846 train acc: 47.6821 val loss: 0.0000 val acc: 0.0000 test loss: 1.3155 test acc: 48.0422 LR0.00010000
+epoch: 148 train loss: 1.2656 train acc: 48.3701 val loss: 0.0000 val acc: 0.0000 test loss: 1.2531 test acc: 48.5967 LR0.00010000
+epoch: 149 train loss: 1.3685 train acc: 49.1844 val loss: 0.0000 val acc: 0.0000 test loss: 1.3486 test acc: 47.4097 LR0.00010000
+epoch: 150 train loss: 1.3803 train acc: 47.2469 val loss: 0.0000 val acc: 0.0000 test loss: 1.3982 test acc: 47.5964 LR0.00010000
+epoch: 151 train loss: 1.3313 train acc: 47.4101 val loss: 0.0000 val acc: 0.0000 test loss: 1.3514 test acc: 47.7765 LR0.00010000
+epoch: 152 train loss: 1.3151 train acc: 46.3862 val loss: 0.0000 val acc: 0.0000 test loss: 1.3238 test acc: 47.9339 LR0.00010000
+epoch: 153 train loss: 1.3629 train acc: 46.7565 val loss: 0.0000 val acc: 0.0000 test loss: 1.4132 test acc: 46.9090 LR0.00010000
+epoch: 154 train loss: 1.4772 train acc: 43.5234 val loss: 0.0000 val acc: 0.0000 test loss: 1.5092 test acc: 44.0018 LR0.00010000
+epoch: 155 train loss: 1.3459 train acc: 46.3283 val loss: 0.0000 val acc: 0.0000 test loss: 1.3881 test acc: 45.3010 LR0.00010000
+epoch: 156 train loss: 1.3353 train acc: 48.8536 val loss: 0.0000 val acc: 0.0000 test loss: 1.3598 test acc: 49.1757 LR0.00010000
+epoch: 157 train loss: 1.3121 train acc: 47.8383 val loss: 0.0000 val acc: 0.0000 test loss: 1.3368 test acc: 48.3498 LR0.00010000
+epoch: 158 train loss: 1.3781 train acc: 45.5764 val loss: 0.0000 val acc: 0.0000 test loss: 1.3953 test acc: 46.1064 LR0.00010000
+epoch: 159 train loss: 1.2820 train acc: 49.9892 val loss: 0.0000 val acc: 0.0000 test loss: 1.3057 test acc: 50.4533 LR0.00010000
+epoch: 160 train loss: 1.4004 train acc: 43.6731 val loss: 0.0000 val acc: 0.0000 test loss: 1.4327 test acc: 44.7033 LR0.00010000
+epoch: 161 train loss: 1.3249 train acc: 47.4753 val loss: 0.0000 val acc: 0.0000 test loss: 1.3591 test acc: 47.7065 LR0.00010000
+epoch: 162 train loss: 1.2531 train acc: 48.0395 val loss: 0.0000 val acc: 0.0000 test loss: 1.2571 test acc: 48.9510 LR0.00010000
+epoch: 163 train loss: 1.3418 train acc: 48.3850 val loss: 0.0000 val acc: 0.0000 test loss: 1.3531 test acc: 49.4264 LR0.00010000
+epoch: 164 train loss: 1.4020 train acc: 47.7558 val loss: 0.0000 val acc: 0.0000 test loss: 1.4225 test acc: 47.9565 LR0.00010000
+epoch: 165 train loss: 1.3166 train acc: 49.1721 val loss: 0.0000 val acc: 0.0000 test loss: 1.3468 test acc: 49.0089 LR0.00010000
+epoch: 166 train loss: 1.2826 train acc: 48.5191 val loss: 0.0000 val acc: 0.0000 test loss: 1.3067 test acc: 48.6921 LR0.00010000
+epoch: 167 train loss: 1.3259 train acc: 43.4485 val loss: 0.0000 val acc: 0.0000 test loss: 1.4049 test acc: 40.0665 LR0.00010000
+epoch: 168 train loss: 1.4069 train acc: 44.6108 val loss: 0.0000 val acc: 0.0000 test loss: 1.3899 test acc: 45.3068 LR0.00010000
+epoch: 169 train loss: 1.3444 train acc: 47.8145 val loss: 0.0000 val acc: 0.0000 test loss: 1.3974 test acc: 47.7380 LR0.00010000
+epoch: 170 train loss: 1.3772 train acc: 45.2406 val loss: 0.0000 val acc: 0.0000 test loss: 1.3858 test acc: 46.7370 LR0.00010000
+epoch: 171 train loss: 1.2983 train acc: 48.5065 val loss: 0.0000 val acc: 0.0000 test loss: 1.3497 test acc: 48.3585 LR0.00010000
+epoch: 172 train loss: 1.2509 train acc: 49.0809 val loss: 0.0000 val acc: 0.0000 test loss: 1.2551 test acc: 49.5386 LR0.00010000
+epoch: 173 train loss: 1.2548 train acc: 49.8162 val loss: 0.0000 val acc: 0.0000 test loss: 1.2520 test acc: 49.9372 LR0.00010000
+epoch: 174 train loss: 1.2204 train acc: 50.4044 val loss: 0.0000 val acc: 0.0000 test loss: 1.2234 test acc: 50.0860 LR0.00010000
+epoch: 175 train loss: 1.2154 train acc: 49.6322 val loss: 0.0000 val acc: 0.0000 test loss: 1.2215 test acc: 49.5869 LR0.00010000
+epoch: 176 train loss: 1.2782 train acc: 48.8520 val loss: 0.0000 val acc: 0.0000 test loss: 1.2893 test acc: 48.2216 LR0.00010000
+epoch: 177 train loss: 1.2627 train acc: 47.4220 val loss: 0.0000 val acc: 0.0000 test loss: 1.2907 test acc: 47.4523 LR0.00010000
+epoch: 178 train loss: 1.2124 train acc: 48.9021 val loss: 0.0000 val acc: 0.0000 test loss: 1.2260 test acc: 48.9355 LR0.00010000
+epoch: 179 train loss: 1.1365 train acc: 53.4418 val loss: 0.0000 val acc: 0.0000 test loss: 1.1611 test acc: 51.8711 LR0.00010000
+epoch: 180 train loss: 1.1027 train acc: 58.3212 val loss: 0.0000 val acc: 0.0000 test loss: 1.1062 test acc: 59.9097 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e180-a60-m.pt
+epoch: 181 train loss: 1.1785 train acc: 56.5387 val loss: 0.0000 val acc: 0.0000 test loss: 1.2172 test acc: 56.1880 LR0.00010000
+epoch: 182 train loss: 1.3557 train acc: 37.1096 val loss: 0.0000 val acc: 0.0000 test loss: 1.3698 test acc: 39.7724 LR0.00010000
+epoch: 183 train loss: 1.3170 train acc: 46.1217 val loss: 0.0000 val acc: 0.0000 test loss: 1.3616 test acc: 44.8398 LR0.00010000
+epoch: 184 train loss: 1.3272 train acc: 45.1892 val loss: 0.0000 val acc: 0.0000 test loss: 1.3192 test acc: 45.7616 LR0.00010000
+epoch: 185 train loss: 1.2387 train acc: 50.7377 val loss: 0.0000 val acc: 0.0000 test loss: 1.2485 test acc: 50.5274 LR0.00010000
+epoch: 186 train loss: 1.4338 train acc: 54.6611 val loss: 0.0000 val acc: 0.0000 test loss: 1.3346 test acc: 58.0291 LR0.00010000
+epoch: 187 train loss: 1.2729 train acc: 51.2257 val loss: 0.0000 val acc: 0.0000 test loss: 1.3215 test acc: 50.7177 LR0.00010000
+epoch: 188 train loss: 1.2209 train acc: 53.3213 val loss: 0.0000 val acc: 0.0000 test loss: 1.2340 test acc: 54.4279 LR0.00010000
+epoch: 189 train loss: 1.3390 train acc: 47.3616 val loss: 0.0000 val acc: 0.0000 test loss: 1.3714 test acc: 47.9637 LR0.00010000
+epoch: 190 train loss: 1.3279 train acc: 47.9628 val loss: 0.0000 val acc: 0.0000 test loss: 1.3562 test acc: 48.6748 LR0.00010000
+epoch: 191 train loss: 1.3212 train acc: 47.9602 val loss: 0.0000 val acc: 0.0000 test loss: 1.3412 test acc: 48.6000 LR0.00010000
+epoch: 192 train loss: 1.3125 train acc: 48.5567 val loss: 0.0000 val acc: 0.0000 test loss: 1.3397 test acc: 49.1382 LR0.00010000
+epoch: 193 train loss: 1.2725 train acc: 48.6075 val loss: 0.0000 val acc: 0.0000 test loss: 1.2967 test acc: 49.5785 LR0.00010000
+epoch: 194 train loss: 1.1917 train acc: 49.0610 val loss: 0.0000 val acc: 0.0000 test loss: 1.1928 test acc: 49.6131 LR0.00010000
+epoch: 195 train loss: 1.1697 train acc: 54.1030 val loss: 0.0000 val acc: 0.0000 test loss: 1.1648 test acc: 58.4044 LR0.00010000
+epoch: 196 train loss: 1.2383 train acc: 43.3486 val loss: 0.0000 val acc: 0.0000 test loss: 1.2387 test acc: 47.6687 LR0.00010000
+epoch: 197 train loss: 1.3197 train acc: 43.5477 val loss: 0.0000 val acc: 0.0000 test loss: 1.3191 test acc: 43.5710 LR0.00010000
+epoch: 198 train loss: 1.1976 train acc: 55.3183 val loss: 0.0000 val acc: 0.0000 test loss: 1.1822 test acc: 58.3330 LR0.00010000
+epoch: 199 train loss: 1.4683 train acc: 46.8185 val loss: 0.0000 val acc: 0.0000 test loss: 1.4970 test acc: 48.2889 LR0.00010000
+epoch: 200 train loss: 1.3509 train acc: 47.8959 val loss: 0.0000 val acc: 0.0000 test loss: 1.3737 test acc: 47.3613 LR0.00010000
+epoch: 201 train loss: 1.3055 train acc: 48.2790 val loss: 0.0000 val acc: 0.0000 test loss: 1.3407 test acc: 48.0615 LR0.00010000
+epoch: 202 train loss: 1.3369 train acc: 48.1282 val loss: 0.0000 val acc: 0.0000 test loss: 1.3585 test acc: 48.5255 LR0.00010000
+epoch: 203 train loss: 1.3664 train acc: 47.2403 val loss: 0.0000 val acc: 0.0000 test loss: 1.4387 test acc: 46.1166 LR0.00010000
+epoch: 204 train loss: 1.3337 train acc: 46.7789 val loss: 0.0000 val acc: 0.0000 test loss: 1.3575 test acc: 47.6771 LR0.00010000
+epoch: 205 train loss: 1.3253 train acc: 46.7855 val loss: 0.0000 val acc: 0.0000 test loss: 1.3559 test acc: 47.2077 LR0.00010000
+epoch: 206 train loss: 1.3044 train acc: 49.3883 val loss: 0.0000 val acc: 0.0000 test loss: 1.3521 test acc: 47.6853 LR0.00010000
+epoch: 207 train loss: 1.2684 train acc: 50.4619 val loss: 0.0000 val acc: 0.0000 test loss: 1.3236 test acc: 47.3569 LR0.00010000
+epoch: 208 train loss: 1.1750 train acc: 50.1760 val loss: 0.0000 val acc: 0.0000 test loss: 1.2121 test acc: 48.3255 LR0.00010000
+epoch: 209 train loss: 1.1247 train acc: 58.7913 val loss: 0.0000 val acc: 0.0000 test loss: 1.1546 test acc: 57.2087 LR0.00010000
+epoch: 210 train loss: 1.1381 train acc: 55.4274 val loss: 0.0000 val acc: 0.0000 test loss: 1.2021 test acc: 51.4137 LR0.00010000
+epoch: 211 train loss: 1.3207 train acc: 57.1067 val loss: 0.0000 val acc: 0.0000 test loss: 1.2147 test acc: 61.2042 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e211-a61-m.pt
+epoch: 212 train loss: 1.3571 train acc: 28.4674 val loss: 0.0000 val acc: 0.0000 test loss: 1.4012 test acc: 24.8954 LR0.00010000
+epoch: 213 train loss: 1.1565 train acc: 50.9688 val loss: 0.0000 val acc: 0.0000 test loss: 1.1629 test acc: 51.3465 LR0.00010000
+epoch: 214 train loss: 1.0671 train acc: 61.8967 val loss: 0.0000 val acc: 0.0000 test loss: 1.0698 test acc: 61.5366 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e214-a62-m.pt
+epoch: 215 train loss: 1.0762 train acc: 57.8627 val loss: 0.0000 val acc: 0.0000 test loss: 1.0771 test acc: 59.4934 LR0.00010000
+epoch: 216 train loss: 1.4950 train acc: 49.3920 val loss: 0.0000 val acc: 0.0000 test loss: 1.4948 test acc: 48.6450 LR0.00010000
+epoch: 217 train loss: 1.5224 train acc: 30.4323 val loss: 0.0000 val acc: 0.0000 test loss: 1.5827 test acc: 26.7924 LR0.00010000
+epoch: 218 train loss: 1.3292 train acc: 46.1847 val loss: 0.0000 val acc: 0.0000 test loss: 1.3412 test acc: 46.9208 LR0.00010000
+epoch: 219 train loss: 1.3931 train acc: 47.4321 val loss: 0.0000 val acc: 0.0000 test loss: 1.4509 test acc: 46.7151 LR0.00010000
+epoch: 220 train loss: 1.1627 train acc: 47.7761 val loss: 0.0000 val acc: 0.0000 test loss: 1.1500 test acc: 48.6585 LR0.00010000
+epoch: 221 train loss: 1.2740 train acc: 49.1421 val loss: 0.0000 val acc: 0.0000 test loss: 1.3243 test acc: 46.0259 LR0.00010000
+epoch: 222 train loss: 1.2800 train acc: 49.8133 val loss: 0.0000 val acc: 0.0000 test loss: 1.3152 test acc: 47.4128 LR0.00010000
+epoch: 223 train loss: 1.1983 train acc: 52.2310 val loss: 0.0000 val acc: 0.0000 test loss: 1.2378 test acc: 49.6143 LR0.00010000
+epoch: 224 train loss: 1.1835 train acc: 50.0060 val loss: 0.0000 val acc: 0.0000 test loss: 1.2304 test acc: 47.3328 LR0.00010000
+epoch: 225 train loss: 1.0627 train acc: 54.1769 val loss: 0.0000 val acc: 0.0000 test loss: 1.1044 test acc: 51.1525 LR0.00010000
+epoch: 226 train loss: 1.0668 train acc: 57.7661 val loss: 0.0000 val acc: 0.0000 test loss: 1.0807 test acc: 58.7680 LR0.00010000
+epoch: 227 train loss: 1.0427 train acc: 60.0434 val loss: 0.0000 val acc: 0.0000 test loss: 1.1081 test acc: 58.9422 LR0.00010000
+epoch: 228 train loss: 1.1897 train acc: 54.5829 val loss: 0.0000 val acc: 0.0000 test loss: 1.2248 test acc: 55.5083 LR0.00010000
+epoch: 229 train loss: 1.2357 train acc: 63.2429 val loss: 0.0000 val acc: 0.0000 test loss: 1.1831 test acc: 63.1905 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e229-a63-m.pt
+epoch: 230 train loss: 1.1409 train acc: 53.5539 val loss: 0.0000 val acc: 0.0000 test loss: 1.1484 test acc: 55.4615 LR0.00010000
+epoch: 231 train loss: 1.1089 train acc: 58.1209 val loss: 0.0000 val acc: 0.0000 test loss: 1.1904 test acc: 57.6271 LR0.00010000
+epoch: 232 train loss: 1.1195 train acc: 59.3844 val loss: 0.0000 val acc: 0.0000 test loss: 1.1348 test acc: 61.3297 LR0.00010000
+epoch: 233 train loss: 1.0109 train acc: 60.8709 val loss: 0.0000 val acc: 0.0000 test loss: 1.0290 test acc: 62.1915 LR0.00010000
+epoch: 234 train loss: 1.0274 train acc: 61.1858 val loss: 0.0000 val acc: 0.0000 test loss: 1.1016 test acc: 59.6120 LR0.00010000
+epoch: 235 train loss: 1.1327 train acc: 59.5264 val loss: 0.0000 val acc: 0.0000 test loss: 1.2261 test acc: 55.5056 LR0.00010000
+epoch: 236 train loss: 1.3358 train acc: 38.8889 val loss: 0.0000 val acc: 0.0000 test loss: 1.3393 test acc: 42.6971 LR0.00010000
+epoch: 237 train loss: 1.2855 train acc: 42.6355 val loss: 0.0000 val acc: 0.0000 test loss: 1.2417 test acc: 44.3545 LR0.00010000
+epoch: 238 train loss: 1.1216 train acc: 46.3471 val loss: 0.0000 val acc: 0.0000 test loss: 1.1374 test acc: 46.5306 LR0.00010000
+epoch: 239 train loss: 1.1476 train acc: 54.9623 val loss: 0.0000 val acc: 0.0000 test loss: 1.1498 test acc: 55.3618 LR0.00010000
+epoch: 240 train loss: 1.0783 train acc: 59.4430 val loss: 0.0000 val acc: 0.0000 test loss: 1.0655 test acc: 63.2613 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e240-a63-m.pt
+epoch: 241 train loss: 1.1173 train acc: 59.7480 val loss: 0.0000 val acc: 0.0000 test loss: 1.1021 test acc: 61.6784 LR0.00010000
+epoch: 242 train loss: 1.1133 train acc: 55.0359 val loss: 0.0000 val acc: 0.0000 test loss: 1.1017 test acc: 58.7561 LR0.00010000
+epoch: 243 train loss: 1.0782 train acc: 61.9624 val loss: 0.0000 val acc: 0.0000 test loss: 1.0890 test acc: 62.4576 LR0.00010000
+epoch: 244 train loss: 1.0908 train acc: 55.4622 val loss: 0.0000 val acc: 0.0000 test loss: 1.0809 test acc: 58.7699 LR0.00010000
+epoch: 245 train loss: 1.0074 train acc: 61.9700 val loss: 0.0000 val acc: 0.0000 test loss: 1.0085 test acc: 62.8862 LR0.00010000
+epoch: 246 train loss: 1.5045 train acc: 28.2445 val loss: 0.0000 val acc: 0.0000 test loss: 1.5201 test acc: 25.2793 LR0.00010000
+epoch: 247 train loss: 1.1629 train acc: 51.5465 val loss: 0.0000 val acc: 0.0000 test loss: 1.2144 test acc: 48.6275 LR0.00010000
+epoch: 248 train loss: 1.0917 train acc: 53.2784 val loss: 0.0000 val acc: 0.0000 test loss: 1.1152 test acc: 51.8941 LR0.00010000
+epoch: 249 train loss: 1.0266 train acc: 57.7264 val loss: 0.0000 val acc: 0.0000 test loss: 1.0853 test acc: 54.0789 LR0.00010000
+epoch: 250 train loss: 1.0661 train acc: 60.4578 val loss: 0.0000 val acc: 0.0000 test loss: 1.1014 test acc: 58.7811 LR0.00010000
+epoch: 251 train loss: 1.0724 train acc: 53.4648 val loss: 0.0000 val acc: 0.0000 test loss: 1.0973 test acc: 54.6877 LR0.00010000
+epoch: 252 train loss: 1.0611 train acc: 60.9391 val loss: 0.0000 val acc: 0.0000 test loss: 1.1392 test acc: 57.8163 LR0.00010000
+epoch: 253 train loss: 1.1473 train acc: 53.3796 val loss: 0.0000 val acc: 0.0000 test loss: 1.1617 test acc: 55.9061 LR0.00010000
+epoch: 254 train loss: 1.3863 train acc: 49.1391 val loss: 0.0000 val acc: 0.0000 test loss: 1.4017 test acc: 50.3686 LR0.00010000
+epoch: 255 train loss: 1.1166 train acc: 57.5100 val loss: 0.0000 val acc: 0.0000 test loss: 1.1184 test acc: 60.4372 LR0.00010000
+epoch: 256 train loss: 1.0537 train acc: 61.5137 val loss: 0.0000 val acc: 0.0000 test loss: 1.0541 test acc: 63.6242 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e256-a64-m.pt
+epoch: 257 train loss: 1.0590 train acc: 59.6390 val loss: 0.0000 val acc: 0.0000 test loss: 1.0994 test acc: 58.1979 LR0.00010000
+epoch: 258 train loss: 1.0305 train acc: 62.5476 val loss: 0.0000 val acc: 0.0000 test loss: 1.0554 test acc: 61.7469 LR0.00010000
+epoch: 259 train loss: 1.0393 train acc: 60.2673 val loss: 0.0000 val acc: 0.0000 test loss: 1.0872 test acc: 58.4783 LR0.00010000
+epoch: 260 train loss: 1.0030 train acc: 63.7552 val loss: 0.0000 val acc: 0.0000 test loss: 1.0527 test acc: 62.4275 LR0.00010000
+epoch: 261 train loss: 0.9769 train acc: 64.6362 val loss: 0.0000 val acc: 0.0000 test loss: 1.0051 test acc: 64.5809 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e261-a65-m.pt
+epoch: 262 train loss: 0.9315 train acc: 67.3964 val loss: 0.0000 val acc: 0.0000 test loss: 0.9720 test acc: 65.3452 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e262-a65-m.pt
+epoch: 263 train loss: 0.9247 train acc: 65.8627 val loss: 0.0000 val acc: 0.0000 test loss: 0.9651 test acc: 65.9669 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e263-a66-m.pt
+epoch: 264 train loss: 1.3288 train acc: 60.9438 val loss: 0.0000 val acc: 0.0000 test loss: 1.3319 test acc: 59.9581 LR0.00010000
+epoch: 265 train loss: 1.3479 train acc: 47.9455 val loss: 0.0000 val acc: 0.0000 test loss: 1.3819 test acc: 49.5543 LR0.00010000
+epoch: 266 train loss: 1.3668 train acc: 39.3243 val loss: 0.0000 val acc: 0.0000 test loss: 1.3962 test acc: 40.0499 LR0.00010000
+epoch: 267 train loss: 1.0834 train acc: 55.0630 val loss: 0.0000 val acc: 0.0000 test loss: 1.0836 test acc: 53.8703 LR0.00010000
+epoch: 268 train loss: 1.0298 train acc: 58.3225 val loss: 0.0000 val acc: 0.0000 test loss: 1.0622 test acc: 55.9873 LR0.00010000
+epoch: 269 train loss: 1.0748 train acc: 55.7882 val loss: 0.0000 val acc: 0.0000 test loss: 1.1198 test acc: 52.2870 LR0.00010000
+epoch: 270 train loss: 1.1579 train acc: 60.8743 val loss: 0.0000 val acc: 0.0000 test loss: 1.1382 test acc: 62.3555 LR0.00010000
+epoch: 271 train loss: 1.1180 train acc: 57.2666 val loss: 0.0000 val acc: 0.0000 test loss: 1.1808 test acc: 56.9944 LR0.00010000
+epoch: 272 train loss: 1.0499 train acc: 61.4474 val loss: 0.0000 val acc: 0.0000 test loss: 1.0528 test acc: 62.2784 LR0.00010000
+epoch: 273 train loss: 1.0247 train acc: 61.4827 val loss: 0.0000 val acc: 0.0000 test loss: 1.0248 test acc: 62.9722 LR0.00010000
+epoch: 274 train loss: 1.0771 train acc: 64.2693 val loss: 0.0000 val acc: 0.0000 test loss: 1.1770 test acc: 60.3538 LR0.00010000
+epoch: 275 train loss: 1.1178 train acc: 56.0887 val loss: 0.0000 val acc: 0.0000 test loss: 1.1310 test acc: 57.4050 LR0.00010000
+epoch: 276 train loss: 1.2157 train acc: 60.4767 val loss: 0.0000 val acc: 0.0000 test loss: 1.2209 test acc: 59.3413 LR0.00010000
+epoch: 277 train loss: 1.1773 train acc: 56.4575 val loss: 0.0000 val acc: 0.0000 test loss: 1.2187 test acc: 56.6342 LR0.00010000
+epoch: 278 train loss: 1.3223 train acc: 43.4758 val loss: 0.0000 val acc: 0.0000 test loss: 1.3273 test acc: 45.4412 LR0.00010000
+epoch: 279 train loss: 1.0702 train acc: 54.7491 val loss: 0.0000 val acc: 0.0000 test loss: 1.0947 test acc: 53.5367 LR0.00010000
+epoch: 280 train loss: 1.0223 train acc: 57.1611 val loss: 0.0000 val acc: 0.0000 test loss: 1.0435 test acc: 56.1372 LR0.00010000
+epoch: 281 train loss: 0.9691 train acc: 65.1976 val loss: 0.0000 val acc: 0.0000 test loss: 0.9940 test acc: 64.5407 LR0.00010000
+epoch: 282 train loss: 0.9512 train acc: 64.7256 val loss: 0.0000 val acc: 0.0000 test loss: 0.9754 test acc: 65.1658 LR0.00010000
+epoch: 283 train loss: 1.0515 train acc: 63.2777 val loss: 0.0000 val acc: 0.0000 test loss: 1.1006 test acc: 61.2612 LR0.00010000
+epoch: 284 train loss: 0.9689 train acc: 64.4043 val loss: 0.0000 val acc: 0.0000 test loss: 0.9677 test acc: 66.0558 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e284-a66-m.pt
+epoch: 285 train loss: 1.0804 train acc: 59.2068 val loss: 0.0000 val acc: 0.0000 test loss: 1.1383 test acc: 58.5082 LR0.00010000
+epoch: 286 train loss: 0.9964 train acc: 61.9540 val loss: 0.0000 val acc: 0.0000 test loss: 1.0307 test acc: 61.6754 LR0.00010000
+epoch: 287 train loss: 1.1481 train acc: 51.1568 val loss: 0.0000 val acc: 0.0000 test loss: 1.1891 test acc: 50.0438 LR0.00010000
+epoch: 288 train loss: 1.1954 train acc: 59.0679 val loss: 0.0000 val acc: 0.0000 test loss: 1.1592 test acc: 56.8106 LR0.00010000
+epoch: 289 train loss: 1.1102 train acc: 62.4607 val loss: 0.0000 val acc: 0.0000 test loss: 1.1380 test acc: 61.6634 LR0.00010000
+epoch: 290 train loss: 1.0215 train acc: 65.4695 val loss: 0.0000 val acc: 0.0000 test loss: 1.0373 test acc: 66.5055 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e290-a67-m.pt
+epoch: 291 train loss: 0.9472 train acc: 65.7821 val loss: 0.0000 val acc: 0.0000 test loss: 0.9831 test acc: 66.0267 LR0.00010000
+epoch: 292 train loss: 0.9084 train acc: 66.8212 val loss: 0.0000 val acc: 0.0000 test loss: 0.9386 test acc: 66.2413 LR0.00010000
+epoch: 293 train loss: 0.9127 train acc: 65.1026 val loss: 0.0000 val acc: 0.0000 test loss: 0.9801 test acc: 61.5656 LR0.00010000
+epoch: 294 train loss: 0.9120 train acc: 65.6991 val loss: 0.0000 val acc: 0.0000 test loss: 0.9448 test acc: 66.0681 LR0.00010000
+epoch: 295 train loss: 0.8832 train acc: 66.9420 val loss: 0.0000 val acc: 0.0000 test loss: 0.9029 test acc: 67.0142 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e295-a67-m.pt
+epoch: 296 train loss: 0.9229 train acc: 67.9150 val loss: 0.0000 val acc: 0.0000 test loss: 0.9415 test acc: 67.6534 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e296-a68-m.pt
+epoch: 297 train loss: 0.9010 train acc: 69.0886 val loss: 0.0000 val acc: 0.0000 test loss: 0.9449 test acc: 67.9532 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e297-a68-m.pt
+epoch: 298 train loss: 0.9893 train acc: 62.9742 val loss: 0.0000 val acc: 0.0000 test loss: 0.9818 test acc: 65.4887 LR0.00010000
+epoch: 299 train loss: 0.9238 train acc: 67.1083 val loss: 0.0000 val acc: 0.0000 test loss: 0.9503 test acc: 66.4502 LR0.00010000
+epoch: 300 train loss: 0.9126 train acc: 66.4553 val loss: 0.0000 val acc: 0.0000 test loss: 0.9270 test acc: 67.4559 LR0.00010000
+epoch: 301 train loss: 0.9261 train acc: 65.8996 val loss: 0.0000 val acc: 0.0000 test loss: 0.9404 test acc: 66.8794 LR0.00010000
+epoch: 302 train loss: 0.8909 train acc: 69.2756 val loss: 0.0000 val acc: 0.0000 test loss: 0.9003 test acc: 69.8045 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e302-a70-m.pt
+epoch: 303 train loss: 0.8733 train acc: 69.1229 val loss: 0.0000 val acc: 0.0000 test loss: 0.8742 test acc: 69.9483 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e303-a70-m.pt
+epoch: 304 train loss: 0.9291 train acc: 65.9273 val loss: 0.0000 val acc: 0.0000 test loss: 0.9897 test acc: 63.5495 LR0.00010000
+epoch: 305 train loss: 1.0904 train acc: 62.4543 val loss: 0.0000 val acc: 0.0000 test loss: 1.0824 test acc: 63.7215 LR0.00010000
+epoch: 306 train loss: 1.0757 train acc: 58.8984 val loss: 0.0000 val acc: 0.0000 test loss: 1.1064 test acc: 58.2611 LR0.00010000
+epoch: 307 train loss: 1.1294 train acc: 65.3784 val loss: 0.0000 val acc: 0.0000 test loss: 1.0810 test acc: 65.1715 LR0.00010000
+epoch: 308 train loss: 1.0125 train acc: 60.9090 val loss: 0.0000 val acc: 0.0000 test loss: 1.0442 test acc: 60.0631 LR0.00010000
+epoch: 309 train loss: 1.0012 train acc: 64.8688 val loss: 0.0000 val acc: 0.0000 test loss: 0.9661 test acc: 66.3609 LR0.00010000
+epoch: 310 train loss: 0.9404 train acc: 66.7784 val loss: 0.0000 val acc: 0.0000 test loss: 0.9883 test acc: 65.3311 LR0.00010000
+epoch: 311 train loss: 0.9422 train acc: 69.2634 val loss: 0.0000 val acc: 0.0000 test loss: 0.9033 test acc: 70.0469 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e311-a70-m.pt
+epoch: 312 train loss: 0.8927 train acc: 68.6699 val loss: 0.0000 val acc: 0.0000 test loss: 0.9404 test acc: 67.5333 LR0.00010000
+epoch: 313 train loss: 0.9811 train acc: 63.8524 val loss: 0.0000 val acc: 0.0000 test loss: 0.9876 test acc: 64.5409 LR0.00010000
+epoch: 314 train loss: 1.0785 train acc: 59.3796 val loss: 0.0000 val acc: 0.0000 test loss: 1.0733 test acc: 60.4759 LR0.00010000
+epoch: 315 train loss: 0.9286 train acc: 66.7046 val loss: 0.0000 val acc: 0.0000 test loss: 0.9792 test acc: 65.4756 LR0.00010000
+epoch: 316 train loss: 0.9209 train acc: 66.8393 val loss: 0.0000 val acc: 0.0000 test loss: 0.9470 test acc: 67.0827 LR0.00010000
+epoch: 317 train loss: 0.9006 train acc: 66.6452 val loss: 0.0000 val acc: 0.0000 test loss: 0.9150 test acc: 67.3997 LR0.00010000
+epoch: 318 train loss: 0.8612 train acc: 70.0066 val loss: 0.0000 val acc: 0.0000 test loss: 0.8837 test acc: 69.1646 LR0.00010000
+epoch: 319 train loss: 0.8515 train acc: 69.6933 val loss: 0.0000 val acc: 0.0000 test loss: 0.8888 test acc: 68.3163 LR0.00010000
+epoch: 320 train loss: 0.8828 train acc: 68.4895 val loss: 0.0000 val acc: 0.0000 test loss: 0.9057 test acc: 67.5791 LR0.00010000
+epoch: 321 train loss: 0.8443 train acc: 70.8156 val loss: 0.0000 val acc: 0.0000 test loss: 0.8742 test acc: 69.2012 LR0.00010000
+epoch: 322 train loss: 0.8687 train acc: 67.9253 val loss: 0.0000 val acc: 0.0000 test loss: 0.8968 test acc: 66.8112 LR0.00010000
+epoch: 323 train loss: 0.8234 train acc: 71.3378 val loss: 0.0000 val acc: 0.0000 test loss: 0.8670 test acc: 69.2890 LR0.00010000
+epoch: 324 train loss: 0.8648 train acc: 68.1600 val loss: 0.0000 val acc: 0.0000 test loss: 0.9120 test acc: 65.7304 LR0.00010000
+epoch: 325 train loss: 0.9443 train acc: 66.9105 val loss: 0.0000 val acc: 0.0000 test loss: 0.9612 test acc: 66.5786 LR0.00010000
+epoch: 326 train loss: 1.0508 train acc: 60.4697 val loss: 0.0000 val acc: 0.0000 test loss: 1.1155 test acc: 57.8757 LR0.00010000
+epoch: 327 train loss: 0.9258 train acc: 66.9650 val loss: 0.0000 val acc: 0.0000 test loss: 0.9703 test acc: 68.2711 LR0.00010000
+epoch: 328 train loss: 0.9517 train acc: 66.6688 val loss: 0.0000 val acc: 0.0000 test loss: 0.9573 test acc: 67.6942 LR0.00010000
+epoch: 329 train loss: 0.9821 train acc: 62.8369 val loss: 0.0000 val acc: 0.0000 test loss: 1.0165 test acc: 59.6407 LR0.00010000
+epoch: 330 train loss: 0.8768 train acc: 69.6508 val loss: 0.0000 val acc: 0.0000 test loss: 0.9219 test acc: 67.5052 LR0.00010000
+epoch: 331 train loss: 0.8672 train acc: 68.5068 val loss: 0.0000 val acc: 0.0000 test loss: 0.9301 test acc: 65.2822 LR0.00010000
+epoch: 332 train loss: 0.8364 train acc: 71.0027 val loss: 0.0000 val acc: 0.0000 test loss: 0.8352 test acc: 71.4334 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e332-a71-m.pt
+epoch: 333 train loss: 0.9694 train acc: 61.6356 val loss: 0.0000 val acc: 0.0000 test loss: 1.0176 test acc: 59.6447 LR0.00010000
+epoch: 334 train loss: 0.8728 train acc: 68.5453 val loss: 0.0000 val acc: 0.0000 test loss: 0.8808 test acc: 69.7994 LR0.00010000
+epoch: 335 train loss: 0.8687 train acc: 69.7846 val loss: 0.0000 val acc: 0.0000 test loss: 0.8969 test acc: 69.6118 LR0.00010000
+epoch: 336 train loss: 0.8377 train acc: 70.9624 val loss: 0.0000 val acc: 0.0000 test loss: 0.8549 test acc: 70.7897 LR0.00010000
+epoch: 337 train loss: 0.8122 train acc: 72.0944 val loss: 0.0000 val acc: 0.0000 test loss: 0.8471 test acc: 70.1911 LR0.00010000
+epoch: 338 train loss: 0.7817 train acc: 71.4659 val loss: 0.0000 val acc: 0.0000 test loss: 0.8426 test acc: 67.8906 LR0.00010000
+epoch: 339 train loss: 0.7704 train acc: 72.7466 val loss: 0.0000 val acc: 0.0000 test loss: 0.8123 test acc: 71.2650 LR0.00010000
+epoch: 340 train loss: 0.8858 train acc: 71.1558 val loss: 0.0000 val acc: 0.0000 test loss: 0.9234 test acc: 68.1254 LR0.00010000
+epoch: 341 train loss: 0.8707 train acc: 66.5468 val loss: 0.0000 val acc: 0.0000 test loss: 0.8690 test acc: 67.7331 LR0.00010000
+epoch: 342 train loss: 0.8315 train acc: 69.1003 val loss: 0.0000 val acc: 0.0000 test loss: 0.8782 test acc: 66.2245 LR0.00010000
+epoch: 343 train loss: 0.8112 train acc: 70.4866 val loss: 0.0000 val acc: 0.0000 test loss: 0.8448 test acc: 68.9224 LR0.00010000
+epoch: 344 train loss: 0.7820 train acc: 72.8499 val loss: 0.0000 val acc: 0.0000 test loss: 0.8105 test acc: 72.2006 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e344-a72-m.pt
+epoch: 345 train loss: 0.7769 train acc: 71.5288 val loss: 0.0000 val acc: 0.0000 test loss: 0.8080 test acc: 71.1227 LR0.00010000
+epoch: 346 train loss: 0.7944 train acc: 72.3076 val loss: 0.0000 val acc: 0.0000 test loss: 0.8092 test acc: 72.0366 LR0.00010000
+epoch: 347 train loss: 0.8662 train acc: 68.1476 val loss: 0.0000 val acc: 0.0000 test loss: 0.9050 test acc: 67.9604 LR0.00010000
+epoch: 348 train loss: 0.9843 train acc: 67.8218 val loss: 0.0000 val acc: 0.0000 test loss: 1.0104 test acc: 66.7294 LR0.00010000
+epoch: 349 train loss: 1.2074 train acc: 56.5856 val loss: 0.0000 val acc: 0.0000 test loss: 1.2600 test acc: 55.1244 LR0.00010000
+epoch: 350 train loss: 1.1999 train acc: 65.7855 val loss: 0.0000 val acc: 0.0000 test loss: 1.2632 test acc: 66.4991 LR0.00010000
+epoch: 351 train loss: 1.0143 train acc: 63.0131 val loss: 0.0000 val acc: 0.0000 test loss: 1.0612 test acc: 61.7139 LR0.00010000
+epoch: 352 train loss: 0.9176 train acc: 65.8190 val loss: 0.0000 val acc: 0.0000 test loss: 0.9356 test acc: 63.5100 LR0.00010000
+epoch: 353 train loss: 0.9597 train acc: 68.1540 val loss: 0.0000 val acc: 0.0000 test loss: 0.9013 test acc: 68.9224 LR0.00010000
+epoch: 354 train loss: 0.9390 train acc: 66.9831 val loss: 0.0000 val acc: 0.0000 test loss: 0.9725 test acc: 65.8491 LR0.00010000
+epoch: 355 train loss: 0.9314 train acc: 67.1493 val loss: 0.0000 val acc: 0.0000 test loss: 0.9135 test acc: 67.6500 LR0.00010000
+epoch: 356 train loss: 1.2127 train acc: 56.1956 val loss: 0.0000 val acc: 0.0000 test loss: 1.2640 test acc: 54.6191 LR0.00010000
+epoch: 357 train loss: 0.9123 train acc: 67.1652 val loss: 0.0000 val acc: 0.0000 test loss: 0.9289 test acc: 67.5437 LR0.00010000
+epoch: 358 train loss: 0.8972 train acc: 67.3550 val loss: 0.0000 val acc: 0.0000 test loss: 0.9143 test acc: 67.3244 LR0.00010000
+epoch: 359 train loss: 0.8667 train acc: 70.3317 val loss: 0.0000 val acc: 0.0000 test loss: 0.9183 test acc: 67.4212 LR0.00010000
+epoch: 360 train loss: 0.8266 train acc: 70.9519 val loss: 0.0000 val acc: 0.0000 test loss: 0.8795 test acc: 67.3651 LR0.00010000
+epoch: 361 train loss: 0.7808 train acc: 72.2907 val loss: 0.0000 val acc: 0.0000 test loss: 0.8253 test acc: 69.9832 LR0.00010000
+epoch: 362 train loss: 0.7793 train acc: 72.7875 val loss: 0.0000 val acc: 0.0000 test loss: 0.8277 test acc: 70.2250 LR0.00010000
+epoch: 363 train loss: 0.7656 train acc: 72.7730 val loss: 0.0000 val acc: 0.0000 test loss: 0.8075 test acc: 71.2943 LR0.00010000
+epoch: 364 train loss: 0.7941 train acc: 72.7131 val loss: 0.0000 val acc: 0.0000 test loss: 0.8312 test acc: 70.9605 LR0.00010000
+epoch: 365 train loss: 0.8524 train acc: 69.7720 val loss: 0.0000 val acc: 0.0000 test loss: 0.8853 test acc: 69.7968 LR0.00010000
+epoch: 366 train loss: 0.8274 train acc: 70.4278 val loss: 0.0000 val acc: 0.0000 test loss: 0.8345 test acc: 70.5460 LR0.00010000
+epoch: 367 train loss: 0.8510 train acc: 70.3372 val loss: 0.0000 val acc: 0.0000 test loss: 0.9318 test acc: 66.3754 LR0.00010000
+epoch: 368 train loss: 0.8403 train acc: 71.4953 val loss: 0.0000 val acc: 0.0000 test loss: 0.8514 test acc: 71.8916 LR0.00010000
+epoch: 369 train loss: 0.8501 train acc: 70.6792 val loss: 0.0000 val acc: 0.0000 test loss: 0.8785 test acc: 70.2605 LR0.00010000
+epoch: 370 train loss: 0.8038 train acc: 71.1778 val loss: 0.0000 val acc: 0.0000 test loss: 0.8209 test acc: 71.2304 LR0.00010000
+epoch: 371 train loss: 0.7671 train acc: 73.3057 val loss: 0.0000 val acc: 0.0000 test loss: 0.7796 test acc: 72.9595 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e371-a73-m.pt
+epoch: 372 train loss: 0.7447 train acc: 73.7211 val loss: 0.0000 val acc: 0.0000 test loss: 0.7647 test acc: 73.7985 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e372-a74-m.pt
+epoch: 373 train loss: 0.7481 train acc: 74.3569 val loss: 0.0000 val acc: 0.0000 test loss: 0.7825 test acc: 72.4922 LR0.00010000
+epoch: 374 train loss: 0.8198 train acc: 70.3085 val loss: 0.0000 val acc: 0.0000 test loss: 0.8491 test acc: 69.8511 LR0.00010000
+epoch: 375 train loss: 0.8247 train acc: 71.0965 val loss: 0.0000 val acc: 0.0000 test loss: 0.8617 test acc: 69.2832 LR0.00010000
+epoch: 376 train loss: 0.8203 train acc: 71.1003 val loss: 0.0000 val acc: 0.0000 test loss: 0.8718 test acc: 68.9770 LR0.00010000
+epoch: 377 train loss: 0.7925 train acc: 72.4303 val loss: 0.0000 val acc: 0.0000 test loss: 0.8181 test acc: 72.2354 LR0.00010000
+epoch: 378 train loss: 0.7351 train acc: 74.5548 val loss: 0.0000 val acc: 0.0000 test loss: 0.7725 test acc: 73.6838 LR0.00010000
+epoch: 379 train loss: 0.7335 train acc: 74.7367 val loss: 0.0000 val acc: 0.0000 test loss: 0.7453 test acc: 74.9749 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e379-a75-m.pt
+epoch: 380 train loss: 0.7775 train acc: 70.4669 val loss: 0.0000 val acc: 0.0000 test loss: 0.8689 test acc: 66.2621 LR0.00010000
+epoch: 381 train loss: 0.8110 train acc: 68.8433 val loss: 0.0000 val acc: 0.0000 test loss: 0.8011 test acc: 69.9500 LR0.00010000
+epoch: 382 train loss: 0.8185 train acc: 70.4770 val loss: 0.0000 val acc: 0.0000 test loss: 0.8603 test acc: 69.2357 LR0.00010000
+epoch: 383 train loss: 0.7719 train acc: 73.6210 val loss: 0.0000 val acc: 0.0000 test loss: 0.7798 test acc: 73.9438 LR0.00010000
+epoch: 384 train loss: 0.7854 train acc: 70.2048 val loss: 0.0000 val acc: 0.0000 test loss: 0.8182 test acc: 69.4131 LR0.00010000
+epoch: 385 train loss: 0.7388 train acc: 74.2036 val loss: 0.0000 val acc: 0.0000 test loss: 0.7645 test acc: 73.4708 LR0.00010000
+epoch: 386 train loss: 0.7627 train acc: 72.5274 val loss: 0.0000 val acc: 0.0000 test loss: 0.7785 test acc: 73.0781 LR0.00010000
+epoch: 387 train loss: 0.8024 train acc: 72.0690 val loss: 0.0000 val acc: 0.0000 test loss: 0.8269 test acc: 70.7272 LR0.00010000
+epoch: 388 train loss: 0.8675 train acc: 70.1826 val loss: 0.0000 val acc: 0.0000 test loss: 0.9146 test acc: 68.5589 LR0.00010000
+epoch: 389 train loss: 0.7616 train acc: 73.1477 val loss: 0.0000 val acc: 0.0000 test loss: 0.7782 test acc: 72.7862 LR0.00010000
+epoch: 390 train loss: 0.7596 train acc: 73.5238 val loss: 0.0000 val acc: 0.0000 test loss: 0.7738 test acc: 73.1193 LR0.00010000
+epoch: 391 train loss: 0.7136 train acc: 74.9889 val loss: 0.0000 val acc: 0.0000 test loss: 0.7279 test acc: 74.8071 LR0.00010000
+epoch: 392 train loss: 0.7014 train acc: 76.1345 val loss: 0.0000 val acc: 0.0000 test loss: 0.7219 test acc: 75.5049 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e392-a76-m.pt
+epoch: 393 train loss: 0.6646 train acc: 77.0591 val loss: 0.0000 val acc: 0.0000 test loss: 0.7004 test acc: 76.1006 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e393-a76-m.pt
+epoch: 394 train loss: 0.6502 train acc: 77.3246 val loss: 0.0000 val acc: 0.0000 test loss: 0.6875 test acc: 76.1226 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e394-a76-m.pt
+epoch: 395 train loss: 0.7420 train acc: 73.6596 val loss: 0.0000 val acc: 0.0000 test loss: 0.7660 test acc: 73.4650 LR0.00010000
+epoch: 396 train loss: 0.9090 train acc: 69.0414 val loss: 0.0000 val acc: 0.0000 test loss: 0.9596 test acc: 66.7979 LR0.00010000
+epoch: 397 train loss: 0.8176 train acc: 67.4895 val loss: 0.0000 val acc: 0.0000 test loss: 0.8839 test acc: 64.3033 LR0.00010000
+epoch: 398 train loss: 0.7836 train acc: 70.6473 val loss: 0.0000 val acc: 0.0000 test loss: 0.8262 test acc: 68.5873 LR0.00010000
+epoch: 399 train loss: 0.7115 train acc: 75.3217 val loss: 0.0000 val acc: 0.0000 test loss: 0.7266 test acc: 75.0571 LR0.00010000
+epoch: 400 train loss: 0.7014 train acc: 74.8527 val loss: 0.0000 val acc: 0.0000 test loss: 0.7264 test acc: 74.0413 LR0.00010000
+epoch: 401 train loss: 0.7072 train acc: 75.9684 val loss: 0.0000 val acc: 0.0000 test loss: 0.7425 test acc: 75.2630 LR0.00010000
+epoch: 402 train loss: 0.7478 train acc: 74.0745 val loss: 0.0000 val acc: 0.0000 test loss: 0.8061 test acc: 72.1249 LR0.00010000
+epoch: 403 train loss: 0.9809 train acc: 64.1136 val loss: 0.0000 val acc: 0.0000 test loss: 0.9383 test acc: 66.7435 LR0.00010000
+epoch: 404 train loss: 0.8484 train acc: 69.2716 val loss: 0.0000 val acc: 0.0000 test loss: 0.8926 test acc: 67.1578 LR0.00010000
+epoch: 405 train loss: 0.8518 train acc: 64.4091 val loss: 0.0000 val acc: 0.0000 test loss: 0.9474 test acc: 59.2287 LR0.00010000
+epoch: 406 train loss: 0.7914 train acc: 67.7494 val loss: 0.0000 val acc: 0.0000 test loss: 0.7856 test acc: 68.9667 LR0.00010000
+epoch: 407 train loss: 0.7508 train acc: 73.7811 val loss: 0.0000 val acc: 0.0000 test loss: 0.7831 test acc: 72.9156 LR0.00010000
+epoch: 408 train loss: 0.7113 train acc: 74.4751 val loss: 0.0000 val acc: 0.0000 test loss: 0.7411 test acc: 73.1980 LR0.00010000
+epoch: 409 train loss: 0.6654 train acc: 76.3645 val loss: 0.0000 val acc: 0.0000 test loss: 0.6931 test acc: 75.5178 LR0.00010000
+epoch: 410 train loss: 0.6704 train acc: 75.9538 val loss: 0.0000 val acc: 0.0000 test loss: 0.7111 test acc: 73.9631 LR0.00010000
+epoch: 411 train loss: 0.6962 train acc: 73.1980 val loss: 0.0000 val acc: 0.0000 test loss: 0.7212 test acc: 73.0634 LR0.00010000
+epoch: 412 train loss: 0.6521 train acc: 76.8869 val loss: 0.0000 val acc: 0.0000 test loss: 0.6794 test acc: 75.6695 LR0.00010000
+epoch: 413 train loss: 0.6238 train acc: 77.7681 val loss: 0.0000 val acc: 0.0000 test loss: 0.6581 test acc: 76.6892 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e413-a77-m.pt
+epoch: 414 train loss: 0.6491 train acc: 74.7575 val loss: 0.0000 val acc: 0.0000 test loss: 0.7024 test acc: 71.7864 LR0.00010000
+epoch: 415 train loss: 0.6368 train acc: 77.4497 val loss: 0.0000 val acc: 0.0000 test loss: 0.6690 test acc: 76.7251 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e415-a77-m.pt
+epoch: 416 train loss: 0.6412 train acc: 77.3863 val loss: 0.0000 val acc: 0.0000 test loss: 0.6888 test acc: 75.4485 LR0.00010000
+epoch: 417 train loss: 0.6857 train acc: 73.1495 val loss: 0.0000 val acc: 0.0000 test loss: 0.7004 test acc: 73.6442 LR0.00010000
+epoch: 418 train loss: 0.7041 train acc: 74.8762 val loss: 0.0000 val acc: 0.0000 test loss: 0.7334 test acc: 73.1767 LR0.00010000
+epoch: 419 train loss: 0.7160 train acc: 75.2530 val loss: 0.0000 val acc: 0.0000 test loss: 0.7606 test acc: 74.2458 LR0.00010000
+epoch: 420 train loss: 0.7505 train acc: 73.0257 val loss: 0.0000 val acc: 0.0000 test loss: 0.7749 test acc: 72.2810 LR0.00010000
+epoch: 421 train loss: 0.7408 train acc: 74.8273 val loss: 0.0000 val acc: 0.0000 test loss: 0.7970 test acc: 72.6584 LR0.00010000
+epoch: 422 train loss: 0.6751 train acc: 76.4929 val loss: 0.0000 val acc: 0.0000 test loss: 0.7047 test acc: 75.9188 LR0.00010000
+epoch: 423 train loss: 0.6445 train acc: 77.5882 val loss: 0.0000 val acc: 0.0000 test loss: 0.6591 test acc: 77.4652 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e423-a77-m.pt
+epoch: 424 train loss: 0.6809 train acc: 74.6633 val loss: 0.0000 val acc: 0.0000 test loss: 0.7540 test acc: 71.7848 LR0.00010000
+epoch: 425 train loss: 0.6801 train acc: 77.0488 val loss: 0.0000 val acc: 0.0000 test loss: 0.7050 test acc: 75.5994 LR0.00010000
+epoch: 426 train loss: 0.6469 train acc: 77.4147 val loss: 0.0000 val acc: 0.0000 test loss: 0.6692 test acc: 76.9529 LR0.00010000
+epoch: 427 train loss: 0.6317 train acc: 77.7289 val loss: 0.0000 val acc: 0.0000 test loss: 0.6602 test acc: 76.8597 LR0.00010000
+epoch: 428 train loss: 0.6720 train acc: 76.4448 val loss: 0.0000 val acc: 0.0000 test loss: 0.7072 test acc: 75.7756 LR0.00010000
+epoch: 429 train loss: 0.7364 train acc: 72.9484 val loss: 0.0000 val acc: 0.0000 test loss: 0.7674 test acc: 71.5832 LR0.00010000
+epoch: 430 train loss: 0.8104 train acc: 72.1347 val loss: 0.0000 val acc: 0.0000 test loss: 0.8034 test acc: 72.5233 LR0.00010000
+epoch: 431 train loss: 0.8037 train acc: 68.2912 val loss: 0.0000 val acc: 0.0000 test loss: 0.8582 test acc: 65.8412 LR0.00010000
+epoch: 432 train loss: 0.7172 train acc: 70.7526 val loss: 0.0000 val acc: 0.0000 test loss: 0.7529 test acc: 68.2650 LR0.00010000
+epoch: 433 train loss: 0.6985 train acc: 75.3701 val loss: 0.0000 val acc: 0.0000 test loss: 0.7239 test acc: 74.6357 LR0.00010000
+epoch: 434 train loss: 0.6685 train acc: 75.3638 val loss: 0.0000 val acc: 0.0000 test loss: 0.7114 test acc: 73.8482 LR0.00010000
+epoch: 435 train loss: 0.6598 train acc: 76.4483 val loss: 0.0000 val acc: 0.0000 test loss: 0.6790 test acc: 76.0945 LR0.00010000
+epoch: 436 train loss: 0.6272 train acc: 77.0609 val loss: 0.0000 val acc: 0.0000 test loss: 0.6648 test acc: 76.0262 LR0.00010000
+epoch: 437 train loss: 0.6231 train acc: 77.4795 val loss: 0.0000 val acc: 0.0000 test loss: 0.6448 test acc: 76.9605 LR0.00010000
+epoch: 438 train loss: 0.6182 train acc: 77.9367 val loss: 0.0000 val acc: 0.0000 test loss: 0.6668 test acc: 76.4255 LR0.00010000
+epoch: 439 train loss: 0.6105 train acc: 78.2861 val loss: 0.0000 val acc: 0.0000 test loss: 0.6313 test acc: 78.0513 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e439-a78-m.pt
+epoch: 440 train loss: 0.5917 train acc: 79.0914 val loss: 0.0000 val acc: 0.0000 test loss: 0.6280 test acc: 78.1386 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e440-a78-m.pt
+epoch: 441 train loss: 0.5801 train acc: 79.5539 val loss: 0.0000 val acc: 0.0000 test loss: 0.6158 test acc: 78.3463 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e441-a78-m.pt
+epoch: 442 train loss: 0.5881 train acc: 79.0646 val loss: 0.0000 val acc: 0.0000 test loss: 0.6341 test acc: 77.8654 LR0.00010000
+epoch: 443 train loss: 0.6765 train acc: 75.0646 val loss: 0.0000 val acc: 0.0000 test loss: 0.7257 test acc: 72.9673 LR0.00010000
+epoch: 444 train loss: 0.8919 train acc: 67.2435 val loss: 0.0000 val acc: 0.0000 test loss: 0.8990 test acc: 68.1066 LR0.00010000
+epoch: 445 train loss: 0.8919 train acc: 67.2339 val loss: 0.0000 val acc: 0.0000 test loss: 0.9424 test acc: 65.1195 LR0.00010000
+epoch: 446 train loss: 0.9674 train acc: 61.5679 val loss: 0.0000 val acc: 0.0000 test loss: 1.0397 test acc: 58.2718 LR0.00010000
+epoch: 447 train loss: 0.9447 train acc: 62.8903 val loss: 0.0000 val acc: 0.0000 test loss: 0.9706 test acc: 62.5556 LR0.00010000
+epoch: 448 train loss: 0.7836 train acc: 69.1232 val loss: 0.0000 val acc: 0.0000 test loss: 0.8111 test acc: 67.3117 LR0.00010000
+epoch: 449 train loss: 0.7238 train acc: 71.0027 val loss: 0.0000 val acc: 0.0000 test loss: 0.7581 test acc: 68.1127 LR0.00010000
+epoch: 450 train loss: 0.6706 train acc: 75.6071 val loss: 0.0000 val acc: 0.0000 test loss: 0.6946 test acc: 74.9642 LR0.00010000
+epoch: 451 train loss: 0.7112 train acc: 74.3625 val loss: 0.0000 val acc: 0.0000 test loss: 0.7279 test acc: 73.0730 LR0.00010000
+epoch: 452 train loss: 0.7934 train acc: 72.5715 val loss: 0.0000 val acc: 0.0000 test loss: 0.8027 test acc: 72.3802 LR0.00010000
+epoch: 453 train loss: 0.7232 train acc: 70.6412 val loss: 0.0000 val acc: 0.0000 test loss: 0.7558 test acc: 68.5052 LR0.00010000
+epoch: 454 train loss: 0.6682 train acc: 75.4235 val loss: 0.0000 val acc: 0.0000 test loss: 0.6984 test acc: 74.4415 LR0.00010000
+epoch: 455 train loss: 0.6680 train acc: 74.7209 val loss: 0.0000 val acc: 0.0000 test loss: 0.6960 test acc: 74.4899 LR0.00010000
+epoch: 456 train loss: 0.6380 train acc: 75.5746 val loss: 0.0000 val acc: 0.0000 test loss: 0.6685 test acc: 74.1680 LR0.00010000
+epoch: 457 train loss: 0.6097 train acc: 77.3804 val loss: 0.0000 val acc: 0.0000 test loss: 0.6429 test acc: 76.4861 LR0.00010000
+epoch: 458 train loss: 0.5966 train acc: 77.8993 val loss: 0.0000 val acc: 0.0000 test loss: 0.6269 test acc: 77.3878 LR0.00010000
+epoch: 459 train loss: 0.5860 train acc: 78.6777 val loss: 0.0000 val acc: 0.0000 test loss: 0.6359 test acc: 77.6473 LR0.00010000
+epoch: 460 train loss: 0.6073 train acc: 77.4530 val loss: 0.0000 val acc: 0.0000 test loss: 0.6449 test acc: 76.7826 LR0.00010000
+epoch: 461 train loss: 0.5926 train acc: 78.4157 val loss: 0.0000 val acc: 0.0000 test loss: 0.6175 test acc: 78.1609 LR0.00010000
+epoch: 462 train loss: 0.5808 train acc: 79.4044 val loss: 0.0000 val acc: 0.0000 test loss: 0.6214 test acc: 78.2182 LR0.00010000
+epoch: 463 train loss: 0.5878 train acc: 78.1975 val loss: 0.0000 val acc: 0.0000 test loss: 0.6227 test acc: 77.7635 LR0.00010000
+epoch: 464 train loss: 0.6545 train acc: 74.8812 val loss: 0.0000 val acc: 0.0000 test loss: 0.7209 test acc: 72.2929 LR0.00010000
+epoch: 465 train loss: 0.6798 train acc: 75.5541 val loss: 0.0000 val acc: 0.0000 test loss: 0.7221 test acc: 75.4108 LR0.00010000
+epoch: 466 train loss: 0.7041 train acc: 73.0945 val loss: 0.0000 val acc: 0.0000 test loss: 0.7237 test acc: 72.9093 LR0.00010000
+epoch: 467 train loss: 0.6708 train acc: 74.7415 val loss: 0.0000 val acc: 0.0000 test loss: 0.7088 test acc: 73.4683 LR0.00010000
+epoch: 468 train loss: 0.6258 train acc: 77.0395 val loss: 0.0000 val acc: 0.0000 test loss: 0.6422 test acc: 77.3717 LR0.00010000
+epoch: 469 train loss: 0.6862 train acc: 76.6717 val loss: 0.0000 val acc: 0.0000 test loss: 0.7636 test acc: 74.3517 LR0.00010000
+epoch: 470 train loss: 0.6831 train acc: 74.3110 val loss: 0.0000 val acc: 0.0000 test loss: 0.7066 test acc: 74.3458 LR0.00010000
+epoch: 471 train loss: 0.6544 train acc: 76.8344 val loss: 0.0000 val acc: 0.0000 test loss: 0.7078 test acc: 74.5872 LR0.00010000
+epoch: 472 train loss: 0.6326 train acc: 77.4119 val loss: 0.0000 val acc: 0.0000 test loss: 0.6739 test acc: 76.5879 LR0.00010000
+epoch: 473 train loss: 0.6028 train acc: 79.0187 val loss: 0.0000 val acc: 0.0000 test loss: 0.6604 test acc: 77.1631 LR0.00010000
+epoch: 474 train loss: 0.6567 train acc: 76.7465 val loss: 0.0000 val acc: 0.0000 test loss: 0.7036 test acc: 75.2857 LR0.00010000
+epoch: 475 train loss: 0.6072 train acc: 78.0928 val loss: 0.0000 val acc: 0.0000 test loss: 0.6446 test acc: 77.1568 LR0.00010000
+epoch: 476 train loss: 0.5820 train acc: 79.0460 val loss: 0.0000 val acc: 0.0000 test loss: 0.6363 test acc: 77.7508 LR0.00010000
+epoch: 477 train loss: 0.5937 train acc: 77.6463 val loss: 0.0000 val acc: 0.0000 test loss: 0.6364 test acc: 76.2435 LR0.00010000
+epoch: 478 train loss: 0.5848 train acc: 79.7494 val loss: 0.0000 val acc: 0.0000 test loss: 0.6353 test acc: 78.9014 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e478-a79-m.pt
+epoch: 479 train loss: 0.6634 train acc: 74.1944 val loss: 0.0000 val acc: 0.0000 test loss: 0.7286 test acc: 71.2809 LR0.00010000
+epoch: 480 train loss: 0.6673 train acc: 73.0646 val loss: 0.0000 val acc: 0.0000 test loss: 0.6848 test acc: 73.5304 LR0.00010000
+epoch: 481 train loss: 0.6491 train acc: 73.9088 val loss: 0.0000 val acc: 0.0000 test loss: 0.6945 test acc: 71.5484 LR0.00010000
+epoch: 482 train loss: 0.6253 train acc: 74.8237 val loss: 0.0000 val acc: 0.0000 test loss: 0.6804 test acc: 71.7850 LR0.00010000
+epoch: 483 train loss: 0.5770 train acc: 79.5887 val loss: 0.0000 val acc: 0.0000 test loss: 0.6182 test acc: 78.7962 LR0.00010000
+epoch: 484 train loss: 0.5488 train acc: 80.3630 val loss: 0.0000 val acc: 0.0000 test loss: 0.5988 test acc: 79.3289 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e484-a79-m.pt
+epoch: 485 train loss: 0.5287 train acc: 80.8151 val loss: 0.0000 val acc: 0.0000 test loss: 0.5802 test acc: 79.5446 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e485-a80-m.pt
+epoch: 486 train loss: 0.5272 train acc: 81.0568 val loss: 0.0000 val acc: 0.0000 test loss: 0.5915 test acc: 79.1453 LR0.00010000
+epoch: 487 train loss: 0.5630 train acc: 79.3768 val loss: 0.0000 val acc: 0.0000 test loss: 0.6074 test acc: 78.6619 LR0.00010000
+epoch: 488 train loss: 0.5666 train acc: 78.0586 val loss: 0.0000 val acc: 0.0000 test loss: 0.6240 test acc: 75.7615 LR0.00010000
+epoch: 489 train loss: 0.6264 train acc: 77.1041 val loss: 0.0000 val acc: 0.0000 test loss: 0.6365 test acc: 77.5066 LR0.00010000
+epoch: 490 train loss: 0.7137 train acc: 72.2577 val loss: 0.0000 val acc: 0.0000 test loss: 0.7680 test acc: 69.9868 LR0.00010000
+epoch: 491 train loss: 0.6562 train acc: 75.2816 val loss: 0.0000 val acc: 0.0000 test loss: 0.7204 test acc: 72.7428 LR0.00010000
+epoch: 492 train loss: 0.6142 train acc: 77.3560 val loss: 0.0000 val acc: 0.0000 test loss: 0.6630 test acc: 75.8221 LR0.00010000
+epoch: 493 train loss: 0.5850 train acc: 77.8666 val loss: 0.0000 val acc: 0.0000 test loss: 0.6441 test acc: 76.1022 LR0.00010000
+epoch: 494 train loss: 0.5715 train acc: 79.1969 val loss: 0.0000 val acc: 0.0000 test loss: 0.6071 test acc: 78.3171 LR0.00010000
+epoch: 495 train loss: 0.5471 train acc: 80.3358 val loss: 0.0000 val acc: 0.0000 test loss: 0.6027 test acc: 78.8272 LR0.00010000
+epoch: 496 train loss: 0.5351 train acc: 80.8398 val loss: 0.0000 val acc: 0.0000 test loss: 0.5866 test acc: 79.4869 LR0.00010000
+epoch: 497 train loss: 0.5325 train acc: 80.7169 val loss: 0.0000 val acc: 0.0000 test loss: 0.5816 test acc: 79.5547 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e497-a80-m.pt
+epoch: 498 train loss: 0.5606 train acc: 78.8364 val loss: 0.0000 val acc: 0.0000 test loss: 0.6351 test acc: 76.1111 LR0.00010000
+epoch: 499 train loss: 0.5738 train acc: 78.3094 val loss: 0.0000 val acc: 0.0000 test loss: 0.6172 test acc: 77.2472 LR0.00010000
+epoch: 500 train loss: 0.5852 train acc: 78.4490 val loss: 0.0000 val acc: 0.0000 test loss: 0.6467 test acc: 76.3995 LR0.00010000
+epoch: 501 train loss: 0.6133 train acc: 78.1910 val loss: 0.0000 val acc: 0.0000 test loss: 0.7024 test acc: 75.7619 LR0.00010000
+epoch: 502 train loss: 0.6083 train acc: 77.1130 val loss: 0.0000 val acc: 0.0000 test loss: 0.6524 test acc: 76.5415 LR0.00010000
+epoch: 503 train loss: 0.5513 train acc: 80.8003 val loss: 0.0000 val acc: 0.0000 test loss: 0.5955 test acc: 79.4066 LR0.00010000
+epoch: 504 train loss: 0.5265 train acc: 81.1438 val loss: 0.0000 val acc: 0.0000 test loss: 0.6001 test acc: 78.6956 LR0.00010000
+epoch: 505 train loss: 0.5024 train acc: 82.2038 val loss: 0.0000 val acc: 0.0000 test loss: 0.5588 test acc: 80.6523 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e505-a81-m.pt
+epoch: 506 train loss: 0.4994 train acc: 82.4095 val loss: 0.0000 val acc: 0.0000 test loss: 0.5741 test acc: 80.2020 LR0.00010000
+epoch: 507 train loss: 0.5882 train acc: 77.2597 val loss: 0.0000 val acc: 0.0000 test loss: 0.6267 test acc: 76.7078 LR0.00010000
+epoch: 508 train loss: 0.5578 train acc: 78.7264 val loss: 0.0000 val acc: 0.0000 test loss: 0.6118 test acc: 76.4963 LR0.00010000
+epoch: 509 train loss: 0.5480 train acc: 79.7004 val loss: 0.0000 val acc: 0.0000 test loss: 0.5940 test acc: 78.7600 LR0.00010000
+epoch: 510 train loss: 0.5332 train acc: 81.3933 val loss: 0.0000 val acc: 0.0000 test loss: 0.5936 test acc: 79.3201 LR0.00010000
+epoch: 511 train loss: 0.5427 train acc: 81.6214 val loss: 0.0000 val acc: 0.0000 test loss: 0.6129 test acc: 79.6504 LR0.00010000
+epoch: 512 train loss: 0.5579 train acc: 80.5174 val loss: 0.0000 val acc: 0.0000 test loss: 0.6225 test acc: 79.0024 LR0.00010000
+epoch: 513 train loss: 0.5823 train acc: 78.9526 val loss: 0.0000 val acc: 0.0000 test loss: 0.6440 test acc: 77.1722 LR0.00010000
+epoch: 514 train loss: 0.7302 train acc: 73.0240 val loss: 0.0000 val acc: 0.0000 test loss: 0.7730 test acc: 71.8572 LR0.00010000
+epoch: 515 train loss: 0.8625 train acc: 69.5555 val loss: 0.0000 val acc: 0.0000 test loss: 0.8722 test acc: 70.0203 LR0.00010000
+epoch: 516 train loss: 0.7713 train acc: 70.5929 val loss: 0.0000 val acc: 0.0000 test loss: 0.8261 test acc: 67.8166 LR0.00010000
+epoch: 517 train loss: 0.8041 train acc: 68.8321 val loss: 0.0000 val acc: 0.0000 test loss: 0.8800 test acc: 65.9493 LR0.00010000
+epoch: 518 train loss: 0.8433 train acc: 69.7390 val loss: 0.0000 val acc: 0.0000 test loss: 0.8952 test acc: 67.0490 LR0.00010000
+epoch: 519 train loss: 0.7123 train acc: 71.6923 val loss: 0.0000 val acc: 0.0000 test loss: 0.7592 test acc: 68.9716 LR0.00010000
+epoch: 520 train loss: 0.6303 train acc: 76.9074 val loss: 0.0000 val acc: 0.0000 test loss: 0.6769 test acc: 75.0663 LR0.00010000
+epoch: 521 train loss: 0.6005 train acc: 79.0951 val loss: 0.0000 val acc: 0.0000 test loss: 0.6637 test acc: 76.7494 LR0.00010000
+epoch: 522 train loss: 0.5822 train acc: 79.0426 val loss: 0.0000 val acc: 0.0000 test loss: 0.6236 test acc: 78.1036 LR0.00010000
+epoch: 523 train loss: 0.5673 train acc: 79.8153 val loss: 0.0000 val acc: 0.0000 test loss: 0.6385 test acc: 77.0783 LR0.00010000
+epoch: 524 train loss: 0.6166 train acc: 78.0196 val loss: 0.0000 val acc: 0.0000 test loss: 0.6504 test acc: 77.4540 LR0.00010000
+epoch: 525 train loss: 0.6457 train acc: 77.1798 val loss: 0.0000 val acc: 0.0000 test loss: 0.7082 test acc: 75.1564 LR0.00010000
+epoch: 526 train loss: 0.6003 train acc: 78.6508 val loss: 0.0000 val acc: 0.0000 test loss: 0.6534 test acc: 77.4314 LR0.00010000
+epoch: 527 train loss: 0.5992 train acc: 77.7405 val loss: 0.0000 val acc: 0.0000 test loss: 0.6333 test acc: 77.4247 LR0.00010000
+epoch: 528 train loss: 0.5561 train acc: 80.1514 val loss: 0.0000 val acc: 0.0000 test loss: 0.6237 test acc: 78.2797 LR0.00010000
+epoch: 529 train loss: 0.5225 train acc: 81.4293 val loss: 0.0000 val acc: 0.0000 test loss: 0.5838 test acc: 79.7055 LR0.00010000
+epoch: 530 train loss: 0.4965 train acc: 82.7172 val loss: 0.0000 val acc: 0.0000 test loss: 0.5657 test acc: 80.5818 LR0.00010000
+epoch: 531 train loss: 0.4888 train acc: 82.8143 val loss: 0.0000 val acc: 0.0000 test loss: 0.5534 test acc: 80.7819 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e531-a81-m.pt
+epoch: 532 train loss: 0.5175 train acc: 81.9685 val loss: 0.0000 val acc: 0.0000 test loss: 0.5859 test acc: 80.1308 LR0.00010000
+epoch: 533 train loss: 0.5970 train acc: 78.6964 val loss: 0.0000 val acc: 0.0000 test loss: 0.6629 test acc: 76.5243 LR0.00010000
+epoch: 534 train loss: 0.6035 train acc: 78.4690 val loss: 0.0000 val acc: 0.0000 test loss: 0.6394 test acc: 77.4260 LR0.00010000
+epoch: 535 train loss: 0.6920 train acc: 72.4979 val loss: 0.0000 val acc: 0.0000 test loss: 0.7821 test acc: 69.7305 LR0.00010000
+epoch: 536 train loss: 0.5857 train acc: 79.5525 val loss: 0.0000 val acc: 0.0000 test loss: 0.6382 test acc: 77.3239 LR0.00010000
+epoch: 537 train loss: 0.5855 train acc: 78.3736 val loss: 0.0000 val acc: 0.0000 test loss: 0.6348 test acc: 77.5666 LR0.00010000
+epoch: 538 train loss: 0.5325 train acc: 81.0826 val loss: 0.0000 val acc: 0.0000 test loss: 0.5978 test acc: 78.8320 LR0.00010000
+epoch: 539 train loss: 0.5196 train acc: 81.1865 val loss: 0.0000 val acc: 0.0000 test loss: 0.5939 test acc: 78.6900 LR0.00010000
+epoch: 540 train loss: 0.4956 train acc: 82.5160 val loss: 0.0000 val acc: 0.0000 test loss: 0.5530 test acc: 80.7039 LR0.00010000
+epoch: 541 train loss: 0.4733 train acc: 83.5883 val loss: 0.0000 val acc: 0.0000 test loss: 0.5410 test acc: 81.1336 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e541-a81-m.pt
+epoch: 542 train loss: 0.4729 train acc: 83.6819 val loss: 0.0000 val acc: 0.0000 test loss: 0.5310 test acc: 81.9794 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e542-a82-m.pt
+epoch: 543 train loss: 0.5535 train acc: 78.0388 val loss: 0.0000 val acc: 0.0000 test loss: 0.6481 test acc: 74.6131 LR0.00010000
+epoch: 544 train loss: 0.5029 train acc: 82.5395 val loss: 0.0000 val acc: 0.0000 test loss: 0.5676 test acc: 80.4711 LR0.00010000
+epoch: 545 train loss: 0.4983 train acc: 82.5622 val loss: 0.0000 val acc: 0.0000 test loss: 0.5547 test acc: 80.9456 LR0.00010000
+epoch: 546 train loss: 0.4868 train acc: 82.5579 val loss: 0.0000 val acc: 0.0000 test loss: 0.5774 test acc: 79.6091 LR0.00010000
+epoch: 547 train loss: 0.4680 train acc: 83.6248 val loss: 0.0000 val acc: 0.0000 test loss: 0.5485 test acc: 81.3980 LR0.00010000
+epoch: 548 train loss: 0.4659 train acc: 83.7194 val loss: 0.0000 val acc: 0.0000 test loss: 0.5393 test acc: 81.4120 LR0.00010000
+epoch: 549 train loss: 0.4976 train acc: 82.0455 val loss: 0.0000 val acc: 0.0000 test loss: 0.5614 test acc: 80.1534 LR0.00010000
+epoch: 550 train loss: 0.4918 train acc: 82.9486 val loss: 0.0000 val acc: 0.0000 test loss: 0.5594 test acc: 80.8394 LR0.00010000
+epoch: 551 train loss: 0.5339 train acc: 80.0152 val loss: 0.0000 val acc: 0.0000 test loss: 0.6115 test acc: 77.0782 LR0.00010000
+epoch: 552 train loss: 0.5037 train acc: 81.7549 val loss: 0.0000 val acc: 0.0000 test loss: 0.5817 test acc: 79.2318 LR0.00010000
+epoch: 553 train loss: 0.5854 train acc: 77.2526 val loss: 0.0000 val acc: 0.0000 test loss: 0.6726 test acc: 74.1481 LR0.00010000
+epoch: 554 train loss: 0.6068 train acc: 76.8472 val loss: 0.0000 val acc: 0.0000 test loss: 0.6903 test acc: 73.3721 LR0.00010000
+epoch: 555 train loss: 0.5549 train acc: 81.4314 val loss: 0.0000 val acc: 0.0000 test loss: 0.6096 test acc: 79.6935 LR0.00010000
+epoch: 556 train loss: 0.4913 train acc: 83.2746 val loss: 0.0000 val acc: 0.0000 test loss: 0.5727 test acc: 80.6999 LR0.00010000
+epoch: 557 train loss: 0.4692 train acc: 83.8291 val loss: 0.0000 val acc: 0.0000 test loss: 0.5495 test acc: 81.2510 LR0.00010000
+epoch: 558 train loss: 0.4519 train acc: 84.2800 val loss: 0.0000 val acc: 0.0000 test loss: 0.5288 test acc: 82.0069 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e558-a82-m.pt
+epoch: 559 train loss: 0.4504 train acc: 84.5102 val loss: 0.0000 val acc: 0.0000 test loss: 0.5483 test acc: 81.8022 LR0.00010000
+epoch: 560 train loss: 0.5208 train acc: 81.9007 val loss: 0.0000 val acc: 0.0000 test loss: 0.6074 test acc: 79.8028 LR0.00010000
+epoch: 561 train loss: 0.5688 train acc: 79.0305 val loss: 0.0000 val acc: 0.0000 test loss: 0.6097 test acc: 78.6692 LR0.00010000
+epoch: 562 train loss: 0.6317 train acc: 74.4433 val loss: 0.0000 val acc: 0.0000 test loss: 0.7018 test acc: 71.9696 LR0.00010000
+epoch: 563 train loss: 0.5882 train acc: 78.1592 val loss: 0.0000 val acc: 0.0000 test loss: 0.6583 test acc: 75.7456 LR0.00010000
+epoch: 564 train loss: 0.5569 train acc: 78.5815 val loss: 0.0000 val acc: 0.0000 test loss: 0.6380 test acc: 75.7091 LR0.00010000
+epoch: 565 train loss: 0.5353 train acc: 81.7971 val loss: 0.0000 val acc: 0.0000 test loss: 0.6027 test acc: 79.6202 LR0.00010000
+epoch: 566 train loss: 0.4773 train acc: 83.2886 val loss: 0.0000 val acc: 0.0000 test loss: 0.5544 test acc: 81.0054 LR0.00010000
+epoch: 567 train loss: 0.4595 train acc: 84.0030 val loss: 0.0000 val acc: 0.0000 test loss: 0.5552 test acc: 81.2749 LR0.00010000
+epoch: 568 train loss: 0.4700 train acc: 83.0204 val loss: 0.0000 val acc: 0.0000 test loss: 0.5458 test acc: 81.1518 LR0.00010000
+epoch: 569 train loss: 0.4670 train acc: 83.7626 val loss: 0.0000 val acc: 0.0000 test loss: 0.5428 test acc: 81.5854 LR0.00010000
+epoch: 570 train loss: 0.4642 train acc: 83.3705 val loss: 0.0000 val acc: 0.0000 test loss: 0.5406 test acc: 81.1989 LR0.00010000
+epoch: 571 train loss: 0.5038 train acc: 82.3077 val loss: 0.0000 val acc: 0.0000 test loss: 0.5587 test acc: 81.0453 LR0.00010000
+epoch: 572 train loss: 0.6512 train acc: 75.3317 val loss: 0.0000 val acc: 0.0000 test loss: 0.7621 test acc: 71.3852 LR0.00010000
+epoch: 573 train loss: 0.5344 train acc: 82.0156 val loss: 0.0000 val acc: 0.0000 test loss: 0.5789 test acc: 80.7511 LR0.00010000
+epoch: 574 train loss: 0.5392 train acc: 80.8595 val loss: 0.0000 val acc: 0.0000 test loss: 0.5769 test acc: 80.1312 LR0.00010000
+epoch: 575 train loss: 0.4842 train acc: 82.9935 val loss: 0.0000 val acc: 0.0000 test loss: 0.5558 test acc: 80.6975 LR0.00010000
+epoch: 576 train loss: 0.4662 train acc: 84.0308 val loss: 0.0000 val acc: 0.0000 test loss: 0.5301 test acc: 82.2004 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e576-a82-m.pt
+epoch: 577 train loss: 0.4824 train acc: 82.7966 val loss: 0.0000 val acc: 0.0000 test loss: 0.5601 test acc: 80.0733 LR0.00010000
+epoch: 578 train loss: 0.4782 train acc: 84.1011 val loss: 0.0000 val acc: 0.0000 test loss: 0.5787 test acc: 80.7469 LR0.00010000
+epoch: 579 train loss: 0.4949 train acc: 82.6085 val loss: 0.0000 val acc: 0.0000 test loss: 0.5644 test acc: 81.0552 LR0.00010000
+epoch: 580 train loss: 0.5489 train acc: 81.1743 val loss: 0.0000 val acc: 0.0000 test loss: 0.6181 test acc: 79.1526 LR0.00010000
+epoch: 581 train loss: 0.5575 train acc: 80.3008 val loss: 0.0000 val acc: 0.0000 test loss: 0.6392 test acc: 77.4763 LR0.00010000
+epoch: 582 train loss: 0.5198 train acc: 81.7054 val loss: 0.0000 val acc: 0.0000 test loss: 0.5650 test acc: 80.5932 LR0.00010000
+epoch: 583 train loss: 0.5781 train acc: 76.7570 val loss: 0.0000 val acc: 0.0000 test loss: 0.6554 test acc: 73.3954 LR0.00010000
+epoch: 584 train loss: 0.5658 train acc: 79.4314 val loss: 0.0000 val acc: 0.0000 test loss: 0.6437 test acc: 76.3749 LR0.00010000
+epoch: 585 train loss: 0.5181 train acc: 81.7934 val loss: 0.0000 val acc: 0.0000 test loss: 0.5888 test acc: 79.5009 LR0.00010000
+epoch: 586 train loss: 0.4675 train acc: 83.6004 val loss: 0.0000 val acc: 0.0000 test loss: 0.5558 test acc: 80.9368 LR0.00010000
+epoch: 587 train loss: 0.4461 train acc: 84.3743 val loss: 0.0000 val acc: 0.0000 test loss: 0.5268 test acc: 81.8602 LR0.00010000
+epoch: 588 train loss: 0.4429 train acc: 84.7886 val loss: 0.0000 val acc: 0.0000 test loss: 0.5314 test acc: 82.1289 LR0.00010000
+epoch: 589 train loss: 0.4460 train acc: 84.6421 val loss: 0.0000 val acc: 0.0000 test loss: 0.5325 test acc: 82.1315 LR0.00010000
+epoch: 590 train loss: 0.4803 train acc: 83.1719 val loss: 0.0000 val acc: 0.0000 test loss: 0.5747 test acc: 80.3002 LR0.00010000
+epoch: 591 train loss: 0.4618 train acc: 83.8170 val loss: 0.0000 val acc: 0.0000 test loss: 0.5521 test acc: 81.1730 LR0.00010000
+epoch: 592 train loss: 0.4496 train acc: 84.6838 val loss: 0.0000 val acc: 0.0000 test loss: 0.5338 test acc: 81.8681 LR0.00010000
+epoch: 593 train loss: 0.4411 train acc: 84.7692 val loss: 0.0000 val acc: 0.0000 test loss: 0.5382 test acc: 81.3972 LR0.00010000
+epoch: 594 train loss: 0.4303 train acc: 85.1868 val loss: 0.0000 val acc: 0.0000 test loss: 0.5127 test acc: 82.7314 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e594-a83-m.pt
+epoch: 595 train loss: 0.4500 train acc: 83.8449 val loss: 0.0000 val acc: 0.0000 test loss: 0.5503 test acc: 80.6996 LR0.00010000
+epoch: 596 train loss: 0.4679 train acc: 82.3986 val loss: 0.0000 val acc: 0.0000 test loss: 0.5563 test acc: 80.2394 LR0.00010000
+epoch: 597 train loss: 0.4738 train acc: 82.7018 val loss: 0.0000 val acc: 0.0000 test loss: 0.5812 test acc: 79.1129 LR0.00010000
+epoch: 598 train loss: 0.6126 train acc: 76.4298 val loss: 0.0000 val acc: 0.0000 test loss: 0.7498 test acc: 72.6103 LR0.00010000
+epoch: 599 train loss: 0.5827 train acc: 80.1787 val loss: 0.0000 val acc: 0.0000 test loss: 0.6581 test acc: 78.0788 LR0.00010000
+epoch: 600 train loss: 0.5051 train acc: 82.4250 val loss: 0.0000 val acc: 0.0000 test loss: 0.5855 test acc: 80.3613 LR0.00010000
+epoch: 601 train loss: 0.4909 train acc: 83.4190 val loss: 0.0000 val acc: 0.0000 test loss: 0.5878 test acc: 80.3343 LR0.00010000
+epoch: 602 train loss: 0.4481 train acc: 84.4453 val loss: 0.0000 val acc: 0.0000 test loss: 0.5146 test acc: 82.4736 LR0.00010000
+epoch: 603 train loss: 0.4323 train acc: 85.1485 val loss: 0.0000 val acc: 0.0000 test loss: 0.5166 test acc: 82.6771 LR0.00010000
+epoch: 604 train loss: 0.4277 train acc: 85.1591 val loss: 0.0000 val acc: 0.0000 test loss: 0.5161 test acc: 82.4843 LR0.00010000
+epoch: 605 train loss: 0.4072 train acc: 85.9575 val loss: 0.0000 val acc: 0.0000 test loss: 0.5122 test acc: 82.9185 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e605-a83-m.pt
+epoch: 606 train loss: 0.4036 train acc: 86.1447 val loss: 0.0000 val acc: 0.0000 test loss: 0.4935 test acc: 83.4337 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e606-a83-m.pt
+epoch: 607 train loss: 0.4513 train acc: 83.9096 val loss: 0.0000 val acc: 0.0000 test loss: 0.5600 test acc: 80.4766 LR0.00010000
+epoch: 608 train loss: 0.4955 train acc: 81.7660 val loss: 0.0000 val acc: 0.0000 test loss: 0.5589 test acc: 80.4960 LR0.00010000
+epoch: 609 train loss: 0.5227 train acc: 81.7125 val loss: 0.0000 val acc: 0.0000 test loss: 0.6156 test acc: 78.8663 LR0.00010000
+epoch: 610 train loss: 0.5554 train acc: 80.3624 val loss: 0.0000 val acc: 0.0000 test loss: 0.6559 test acc: 76.4605 LR0.00010000
+epoch: 611 train loss: 0.5124 train acc: 82.7487 val loss: 0.0000 val acc: 0.0000 test loss: 0.6031 test acc: 80.4797 LR0.00010000
+epoch: 612 train loss: 0.5231 train acc: 82.5564 val loss: 0.0000 val acc: 0.0000 test loss: 0.6379 test acc: 79.1696 LR0.00010000
+epoch: 613 train loss: 0.5013 train acc: 82.6744 val loss: 0.0000 val acc: 0.0000 test loss: 0.5861 test acc: 80.5051 LR0.00010000
+epoch: 614 train loss: 0.5070 train acc: 83.6211 val loss: 0.0000 val acc: 0.0000 test loss: 0.6003 test acc: 80.9197 LR0.00010000
+epoch: 615 train loss: 0.4833 train acc: 84.2648 val loss: 0.0000 val acc: 0.0000 test loss: 0.5844 test acc: 82.2084 LR0.00010000
+epoch: 616 train loss: 0.5337 train acc: 84.3915 val loss: 0.0000 val acc: 0.0000 test loss: 0.6220 test acc: 81.3415 LR0.00010000
+epoch: 617 train loss: 0.4919 train acc: 82.6933 val loss: 0.0000 val acc: 0.0000 test loss: 0.5619 test acc: 80.6640 LR0.00010000
+epoch: 618 train loss: 0.4579 train acc: 84.3798 val loss: 0.0000 val acc: 0.0000 test loss: 0.5390 test acc: 81.5559 LR0.00010000
+epoch: 619 train loss: 0.4538 train acc: 84.9197 val loss: 0.0000 val acc: 0.0000 test loss: 0.5392 test acc: 81.9359 LR0.00010000
+epoch: 620 train loss: 0.4264 train acc: 85.7545 val loss: 0.0000 val acc: 0.0000 test loss: 0.5141 test acc: 82.8396 LR0.00010000
+epoch: 621 train loss: 0.4027 train acc: 86.4564 val loss: 0.0000 val acc: 0.0000 test loss: 0.5084 test acc: 83.2719 LR0.00010000
+epoch: 622 train loss: 0.4142 train acc: 85.3483 val loss: 0.0000 val acc: 0.0000 test loss: 0.5100 test acc: 82.6326 LR0.00010000
+epoch: 623 train loss: 0.4471 train acc: 84.3400 val loss: 0.0000 val acc: 0.0000 test loss: 0.5830 test acc: 80.4278 LR0.00010000
+epoch: 624 train loss: 0.5161 train acc: 80.4932 val loss: 0.0000 val acc: 0.0000 test loss: 0.5823 test acc: 79.1336 LR0.00010000
+epoch: 625 train loss: 0.5620 train acc: 79.5622 val loss: 0.0000 val acc: 0.0000 test loss: 0.6600 test acc: 76.5363 LR0.00010000
+epoch: 626 train loss: 0.6787 train acc: 72.9841 val loss: 0.0000 val acc: 0.0000 test loss: 0.8079 test acc: 68.8352 LR0.00010000
+epoch: 627 train loss: 0.7404 train acc: 75.3456 val loss: 0.0000 val acc: 0.0000 test loss: 0.7858 test acc: 73.9720 LR0.00010000
+epoch: 628 train loss: 0.6341 train acc: 76.1343 val loss: 0.0000 val acc: 0.0000 test loss: 0.6833 test acc: 74.1492 LR0.00010000
+epoch: 629 train loss: 0.5984 train acc: 78.1847 val loss: 0.0000 val acc: 0.0000 test loss: 0.6679 test acc: 76.3972 LR0.00010000
+epoch: 630 train loss: 0.6110 train acc: 79.2549 val loss: 0.0000 val acc: 0.0000 test loss: 0.7343 test acc: 75.9801 LR0.00010000
+epoch: 631 train loss: 0.5490 train acc: 81.1082 val loss: 0.0000 val acc: 0.0000 test loss: 0.6107 test acc: 79.2924 LR0.00010000
+epoch: 632 train loss: 0.5337 train acc: 81.5561 val loss: 0.0000 val acc: 0.0000 test loss: 0.6167 test acc: 78.9362 LR0.00010000
+epoch: 633 train loss: 0.5376 train acc: 81.8523 val loss: 0.0000 val acc: 0.0000 test loss: 0.6211 test acc: 78.9978 LR0.00010000
+epoch: 634 train loss: 0.5524 train acc: 81.9354 val loss: 0.0000 val acc: 0.0000 test loss: 0.6054 test acc: 80.1915 LR0.00010000
+epoch: 635 train loss: 0.5242 train acc: 81.8120 val loss: 0.0000 val acc: 0.0000 test loss: 0.5944 test acc: 79.5632 LR0.00010000
+epoch: 636 train loss: 0.4580 train acc: 84.8556 val loss: 0.0000 val acc: 0.0000 test loss: 0.5502 test acc: 81.8461 LR0.00010000
+epoch: 637 train loss: 0.4536 train acc: 84.3703 val loss: 0.0000 val acc: 0.0000 test loss: 0.5418 test acc: 81.6210 LR0.00010000
+epoch: 638 train loss: 0.4435 train acc: 84.9317 val loss: 0.0000 val acc: 0.0000 test loss: 0.5469 test acc: 81.7514 LR0.00010000
+epoch: 639 train loss: 0.4245 train acc: 85.4590 val loss: 0.0000 val acc: 0.0000 test loss: 0.5091 test acc: 82.7253 LR0.00010000
+epoch: 640 train loss: 0.4182 train acc: 85.9231 val loss: 0.0000 val acc: 0.0000 test loss: 0.5315 test acc: 82.5153 LR0.00010000
+epoch: 641 train loss: 0.4193 train acc: 85.5972 val loss: 0.0000 val acc: 0.0000 test loss: 0.5205 test acc: 82.4797 LR0.00010000
+epoch: 642 train loss: 0.4014 train acc: 86.2295 val loss: 0.0000 val acc: 0.0000 test loss: 0.5098 test acc: 82.9398 LR0.00010000
+epoch: 643 train loss: 0.4378 train acc: 84.6894 val loss: 0.0000 val acc: 0.0000 test loss: 0.5392 test acc: 82.0650 LR0.00010000
+epoch: 644 train loss: 0.4474 train acc: 85.2926 val loss: 0.0000 val acc: 0.0000 test loss: 0.5223 test acc: 82.7241 LR0.00010000
+epoch: 645 train loss: 0.4204 train acc: 86.4064 val loss: 0.0000 val acc: 0.0000 test loss: 0.5121 test acc: 83.1176 LR0.00010000
+epoch: 646 train loss: 0.4026 train acc: 86.4197 val loss: 0.0000 val acc: 0.0000 test loss: 0.5039 test acc: 83.3558 LR0.00010000
+epoch: 647 train loss: 0.4002 train acc: 86.4982 val loss: 0.0000 val acc: 0.0000 test loss: 0.5224 test acc: 82.9209 LR0.00010000
+epoch: 648 train loss: 0.5338 train acc: 81.6305 val loss: 0.0000 val acc: 0.0000 test loss: 0.5826 test acc: 80.4153 LR0.00010000
+epoch: 649 train loss: 0.5984 train acc: 76.9258 val loss: 0.0000 val acc: 0.0000 test loss: 0.7222 test acc: 73.1644 LR0.00010000
+epoch: 650 train loss: 0.7260 train acc: 72.2569 val loss: 0.0000 val acc: 0.0000 test loss: 0.8696 test acc: 67.3851 LR0.00010000
+epoch: 651 train loss: 0.8617 train acc: 70.7938 val loss: 0.0000 val acc: 0.0000 test loss: 0.8807 test acc: 70.3078 LR0.00010000
+epoch: 652 train loss: 0.7609 train acc: 74.7773 val loss: 0.0000 val acc: 0.0000 test loss: 0.8447 test acc: 71.5444 LR0.00010000
+epoch: 653 train loss: 0.6479 train acc: 77.1091 val loss: 0.0000 val acc: 0.0000 test loss: 0.7113 test acc: 74.6748 LR0.00010000
+epoch: 654 train loss: 0.6077 train acc: 79.1497 val loss: 0.0000 val acc: 0.0000 test loss: 0.6725 test acc: 77.3751 LR0.00010000
+epoch: 655 train loss: 0.5523 train acc: 81.0036 val loss: 0.0000 val acc: 0.0000 test loss: 0.6149 test acc: 78.9966 LR0.00010000
+epoch: 656 train loss: 0.5134 train acc: 82.4441 val loss: 0.0000 val acc: 0.0000 test loss: 0.5853 test acc: 79.9320 LR0.00010000
+epoch: 657 train loss: 0.4843 train acc: 83.8529 val loss: 0.0000 val acc: 0.0000 test loss: 0.5689 test acc: 80.8838 LR0.00010000
+epoch: 658 train loss: 0.4811 train acc: 83.4996 val loss: 0.0000 val acc: 0.0000 test loss: 0.5542 test acc: 81.1671 LR0.00010000
+epoch: 659 train loss: 0.4591 train acc: 84.1661 val loss: 0.0000 val acc: 0.0000 test loss: 0.5366 test acc: 81.6092 LR0.00010000
+epoch: 660 train loss: 0.4416 train acc: 84.6794 val loss: 0.0000 val acc: 0.0000 test loss: 0.5477 test acc: 80.8827 LR0.00010000
+epoch: 661 train loss: 0.4391 train acc: 84.9799 val loss: 0.0000 val acc: 0.0000 test loss: 0.5314 test acc: 82.5143 LR0.00010000
+epoch: 662 train loss: 0.5062 train acc: 82.7593 val loss: 0.0000 val acc: 0.0000 test loss: 0.6265 test acc: 79.5852 LR0.00010000
+epoch: 663 train loss: 0.4835 train acc: 82.6321 val loss: 0.0000 val acc: 0.0000 test loss: 0.5840 test acc: 79.5220 LR0.00010000
+epoch: 664 train loss: 0.4730 train acc: 83.0511 val loss: 0.0000 val acc: 0.0000 test loss: 0.5473 test acc: 80.7325 LR0.00010000
+epoch: 665 train loss: 0.4236 train acc: 85.7257 val loss: 0.0000 val acc: 0.0000 test loss: 0.5155 test acc: 82.6591 LR0.00010000
+epoch: 666 train loss: 0.4009 train acc: 86.5643 val loss: 0.0000 val acc: 0.0000 test loss: 0.5060 test acc: 83.0261 LR0.00010000
+epoch: 667 train loss: 0.3870 train acc: 86.8461 val loss: 0.0000 val acc: 0.0000 test loss: 0.4844 test acc: 83.7012 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e667-a84-m.pt
+epoch: 668 train loss: 0.3737 train acc: 87.3353 val loss: 0.0000 val acc: 0.0000 test loss: 0.4914 test acc: 83.8139 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e668-a84-m.pt
+epoch: 669 train loss: 0.3855 train acc: 86.8330 val loss: 0.0000 val acc: 0.0000 test loss: 0.4882 test acc: 83.6633 LR0.00010000
+epoch: 670 train loss: 0.3839 train acc: 86.8786 val loss: 0.0000 val acc: 0.0000 test loss: 0.5078 test acc: 83.0047 LR0.00010000
+epoch: 671 train loss: 0.3915 train acc: 86.4596 val loss: 0.0000 val acc: 0.0000 test loss: 0.4981 test acc: 83.3526 LR0.00010000
+epoch: 672 train loss: 0.3844 train acc: 87.1354 val loss: 0.0000 val acc: 0.0000 test loss: 0.4874 test acc: 83.5928 LR0.00010000
+epoch: 673 train loss: 0.3960 train acc: 86.4868 val loss: 0.0000 val acc: 0.0000 test loss: 0.5182 test acc: 82.5342 LR0.00010000
+epoch: 674 train loss: 0.3771 train acc: 87.2316 val loss: 0.0000 val acc: 0.0000 test loss: 0.4977 test acc: 83.8388 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e674-a84-m.pt
+epoch: 675 train loss: 0.3716 train acc: 87.4082 val loss: 0.0000 val acc: 0.0000 test loss: 0.4892 test acc: 83.9717 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e675-a84-m.pt
+epoch: 676 train loss: 0.3862 train acc: 86.5523 val loss: 0.0000 val acc: 0.0000 test loss: 0.5039 test acc: 82.8411 LR0.00010000
+epoch: 677 train loss: 0.4892 train acc: 83.0037 val loss: 0.0000 val acc: 0.0000 test loss: 0.5460 test acc: 81.2687 LR0.00010000
+epoch: 678 train loss: 0.4964 train acc: 81.7079 val loss: 0.0000 val acc: 0.0000 test loss: 0.5976 test acc: 78.0733 LR0.00010000
+epoch: 679 train loss: 0.4474 train acc: 84.5057 val loss: 0.0000 val acc: 0.0000 test loss: 0.5589 test acc: 81.0217 LR0.00010000
+epoch: 680 train loss: 0.4170 train acc: 85.6616 val loss: 0.0000 val acc: 0.0000 test loss: 0.5385 test acc: 81.9928 LR0.00010000
+epoch: 681 train loss: 0.3895 train acc: 86.7061 val loss: 0.0000 val acc: 0.0000 test loss: 0.5014 test acc: 83.2505 LR0.00010000
+epoch: 682 train loss: 0.3650 train acc: 87.7015 val loss: 0.0000 val acc: 0.0000 test loss: 0.4842 test acc: 84.0509 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e682-a84-m.pt
+epoch: 683 train loss: 0.3522 train acc: 88.1318 val loss: 0.0000 val acc: 0.0000 test loss: 0.4823 test acc: 84.1043 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e683-a84-m.pt
+epoch: 684 train loss: 0.3465 train acc: 88.2519 val loss: 0.0000 val acc: 0.0000 test loss: 0.4763 test acc: 84.3630 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e684-a84-m.pt
+epoch: 685 train loss: 0.3511 train acc: 87.9695 val loss: 0.0000 val acc: 0.0000 test loss: 0.4786 test acc: 84.4003 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e685-a84-m.pt
+epoch: 686 train loss: 0.3728 train acc: 87.7474 val loss: 0.0000 val acc: 0.0000 test loss: 0.5292 test acc: 83.1891 LR0.00010000
+epoch: 687 train loss: 0.4309 train acc: 84.3629 val loss: 0.0000 val acc: 0.0000 test loss: 0.5151 test acc: 82.2757 LR0.00010000
+epoch: 688 train loss: 0.4601 train acc: 83.2855 val loss: 0.0000 val acc: 0.0000 test loss: 0.5833 test acc: 79.4364 LR0.00010000
+epoch: 689 train loss: 0.4371 train acc: 86.2112 val loss: 0.0000 val acc: 0.0000 test loss: 0.5533 test acc: 81.9510 LR0.00010000
+epoch: 690 train loss: 0.3893 train acc: 87.0490 val loss: 0.0000 val acc: 0.0000 test loss: 0.5088 test acc: 83.6448 LR0.00010000
+epoch: 691 train loss: 0.3914 train acc: 87.3196 val loss: 0.0000 val acc: 0.0000 test loss: 0.5523 test acc: 83.2197 LR0.00010000
+epoch: 692 train loss: 0.4702 train acc: 83.5244 val loss: 0.0000 val acc: 0.0000 test loss: 0.5850 test acc: 80.9171 LR0.00010000
+epoch: 693 train loss: 0.4481 train acc: 84.8785 val loss: 0.0000 val acc: 0.0000 test loss: 0.5198 test acc: 82.6760 LR0.00010000
+epoch: 694 train loss: 0.4069 train acc: 86.6541 val loss: 0.0000 val acc: 0.0000 test loss: 0.4992 test acc: 83.5122 LR0.00010000
+epoch: 695 train loss: 0.3834 train acc: 86.8916 val loss: 0.0000 val acc: 0.0000 test loss: 0.4879 test acc: 83.6641 LR0.00010000
+epoch: 696 train loss: 0.3961 train acc: 86.2105 val loss: 0.0000 val acc: 0.0000 test loss: 0.5284 test acc: 82.3519 LR0.00010000
+epoch: 697 train loss: 0.4889 train acc: 82.5582 val loss: 0.0000 val acc: 0.0000 test loss: 0.5731 test acc: 80.4913 LR0.00010000
+epoch: 698 train loss: 0.6408 train acc: 77.6551 val loss: 0.0000 val acc: 0.0000 test loss: 0.7466 test acc: 74.8188 LR0.00010000
+epoch: 699 train loss: 0.8383 train acc: 74.4603 val loss: 0.0000 val acc: 0.0000 test loss: 1.0074 test acc: 68.9096 LR0.00010000
+epoch: 700 train loss: 0.9627 train acc: 70.0045 val loss: 0.0000 val acc: 0.0000 test loss: 1.0145 test acc: 69.7021 LR0.00010000
+epoch: 701 train loss: 0.8281 train acc: 71.9550 val loss: 0.0000 val acc: 0.0000 test loss: 0.8586 test acc: 70.9804 LR0.00010000
+epoch: 702 train loss: 0.6390 train acc: 79.5685 val loss: 0.0000 val acc: 0.0000 test loss: 0.6681 test acc: 78.0406 LR0.00010000
+epoch: 703 train loss: 0.6298 train acc: 78.1449 val loss: 0.0000 val acc: 0.0000 test loss: 0.6837 test acc: 76.8338 LR0.00010000
+epoch: 704 train loss: 0.5355 train acc: 83.0444 val loss: 0.0000 val acc: 0.0000 test loss: 0.6255 test acc: 80.0340 LR0.00010000
+epoch: 705 train loss: 0.5367 train acc: 82.0709 val loss: 0.0000 val acc: 0.0000 test loss: 0.6131 test acc: 79.4713 LR0.00010000
+epoch: 706 train loss: 0.5102 train acc: 83.1646 val loss: 0.0000 val acc: 0.0000 test loss: 0.6016 test acc: 80.1655 LR0.00010000
+epoch: 707 train loss: 0.4627 train acc: 84.4173 val loss: 0.0000 val acc: 0.0000 test loss: 0.5656 test acc: 80.9300 LR0.00010000
+epoch: 708 train loss: 0.4230 train acc: 85.5801 val loss: 0.0000 val acc: 0.0000 test loss: 0.5226 test acc: 82.1837 LR0.00010000
+epoch: 709 train loss: 0.4047 train acc: 86.3827 val loss: 0.0000 val acc: 0.0000 test loss: 0.5046 test acc: 83.2066 LR0.00010000
+epoch: 710 train loss: 0.3964 train acc: 86.5130 val loss: 0.0000 val acc: 0.0000 test loss: 0.5025 test acc: 83.1806 LR0.00010000
+epoch: 711 train loss: 0.4071 train acc: 86.2362 val loss: 0.0000 val acc: 0.0000 test loss: 0.5162 test acc: 83.0235 LR0.00010000
+epoch: 712 train loss: 0.4127 train acc: 86.1061 val loss: 0.0000 val acc: 0.0000 test loss: 0.5039 test acc: 82.8837 LR0.00010000
+epoch: 713 train loss: 0.3961 train acc: 87.3174 val loss: 0.0000 val acc: 0.0000 test loss: 0.4938 test acc: 83.8730 LR0.00010000
+epoch: 714 train loss: 0.3807 train acc: 87.3434 val loss: 0.0000 val acc: 0.0000 test loss: 0.4932 test acc: 83.8028 LR0.00010000
+epoch: 715 train loss: 0.3641 train acc: 87.8289 val loss: 0.0000 val acc: 0.0000 test loss: 0.4697 test acc: 84.4686 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e715-a84-m.pt
+epoch: 716 train loss: 0.4124 train acc: 85.3736 val loss: 0.0000 val acc: 0.0000 test loss: 0.5396 test acc: 81.3355 LR0.00010000
+epoch: 717 train loss: 0.4585 train acc: 83.5870 val loss: 0.0000 val acc: 0.0000 test loss: 0.5390 test acc: 81.6452 LR0.00010000
+epoch: 718 train loss: 0.4512 train acc: 84.0011 val loss: 0.0000 val acc: 0.0000 test loss: 0.5682 test acc: 80.0962 LR0.00010000
+epoch: 719 train loss: 0.4547 train acc: 83.7301 val loss: 0.0000 val acc: 0.0000 test loss: 0.5650 test acc: 80.0043 LR0.00010000
+epoch: 720 train loss: 0.4080 train acc: 86.2636 val loss: 0.0000 val acc: 0.0000 test loss: 0.5225 test acc: 82.7339 LR0.00010000
+epoch: 721 train loss: 0.3767 train acc: 87.4367 val loss: 0.0000 val acc: 0.0000 test loss: 0.5179 test acc: 83.6218 LR0.00010000
+epoch: 722 train loss: 0.3621 train acc: 87.7812 val loss: 0.0000 val acc: 0.0000 test loss: 0.4900 test acc: 83.8355 LR0.00010000
+epoch: 723 train loss: 0.3559 train acc: 87.9561 val loss: 0.0000 val acc: 0.0000 test loss: 0.4938 test acc: 84.0792 LR0.00010000
+epoch: 724 train loss: 0.4037 train acc: 85.9974 val loss: 0.0000 val acc: 0.0000 test loss: 0.5330 test acc: 82.6359 LR0.00010000
+epoch: 725 train loss: 0.4203 train acc: 85.6601 val loss: 0.0000 val acc: 0.0000 test loss: 0.5218 test acc: 82.6358 LR0.00010000
+epoch: 726 train loss: 0.3753 train acc: 87.5784 val loss: 0.0000 val acc: 0.0000 test loss: 0.4763 test acc: 84.1530 LR0.00010000
+epoch: 727 train loss: 0.3640 train acc: 87.7324 val loss: 0.0000 val acc: 0.0000 test loss: 0.4723 test acc: 84.3057 LR0.00010000
+epoch: 728 train loss: 0.3409 train acc: 88.5275 val loss: 0.0000 val acc: 0.0000 test loss: 0.4728 test acc: 84.6433 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e728-a85-m.pt
+epoch: 729 train loss: 0.3308 train acc: 88.6978 val loss: 0.0000 val acc: 0.0000 test loss: 0.4665 test acc: 84.9343 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e729-a85-m.pt
+epoch: 730 train loss: 0.3300 train acc: 88.8910 val loss: 0.0000 val acc: 0.0000 test loss: 0.4803 test acc: 84.6510 LR0.00010000
+epoch: 731 train loss: 0.3538 train acc: 87.8236 val loss: 0.0000 val acc: 0.0000 test loss: 0.4889 test acc: 84.1181 LR0.00010000
+epoch: 732 train loss: 0.3574 train acc: 87.9246 val loss: 0.0000 val acc: 0.0000 test loss: 0.5101 test acc: 83.7387 LR0.00010000
+epoch: 733 train loss: 0.3799 train acc: 87.0761 val loss: 0.0000 val acc: 0.0000 test loss: 0.5124 test acc: 82.8259 LR0.00010000
+epoch: 734 train loss: 0.3854 train acc: 86.9230 val loss: 0.0000 val acc: 0.0000 test loss: 0.4842 test acc: 84.2315 LR0.00010000
+epoch: 735 train loss: 0.3694 train acc: 87.6382 val loss: 0.0000 val acc: 0.0000 test loss: 0.5044 test acc: 83.5613 LR0.00010000
+epoch: 736 train loss: 0.3503 train acc: 88.3222 val loss: 0.0000 val acc: 0.0000 test loss: 0.4649 test acc: 84.7748 LR0.00010000
+epoch: 737 train loss: 0.3369 train acc: 88.7806 val loss: 0.0000 val acc: 0.0000 test loss: 0.4814 test acc: 84.5136 LR0.00010000
+epoch: 738 train loss: 0.3403 train acc: 88.5077 val loss: 0.0000 val acc: 0.0000 test loss: 0.4675 test acc: 84.5923 LR0.00010000
+epoch: 739 train loss: 0.3768 train acc: 87.0806 val loss: 0.0000 val acc: 0.0000 test loss: 0.4971 test acc: 83.6599 LR0.00010000
+epoch: 740 train loss: 0.4698 train acc: 82.4281 val loss: 0.0000 val acc: 0.0000 test loss: 0.6241 test acc: 77.9810 LR0.00010000
+epoch: 741 train loss: 0.4593 train acc: 84.3439 val loss: 0.0000 val acc: 0.0000 test loss: 0.5842 test acc: 80.6447 LR0.00010000
+epoch: 742 train loss: 0.5090 train acc: 80.9474 val loss: 0.0000 val acc: 0.0000 test loss: 0.5977 test acc: 78.6842 LR0.00010000
+epoch: 743 train loss: 0.4533 train acc: 84.6727 val loss: 0.0000 val acc: 0.0000 test loss: 0.5650 test acc: 80.5312 LR0.00010000
+epoch: 744 train loss: 0.3813 train acc: 87.7373 val loss: 0.0000 val acc: 0.0000 test loss: 0.5190 test acc: 83.9052 LR0.00010000
+epoch: 745 train loss: 0.3696 train acc: 87.4605 val loss: 0.0000 val acc: 0.0000 test loss: 0.4961 test acc: 83.7808 LR0.00010000
+epoch: 746 train loss: 0.3544 train acc: 88.4907 val loss: 0.0000 val acc: 0.0000 test loss: 0.4659 test acc: 84.6903 LR0.00010000
+epoch: 747 train loss: 0.3351 train acc: 89.0515 val loss: 0.0000 val acc: 0.0000 test loss: 0.4564 test acc: 85.0022 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e747-a85-m.pt
+epoch: 748 train loss: 0.3203 train acc: 89.2580 val loss: 0.0000 val acc: 0.0000 test loss: 0.4687 test acc: 84.7948 LR0.00010000
+epoch: 749 train loss: 0.3145 train acc: 89.4491 val loss: 0.0000 val acc: 0.0000 test loss: 0.4578 test acc: 85.3742 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e749-a85-m.pt
+epoch: 750 train loss: 0.3391 train acc: 88.2559 val loss: 0.0000 val acc: 0.0000 test loss: 0.5114 test acc: 83.3192 LR0.00010000
+epoch: 751 train loss: 0.3338 train acc: 88.4174 val loss: 0.0000 val acc: 0.0000 test loss: 0.4726 test acc: 84.7683 LR0.00010000
+epoch: 752 train loss: 0.3609 train acc: 87.5214 val loss: 0.0000 val acc: 0.0000 test loss: 0.5205 test acc: 82.9489 LR0.00010000
+epoch: 753 train loss: 0.3703 train acc: 87.1575 val loss: 0.0000 val acc: 0.0000 test loss: 0.5385 test acc: 82.3274 LR0.00010000
+epoch: 754 train loss: 0.3506 train acc: 87.9652 val loss: 0.0000 val acc: 0.0000 test loss: 0.5054 test acc: 83.8035 LR0.00010000
+epoch: 755 train loss: 0.3278 train acc: 89.0119 val loss: 0.0000 val acc: 0.0000 test loss: 0.4750 test acc: 84.8903 LR0.00010000
+epoch: 756 train loss: 0.3358 train acc: 88.6702 val loss: 0.0000 val acc: 0.0000 test loss: 0.5305 test acc: 83.5176 LR0.00010000
+epoch: 757 train loss: 0.3351 train acc: 88.6635 val loss: 0.0000 val acc: 0.0000 test loss: 0.4610 test acc: 84.9610 LR0.00010000
+epoch: 758 train loss: 0.3187 train acc: 89.2739 val loss: 0.0000 val acc: 0.0000 test loss: 0.4663 test acc: 84.7951 LR0.00010000
+epoch: 759 train loss: 0.2995 train acc: 89.9383 val loss: 0.0000 val acc: 0.0000 test loss: 0.4446 test acc: 85.6169 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e759-a86-m.pt
+epoch: 760 train loss: 0.2957 train acc: 90.0485 val loss: 0.0000 val acc: 0.0000 test loss: 0.4665 test acc: 85.2172 LR0.00010000
+epoch: 761 train loss: 0.3247 train acc: 88.7309 val loss: 0.0000 val acc: 0.0000 test loss: 0.4705 test acc: 84.8735 LR0.00010000
+epoch: 762 train loss: 0.3735 train acc: 85.9989 val loss: 0.0000 val acc: 0.0000 test loss: 0.5543 test acc: 80.9960 LR0.00010000
+epoch: 763 train loss: 0.3686 train acc: 88.0417 val loss: 0.0000 val acc: 0.0000 test loss: 0.5452 test acc: 82.9262 LR0.00010000
+epoch: 764 train loss: 0.3712 train acc: 87.9866 val loss: 0.0000 val acc: 0.0000 test loss: 0.5068 test acc: 83.8261 LR0.00010000
+epoch: 765 train loss: 0.3702 train acc: 87.3676 val loss: 0.0000 val acc: 0.0000 test loss: 0.5157 test acc: 83.2087 LR0.00010000
+epoch: 766 train loss: 0.3901 train acc: 87.1538 val loss: 0.0000 val acc: 0.0000 test loss: 0.5537 test acc: 83.1579 LR0.00010000
+epoch: 767 train loss: 0.4033 train acc: 85.8888 val loss: 0.0000 val acc: 0.0000 test loss: 0.5144 test acc: 82.5076 LR0.00010000
+epoch: 768 train loss: 0.4212 train acc: 86.3010 val loss: 0.0000 val acc: 0.0000 test loss: 0.5135 test acc: 83.3431 LR0.00010000
+epoch: 769 train loss: 0.4750 train acc: 83.9423 val loss: 0.0000 val acc: 0.0000 test loss: 0.5989 test acc: 80.4328 LR0.00010000
+epoch: 770 train loss: 0.5925 train acc: 81.3132 val loss: 0.0000 val acc: 0.0000 test loss: 0.6847 test acc: 79.0315 LR0.00010000
+epoch: 771 train loss: 0.6665 train acc: 80.3299 val loss: 0.0000 val acc: 0.0000 test loss: 0.8143 test acc: 75.8132 LR0.00010000
+epoch: 772 train loss: 0.8292 train acc: 72.4997 val loss: 0.0000 val acc: 0.0000 test loss: 0.8984 test acc: 70.9489 LR0.00010000
+epoch: 773 train loss: 0.7430 train acc: 75.4096 val loss: 0.0000 val acc: 0.0000 test loss: 0.8477 test acc: 72.5812 LR0.00010000
+epoch: 774 train loss: 0.5749 train acc: 81.8262 val loss: 0.0000 val acc: 0.0000 test loss: 0.6358 test acc: 79.4291 LR0.00010000
+epoch: 775 train loss: 0.4883 train acc: 84.1520 val loss: 0.0000 val acc: 0.0000 test loss: 0.5518 test acc: 81.9857 LR0.00010000
+epoch: 776 train loss: 0.4301 train acc: 86.0423 val loss: 0.0000 val acc: 0.0000 test loss: 0.5336 test acc: 82.2615 LR0.00010000
+epoch: 777 train loss: 0.3942 train acc: 86.9497 val loss: 0.0000 val acc: 0.0000 test loss: 0.4991 test acc: 83.4511 LR0.00010000
+epoch: 778 train loss: 0.3886 train acc: 86.9018 val loss: 0.0000 val acc: 0.0000 test loss: 0.5237 test acc: 82.5034 LR0.00010000
+epoch: 779 train loss: 0.3893 train acc: 86.9661 val loss: 0.0000 val acc: 0.0000 test loss: 0.4870 test acc: 83.8098 LR0.00010000
+epoch: 780 train loss: 0.3773 train acc: 87.6255 val loss: 0.0000 val acc: 0.0000 test loss: 0.4752 test acc: 84.1078 LR0.00010000
+epoch: 781 train loss: 0.3577 train acc: 88.2560 val loss: 0.0000 val acc: 0.0000 test loss: 0.4793 test acc: 83.9321 LR0.00010000
+epoch: 782 train loss: 0.3319 train acc: 88.9654 val loss: 0.0000 val acc: 0.0000 test loss: 0.4678 test acc: 84.6927 LR0.00010000
+epoch: 783 train loss: 0.3228 train acc: 89.3532 val loss: 0.0000 val acc: 0.0000 test loss: 0.4579 test acc: 84.9827 LR0.00010000
+epoch: 784 train loss: 0.3142 train acc: 89.4383 val loss: 0.0000 val acc: 0.0000 test loss: 0.4629 test acc: 84.8081 LR0.00010000
+epoch: 785 train loss: 0.3433 train acc: 88.5671 val loss: 0.0000 val acc: 0.0000 test loss: 0.4942 test acc: 84.5369 LR0.00010000
+epoch: 786 train loss: 0.3575 train acc: 87.6095 val loss: 0.0000 val acc: 0.0000 test loss: 0.4898 test acc: 83.3627 LR0.00010000
+epoch: 787 train loss: 0.3516 train acc: 88.5519 val loss: 0.0000 val acc: 0.0000 test loss: 0.4631 test acc: 84.7972 LR0.00010000
+epoch: 788 train loss: 0.3547 train acc: 88.2079 val loss: 0.0000 val acc: 0.0000 test loss: 0.4765 test acc: 84.1876 LR0.00010000
+epoch: 789 train loss: 0.3198 train acc: 89.1231 val loss: 0.0000 val acc: 0.0000 test loss: 0.4611 test acc: 84.6248 LR0.00010000
+epoch: 790 train loss: 0.3004 train acc: 89.8419 val loss: 0.0000 val acc: 0.0000 test loss: 0.4524 test acc: 85.4913 LR0.00010000
+epoch: 791 train loss: 0.2855 train acc: 90.3878 val loss: 0.0000 val acc: 0.0000 test loss: 0.4398 test acc: 85.7177 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e791-a86-m.pt
+epoch: 792 train loss: 0.2796 train acc: 90.6549 val loss: 0.0000 val acc: 0.0000 test loss: 0.4378 test acc: 85.7149 LR0.00010000
+epoch: 793 train loss: 0.2813 train acc: 90.4653 val loss: 0.0000 val acc: 0.0000 test loss: 0.4395 test acc: 85.9881 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e793-a86-m.pt
+epoch: 794 train loss: 0.3153 train acc: 89.1719 val loss: 0.0000 val acc: 0.0000 test loss: 0.5133 test acc: 83.8048 LR0.00010000
+epoch: 795 train loss: 0.3976 train acc: 86.4509 val loss: 0.0000 val acc: 0.0000 test loss: 0.5415 test acc: 83.0008 LR0.00010000
+epoch: 796 train loss: 0.5075 train acc: 81.5607 val loss: 0.0000 val acc: 0.0000 test loss: 0.6739 test acc: 77.0709 LR0.00010000
+epoch: 797 train loss: 0.5062 train acc: 82.0512 val loss: 0.0000 val acc: 0.0000 test loss: 0.6189 test acc: 77.6584 LR0.00010000
+epoch: 798 train loss: 0.4884 train acc: 83.9840 val loss: 0.0000 val acc: 0.0000 test loss: 0.5737 test acc: 81.2847 LR0.00010000
+epoch: 799 train loss: 0.4254 train acc: 85.7483 val loss: 0.0000 val acc: 0.0000 test loss: 0.5467 test acc: 81.8768 LR0.00010000
+epoch: 800 train loss: 0.3744 train acc: 87.5227 val loss: 0.0000 val acc: 0.0000 test loss: 0.4902 test acc: 83.5282 LR0.00010000
+epoch: 801 train loss: 0.3352 train acc: 88.7613 val loss: 0.0000 val acc: 0.0000 test loss: 0.4627 test acc: 84.8705 LR0.00010000
+epoch: 802 train loss: 0.3108 train acc: 89.5688 val loss: 0.0000 val acc: 0.0000 test loss: 0.4635 test acc: 85.0951 LR0.00010000
+epoch: 803 train loss: 0.2960 train acc: 90.0857 val loss: 0.0000 val acc: 0.0000 test loss: 0.4383 test acc: 85.7558 LR0.00010000
+epoch: 804 train loss: 0.2914 train acc: 90.1814 val loss: 0.0000 val acc: 0.0000 test loss: 0.4603 test acc: 85.3528 LR0.00010000
+epoch: 805 train loss: 0.3130 train acc: 89.3900 val loss: 0.0000 val acc: 0.0000 test loss: 0.4556 test acc: 85.3716 LR0.00010000
+epoch: 806 train loss: 0.3928 train acc: 85.1882 val loss: 0.0000 val acc: 0.0000 test loss: 0.5767 test acc: 80.0440 LR0.00010000
+epoch: 807 train loss: 0.3478 train acc: 88.8950 val loss: 0.0000 val acc: 0.0000 test loss: 0.4839 test acc: 84.1152 LR0.00010000
+epoch: 808 train loss: 0.3282 train acc: 89.0634 val loss: 0.0000 val acc: 0.0000 test loss: 0.4699 test acc: 84.4785 LR0.00010000
+epoch: 809 train loss: 0.2935 train acc: 90.0391 val loss: 0.0000 val acc: 0.0000 test loss: 0.4640 test acc: 85.2904 LR0.00010000
+epoch: 810 train loss: 0.2768 train acc: 90.5677 val loss: 0.0000 val acc: 0.0000 test loss: 0.4537 test acc: 85.6310 LR0.00010000
+epoch: 811 train loss: 0.2694 train acc: 90.8198 val loss: 0.0000 val acc: 0.0000 test loss: 0.4427 test acc: 85.9209 LR0.00010000
+epoch: 812 train loss: 0.2646 train acc: 91.0358 val loss: 0.0000 val acc: 0.0000 test loss: 0.4516 test acc: 86.0574 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e812-a86-m.pt
+epoch: 813 train loss: 0.2702 train acc: 90.8132 val loss: 0.0000 val acc: 0.0000 test loss: 0.4483 test acc: 85.9923 LR0.00010000
+epoch: 814 train loss: 0.3084 train acc: 89.5545 val loss: 0.0000 val acc: 0.0000 test loss: 0.5188 test acc: 84.7870 LR0.00010000
+epoch: 815 train loss: 0.3761 train acc: 86.4225 val loss: 0.0000 val acc: 0.0000 test loss: 0.5323 test acc: 82.0012 LR0.00010000
+epoch: 816 train loss: 0.3797 train acc: 87.1863 val loss: 0.0000 val acc: 0.0000 test loss: 0.4869 test acc: 83.5548 LR0.00010000
+epoch: 817 train loss: 0.3987 train acc: 86.5956 val loss: 0.0000 val acc: 0.0000 test loss: 0.5033 test acc: 82.8538 LR0.00010000
+epoch: 818 train loss: 0.3279 train acc: 88.8674 val loss: 0.0000 val acc: 0.0000 test loss: 0.4669 test acc: 83.9973 LR0.00010000
+epoch: 819 train loss: 0.2948 train acc: 90.0493 val loss: 0.0000 val acc: 0.0000 test loss: 0.4487 test acc: 85.5094 LR0.00010000
+epoch: 820 train loss: 0.3161 train acc: 88.7412 val loss: 0.0000 val acc: 0.0000 test loss: 0.4869 test acc: 83.5684 LR0.00010000
+epoch: 821 train loss: 0.3147 train acc: 89.2572 val loss: 0.0000 val acc: 0.0000 test loss: 0.4762 test acc: 84.8018 LR0.00010000
+epoch: 822 train loss: 0.3257 train acc: 88.8678 val loss: 0.0000 val acc: 0.0000 test loss: 0.5088 test acc: 83.7939 LR0.00010000
+epoch: 823 train loss: 0.3303 train acc: 88.5326 val loss: 0.0000 val acc: 0.0000 test loss: 0.4925 test acc: 83.5960 LR0.00010000
+epoch: 824 train loss: 0.3105 train acc: 89.3253 val loss: 0.0000 val acc: 0.0000 test loss: 0.4687 test acc: 85.0300 LR0.00010000
+epoch: 825 train loss: 0.2944 train acc: 90.1385 val loss: 0.0000 val acc: 0.0000 test loss: 0.4574 test acc: 85.0442 LR0.00010000
+epoch: 826 train loss: 0.2832 train acc: 90.6763 val loss: 0.0000 val acc: 0.0000 test loss: 0.4340 test acc: 86.0248 LR0.00010000
+epoch: 827 train loss: 0.2818 train acc: 90.5322 val loss: 0.0000 val acc: 0.0000 test loss: 0.4472 test acc: 86.0782 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e827-a86-m.pt
+epoch: 828 train loss: 0.2691 train acc: 91.0239 val loss: 0.0000 val acc: 0.0000 test loss: 0.4344 test acc: 85.9632 LR0.00010000
+epoch: 829 train loss: 0.2578 train acc: 91.3831 val loss: 0.0000 val acc: 0.0000 test loss: 0.4222 test acc: 86.5213 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e829-a87-m.pt
+epoch: 830 train loss: 0.2554 train acc: 91.4137 val loss: 0.0000 val acc: 0.0000 test loss: 0.4434 test acc: 86.3298 LR0.00010000
+epoch: 831 train loss: 0.2445 train acc: 91.8027 val loss: 0.0000 val acc: 0.0000 test loss: 0.4292 test acc: 86.5755 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e831-a87-m.pt
+epoch: 832 train loss: 0.2425 train acc: 91.8268 val loss: 0.0000 val acc: 0.0000 test loss: 0.4381 test acc: 86.5991 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e832-a87-m.pt
+epoch: 833 train loss: 0.2383 train acc: 91.9349 val loss: 0.0000 val acc: 0.0000 test loss: 0.4324 test acc: 86.8285 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e833-a87-m.pt
+epoch: 834 train loss: 0.2343 train acc: 92.0645 val loss: 0.0000 val acc: 0.0000 test loss: 0.4281 test acc: 86.7065 LR0.00010000
+epoch: 835 train loss: 0.2536 train acc: 91.3698 val loss: 0.0000 val acc: 0.0000 test loss: 0.4504 test acc: 86.3565 LR0.00010000
+epoch: 836 train loss: 0.3278 train acc: 87.6191 val loss: 0.0000 val acc: 0.0000 test loss: 0.5363 test acc: 81.9217 LR0.00010000
+epoch: 837 train loss: 0.4246 train acc: 83.4241 val loss: 0.0000 val acc: 0.0000 test loss: 0.5814 test acc: 80.2069 LR0.00010000
+epoch: 838 train loss: 0.5880 train acc: 80.6675 val loss: 0.0000 val acc: 0.0000 test loss: 0.7286 test acc: 76.3969 LR0.00010000
+epoch: 839 train loss: 0.5806 train acc: 78.8110 val loss: 0.0000 val acc: 0.0000 test loss: 0.7626 test acc: 73.6549 LR0.00010000
+epoch: 840 train loss: 0.6381 train acc: 79.3976 val loss: 0.0000 val acc: 0.0000 test loss: 0.7995 test acc: 76.6363 LR0.00010000
+epoch: 841 train loss: 0.5732 train acc: 82.1168 val loss: 0.0000 val acc: 0.0000 test loss: 0.6743 test acc: 79.3296 LR0.00010000
+epoch: 842 train loss: 0.5162 train acc: 84.2778 val loss: 0.0000 val acc: 0.0000 test loss: 0.5857 test acc: 81.3431 LR0.00010000
+epoch: 843 train loss: 0.4726 train acc: 85.2508 val loss: 0.0000 val acc: 0.0000 test loss: 0.5945 test acc: 81.1748 LR0.00010000
+epoch: 844 train loss: 0.4401 train acc: 85.9259 val loss: 0.0000 val acc: 0.0000 test loss: 0.5438 test acc: 82.2586 LR0.00010000
+epoch: 845 train loss: 0.4007 train acc: 86.3227 val loss: 0.0000 val acc: 0.0000 test loss: 0.5085 test acc: 82.4362 LR0.00010000
+epoch: 846 train loss: 0.3523 train acc: 88.2711 val loss: 0.0000 val acc: 0.0000 test loss: 0.4806 test acc: 83.9372 LR0.00010000
+epoch: 847 train loss: 0.3261 train acc: 89.0840 val loss: 0.0000 val acc: 0.0000 test loss: 0.4748 test acc: 84.6611 LR0.00010000
+epoch: 848 train loss: 0.2967 train acc: 90.1705 val loss: 0.0000 val acc: 0.0000 test loss: 0.4590 test acc: 85.5081 LR0.00010000
+epoch: 849 train loss: 0.2809 train acc: 90.6421 val loss: 0.0000 val acc: 0.0000 test loss: 0.4494 test acc: 85.8182 LR0.00010000
+epoch: 850 train loss: 0.2700 train acc: 90.9950 val loss: 0.0000 val acc: 0.0000 test loss: 0.4525 test acc: 86.0372 LR0.00010000
+epoch: 851 train loss: 0.2641 train acc: 91.1637 val loss: 0.0000 val acc: 0.0000 test loss: 0.4466 test acc: 86.0195 LR0.00010000
+epoch: 852 train loss: 0.2645 train acc: 91.0537 val loss: 0.0000 val acc: 0.0000 test loss: 0.4520 test acc: 86.1509 LR0.00010000
+epoch: 853 train loss: 0.2736 train acc: 90.6741 val loss: 0.0000 val acc: 0.0000 test loss: 0.4526 test acc: 85.3126 LR0.00010000
+epoch: 854 train loss: 0.2778 train acc: 90.4934 val loss: 0.0000 val acc: 0.0000 test loss: 0.4652 test acc: 85.5757 LR0.00010000
+epoch: 855 train loss: 0.2768 train acc: 90.5790 val loss: 0.0000 val acc: 0.0000 test loss: 0.4807 test acc: 85.0730 LR0.00010000
+epoch: 856 train loss: 0.2839 train acc: 90.4478 val loss: 0.0000 val acc: 0.0000 test loss: 0.4598 test acc: 85.1033 LR0.00010000
+epoch: 857 train loss: 0.2906 train acc: 90.4994 val loss: 0.0000 val acc: 0.0000 test loss: 0.5714 test acc: 85.0190 LR0.00010000
+epoch: 858 train loss: 0.3866 train acc: 87.0080 val loss: 0.0000 val acc: 0.0000 test loss: 0.5397 test acc: 83.4969 LR0.00010000
+epoch: 859 train loss: 0.3920 train acc: 87.2761 val loss: 0.0000 val acc: 0.0000 test loss: 0.5059 test acc: 83.0271 LR0.00010000
+epoch: 860 train loss: 0.3418 train acc: 88.8469 val loss: 0.0000 val acc: 0.0000 test loss: 0.4753 test acc: 84.5751 LR0.00010000
+epoch: 861 train loss: 0.3167 train acc: 89.6559 val loss: 0.0000 val acc: 0.0000 test loss: 0.4790 test acc: 85.2142 LR0.00010000
+epoch: 862 train loss: 0.2893 train acc: 90.6262 val loss: 0.0000 val acc: 0.0000 test loss: 0.4514 test acc: 85.6350 LR0.00010000
+epoch: 863 train loss: 0.2677 train acc: 91.1029 val loss: 0.0000 val acc: 0.0000 test loss: 0.4489 test acc: 85.8710 LR0.00010000
+epoch: 864 train loss: 0.2609 train acc: 91.2153 val loss: 0.0000 val acc: 0.0000 test loss: 0.4450 test acc: 86.3768 LR0.00010000
+epoch: 865 train loss: 0.2654 train acc: 90.9595 val loss: 0.0000 val acc: 0.0000 test loss: 0.4790 test acc: 85.4620 LR0.00010000
+epoch: 866 train loss: 0.2610 train acc: 90.9858 val loss: 0.0000 val acc: 0.0000 test loss: 0.4599 test acc: 85.8727 LR0.00010000
+epoch: 867 train loss: 0.2591 train acc: 91.2878 val loss: 0.0000 val acc: 0.0000 test loss: 0.4753 test acc: 85.6687 LR0.00010000
+epoch: 868 train loss: 0.2537 train acc: 91.3792 val loss: 0.0000 val acc: 0.0000 test loss: 0.4615 test acc: 85.6834 LR0.00010000
+epoch: 869 train loss: 0.2494 train acc: 91.5122 val loss: 0.0000 val acc: 0.0000 test loss: 0.4543 test acc: 86.1798 LR0.00010000
+epoch: 870 train loss: 0.2412 train acc: 91.8146 val loss: 0.0000 val acc: 0.0000 test loss: 0.4639 test acc: 86.3359 LR0.00010000
+epoch: 871 train loss: 0.2369 train acc: 91.9013 val loss: 0.0000 val acc: 0.0000 test loss: 0.4476 test acc: 86.6049 LR0.00010000
+epoch: 872 train loss: 0.2504 train acc: 91.2855 val loss: 0.0000 val acc: 0.0000 test loss: 0.4886 test acc: 85.4291 LR0.00010000
+epoch: 873 train loss: 0.2426 train acc: 91.6479 val loss: 0.0000 val acc: 0.0000 test loss: 0.4639 test acc: 86.1330 LR0.00010000
+epoch: 874 train loss: 0.2452 train acc: 91.5992 val loss: 0.0000 val acc: 0.0000 test loss: 0.4745 test acc: 85.7330 LR0.00010000
+epoch: 875 train loss: 0.2854 train acc: 90.4985 val loss: 0.0000 val acc: 0.0000 test loss: 0.5422 test acc: 84.4302 LR0.00010000
+epoch: 876 train loss: 0.2869 train acc: 90.3760 val loss: 0.0000 val acc: 0.0000 test loss: 0.4610 test acc: 85.1886 LR0.00010000
+epoch: 877 train loss: 0.2662 train acc: 90.8526 val loss: 0.0000 val acc: 0.0000 test loss: 0.4945 test acc: 85.0177 LR0.00010000
+epoch: 878 train loss: 0.2754 train acc: 90.4455 val loss: 0.0000 val acc: 0.0000 test loss: 0.4692 test acc: 85.4881 LR0.00010000
+epoch: 879 train loss: 0.2702 train acc: 90.6746 val loss: 0.0000 val acc: 0.0000 test loss: 0.4873 test acc: 84.9309 LR0.00010000
+epoch: 880 train loss: 0.2951 train acc: 89.6859 val loss: 0.0000 val acc: 0.0000 test loss: 0.4778 test acc: 85.2958 LR0.00010000
+epoch: 881 train loss: 0.2968 train acc: 89.8024 val loss: 0.0000 val acc: 0.0000 test loss: 0.4937 test acc: 84.2095 LR0.00010000
+epoch: 882 train loss: 0.3064 train acc: 89.3417 val loss: 0.0000 val acc: 0.0000 test loss: 0.4890 test acc: 83.9581 LR0.00010000
+epoch: 883 train loss: 0.2930 train acc: 89.8977 val loss: 0.0000 val acc: 0.0000 test loss: 0.4805 test acc: 84.7700 LR0.00010000
+epoch: 884 train loss: 0.2974 train acc: 90.0378 val loss: 0.0000 val acc: 0.0000 test loss: 0.4728 test acc: 84.8594 LR0.00010000
+epoch: 885 train loss: 0.3193 train acc: 89.2794 val loss: 0.0000 val acc: 0.0000 test loss: 0.5133 test acc: 84.2395 LR0.00010000
+epoch: 886 train loss: 0.2986 train acc: 90.0391 val loss: 0.0000 val acc: 0.0000 test loss: 0.4730 test acc: 85.0657 LR0.00010000
+epoch: 887 train loss: 0.2942 train acc: 90.0618 val loss: 0.0000 val acc: 0.0000 test loss: 0.4643 test acc: 85.3032 LR0.00010000
+epoch: 888 train loss: 0.3032 train acc: 89.7804 val loss: 0.0000 val acc: 0.0000 test loss: 0.4604 test acc: 85.0646 LR0.00010000
+epoch: 889 train loss: 0.2857 train acc: 90.5446 val loss: 0.0000 val acc: 0.0000 test loss: 0.4423 test acc: 85.5476 LR0.00010000
+epoch: 890 train loss: 0.2634 train acc: 91.2516 val loss: 0.0000 val acc: 0.0000 test loss: 0.4375 test acc: 86.0546 LR0.00010000
+epoch: 891 train loss: 0.2531 train acc: 91.3616 val loss: 0.0000 val acc: 0.0000 test loss: 0.4399 test acc: 86.1161 LR0.00010000
+epoch: 892 train loss: 0.2497 train acc: 91.4951 val loss: 0.0000 val acc: 0.0000 test loss: 0.4360 test acc: 86.3327 LR0.00010000
+epoch: 893 train loss: 0.2419 train acc: 91.7026 val loss: 0.0000 val acc: 0.0000 test loss: 0.4305 test acc: 86.4107 LR0.00010000
+epoch: 894 train loss: 0.2361 train acc: 91.9689 val loss: 0.0000 val acc: 0.0000 test loss: 0.4393 test acc: 86.4001 LR0.00010000
+epoch: 895 train loss: 0.2222 train acc: 92.4704 val loss: 0.0000 val acc: 0.0000 test loss: 0.4217 test acc: 87.0694 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e895-a87-m.pt
+epoch: 896 train loss: 0.2156 train acc: 92.6921 val loss: 0.0000 val acc: 0.0000 test loss: 0.4287 test acc: 86.9305 LR0.00010000
+epoch: 897 train loss: 0.2289 train acc: 92.2411 val loss: 0.0000 val acc: 0.0000 test loss: 0.4367 test acc: 87.0994 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e897-a87-m.pt
+epoch: 898 train loss: 0.2771 train acc: 90.0864 val loss: 0.0000 val acc: 0.0000 test loss: 0.5060 test acc: 83.9277 LR0.00010000
+epoch: 899 train loss: 0.2933 train acc: 90.1956 val loss: 0.0000 val acc: 0.0000 test loss: 0.4967 test acc: 85.0853 LR0.00010000
+epoch: 900 train loss: 0.2911 train acc: 90.4171 val loss: 0.0000 val acc: 0.0000 test loss: 0.4900 test acc: 85.4302 LR0.00010000
+epoch: 901 train loss: 0.3021 train acc: 90.0611 val loss: 0.0000 val acc: 0.0000 test loss: 0.4801 test acc: 84.8633 LR0.00010000
+epoch: 902 train loss: 0.2796 train acc: 90.6689 val loss: 0.0000 val acc: 0.0000 test loss: 0.4629 test acc: 85.9281 LR0.00010000
+epoch: 903 train loss: 0.3843 train acc: 88.2719 val loss: 0.0000 val acc: 0.0000 test loss: 0.6485 test acc: 81.7797 LR0.00010000
+epoch: 904 train loss: 0.4999 train acc: 85.7286 val loss: 0.0000 val acc: 0.0000 test loss: 0.6098 test acc: 83.0854 LR0.00010000
+epoch: 905 train loss: 0.4759 train acc: 85.4148 val loss: 0.0000 val acc: 0.0000 test loss: 0.6287 test acc: 80.6062 LR0.00010000
+epoch: 906 train loss: 0.4500 train acc: 85.9152 val loss: 0.0000 val acc: 0.0000 test loss: 0.5323 test acc: 83.1990 LR0.00010000
+epoch: 907 train loss: 0.4601 train acc: 84.7763 val loss: 0.0000 val acc: 0.0000 test loss: 0.5647 test acc: 81.1429 LR0.00010000
+epoch: 908 train loss: 0.4072 train acc: 87.0589 val loss: 0.0000 val acc: 0.0000 test loss: 0.5040 test acc: 84.3712 LR0.00010000
+epoch: 909 train loss: 0.3642 train acc: 88.5981 val loss: 0.0000 val acc: 0.0000 test loss: 0.5134 test acc: 84.0740 LR0.00010000
+epoch: 910 train loss: 0.3786 train acc: 87.2688 val loss: 0.0000 val acc: 0.0000 test loss: 0.5087 test acc: 83.4272 LR0.00010000
+epoch: 911 train loss: 0.3410 train acc: 89.1600 val loss: 0.0000 val acc: 0.0000 test loss: 0.4813 test acc: 84.5931 LR0.00010000
+epoch: 912 train loss: 0.3590 train acc: 88.2025 val loss: 0.0000 val acc: 0.0000 test loss: 0.5165 test acc: 84.1906 LR0.00010000
+epoch: 913 train loss: 0.3668 train acc: 88.1103 val loss: 0.0000 val acc: 0.0000 test loss: 0.4816 test acc: 83.8331 LR0.00010000
+epoch: 914 train loss: 0.3542 train acc: 88.6207 val loss: 0.0000 val acc: 0.0000 test loss: 0.4768 test acc: 84.2959 LR0.00010000
+epoch: 915 train loss: 0.3044 train acc: 89.9147 val loss: 0.0000 val acc: 0.0000 test loss: 0.4570 test acc: 85.4018 LR0.00010000
+epoch: 916 train loss: 0.2931 train acc: 90.1650 val loss: 0.0000 val acc: 0.0000 test loss: 0.4672 test acc: 85.3943 LR0.00010000
+epoch: 917 train loss: 0.3012 train acc: 89.4880 val loss: 0.0000 val acc: 0.0000 test loss: 0.4631 test acc: 84.5997 LR0.00010000
+epoch: 918 train loss: 0.2791 train acc: 90.7348 val loss: 0.0000 val acc: 0.0000 test loss: 0.4419 test acc: 85.8156 LR0.00010000
+epoch: 919 train loss: 0.2793 train acc: 90.5884 val loss: 0.0000 val acc: 0.0000 test loss: 0.4242 test acc: 86.0813 LR0.00010000
+epoch: 920 train loss: 0.2670 train acc: 90.8546 val loss: 0.0000 val acc: 0.0000 test loss: 0.4479 test acc: 85.6095 LR0.00010000
+epoch: 921 train loss: 0.2510 train acc: 91.4284 val loss: 0.0000 val acc: 0.0000 test loss: 0.4324 test acc: 86.5953 LR0.00010000
+epoch: 922 train loss: 0.2552 train acc: 91.3012 val loss: 0.0000 val acc: 0.0000 test loss: 0.4588 test acc: 85.8010 LR0.00010000
+epoch: 923 train loss: 0.2343 train acc: 92.0701 val loss: 0.0000 val acc: 0.0000 test loss: 0.4268 test acc: 86.5293 LR0.00010000
+epoch: 924 train loss: 0.2280 train acc: 92.3141 val loss: 0.0000 val acc: 0.0000 test loss: 0.4227 test acc: 86.9074 LR0.00010000
+epoch: 925 train loss: 0.2196 train acc: 92.5579 val loss: 0.0000 val acc: 0.0000 test loss: 0.4256 test acc: 86.9027 LR0.00010000
+epoch: 926 train loss: 0.2143 train acc: 92.7103 val loss: 0.0000 val acc: 0.0000 test loss: 0.4260 test acc: 87.0802 LR0.00010000
+epoch: 927 train loss: 0.2112 train acc: 92.8393 val loss: 0.0000 val acc: 0.0000 test loss: 0.4249 test acc: 87.2529 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e927-a87-m.pt
+epoch: 928 train loss: 0.2116 train acc: 92.8112 val loss: 0.0000 val acc: 0.0000 test loss: 0.4287 test acc: 87.1294 LR0.00010000
+epoch: 929 train loss: 0.2102 train acc: 92.8324 val loss: 0.0000 val acc: 0.0000 test loss: 0.4200 test acc: 87.0823 LR0.00010000
+epoch: 930 train loss: 0.2125 train acc: 92.7969 val loss: 0.0000 val acc: 0.0000 test loss: 0.4331 test acc: 87.2936 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e930-a87-m.pt
+epoch: 931 train loss: 0.2127 train acc: 92.7315 val loss: 0.0000 val acc: 0.0000 test loss: 0.4366 test acc: 87.1217 LR0.00010000
+epoch: 932 train loss: 0.2251 train acc: 92.1827 val loss: 0.0000 val acc: 0.0000 test loss: 0.4473 test acc: 86.1305 LR0.00010000
+epoch: 933 train loss: 0.2587 train acc: 90.7323 val loss: 0.0000 val acc: 0.0000 test loss: 0.4734 test acc: 85.5893 LR0.00010000
+epoch: 934 train loss: 0.3241 train acc: 87.7198 val loss: 0.0000 val acc: 0.0000 test loss: 0.5741 test acc: 81.4201 LR0.00010000
+epoch: 935 train loss: 0.3359 train acc: 89.4450 val loss: 0.0000 val acc: 0.0000 test loss: 0.5324 test acc: 83.6762 LR0.00010000
+epoch: 936 train loss: 0.3223 train acc: 89.5053 val loss: 0.0000 val acc: 0.0000 test loss: 0.4856 test acc: 84.6913 LR0.00010000
+epoch: 937 train loss: 0.2648 train acc: 91.4442 val loss: 0.0000 val acc: 0.0000 test loss: 0.4821 test acc: 85.6713 LR0.00010000
+epoch: 938 train loss: 0.2624 train acc: 91.2605 val loss: 0.0000 val acc: 0.0000 test loss: 0.4468 test acc: 86.1422 LR0.00010000
+epoch: 939 train loss: 0.2404 train acc: 91.9693 val loss: 0.0000 val acc: 0.0000 test loss: 0.4420 test acc: 86.2323 LR0.00010000
+epoch: 940 train loss: 0.2331 train acc: 92.2575 val loss: 0.0000 val acc: 0.0000 test loss: 0.4310 test acc: 86.7174 LR0.00010000
+epoch: 941 train loss: 0.2248 train acc: 92.4598 val loss: 0.0000 val acc: 0.0000 test loss: 0.4368 test acc: 86.7634 LR0.00010000
+epoch: 942 train loss: 0.2273 train acc: 92.4536 val loss: 0.0000 val acc: 0.0000 test loss: 0.4476 test acc: 86.4372 LR0.00010000
+epoch: 943 train loss: 0.2188 train acc: 92.5601 val loss: 0.0000 val acc: 0.0000 test loss: 0.4338 test acc: 86.8920 LR0.00010000
+epoch: 944 train loss: 0.2110 train acc: 92.9221 val loss: 0.0000 val acc: 0.0000 test loss: 0.4142 test acc: 87.3261 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e944-a87-m.pt
+epoch: 945 train loss: 0.2204 train acc: 92.4327 val loss: 0.0000 val acc: 0.0000 test loss: 0.4468 test acc: 86.2993 LR0.00010000
+epoch: 946 train loss: 0.2332 train acc: 91.8453 val loss: 0.0000 val acc: 0.0000 test loss: 0.4399 test acc: 86.2130 LR0.00010000
+epoch: 947 train loss: 0.2361 train acc: 91.5615 val loss: 0.0000 val acc: 0.0000 test loss: 0.4715 test acc: 85.3450 LR0.00010000
+epoch: 948 train loss: 0.2202 train acc: 92.6409 val loss: 0.0000 val acc: 0.0000 test loss: 0.4617 test acc: 86.4244 LR0.00010000
+epoch: 949 train loss: 0.2187 train acc: 92.5702 val loss: 0.0000 val acc: 0.0000 test loss: 0.4311 test acc: 86.9026 LR0.00010000
+epoch: 950 train loss: 0.2095 train acc: 92.8021 val loss: 0.0000 val acc: 0.0000 test loss: 0.4435 test acc: 86.7272 LR0.00010000
+epoch: 951 train loss: 0.1997 train acc: 93.1761 val loss: 0.0000 val acc: 0.0000 test loss: 0.4297 test acc: 87.3245 LR0.00010000
+epoch: 952 train loss: 0.1991 train acc: 93.1593 val loss: 0.0000 val acc: 0.0000 test loss: 0.4502 test acc: 86.8082 LR0.00010000
+epoch: 953 train loss: 0.1991 train acc: 93.1323 val loss: 0.0000 val acc: 0.0000 test loss: 0.4450 test acc: 87.1855 LR0.00010000
+epoch: 954 train loss: 0.2014 train acc: 93.0486 val loss: 0.0000 val acc: 0.0000 test loss: 0.4544 test acc: 86.7084 LR0.00010000
+epoch: 955 train loss: 0.2009 train acc: 93.0642 val loss: 0.0000 val acc: 0.0000 test loss: 0.4704 test acc: 86.7121 LR0.00010000
+epoch: 956 train loss: 0.1986 train acc: 93.1080 val loss: 0.0000 val acc: 0.0000 test loss: 0.4432 test acc: 87.1893 LR0.00010000
+epoch: 957 train loss: 0.1907 train acc: 93.4292 val loss: 0.0000 val acc: 0.0000 test loss: 0.4600 test acc: 87.0502 LR0.00010000
+epoch: 958 train loss: 0.1897 train acc: 93.4953 val loss: 0.0000 val acc: 0.0000 test loss: 0.4663 test acc: 87.3391 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e958-a87-m.pt
+epoch: 959 train loss: 0.2027 train acc: 92.9415 val loss: 0.0000 val acc: 0.0000 test loss: 0.5026 test acc: 86.2031 LR0.00010000
+epoch: 960 train loss: 0.2141 train acc: 92.5063 val loss: 0.0000 val acc: 0.0000 test loss: 0.4814 test acc: 86.3307 LR0.00010000
+epoch: 961 train loss: 0.2391 train acc: 91.6366 val loss: 0.0000 val acc: 0.0000 test loss: 0.4958 test acc: 85.3761 LR0.00010000
+epoch: 962 train loss: 0.2832 train acc: 90.7024 val loss: 0.0000 val acc: 0.0000 test loss: 0.5276 test acc: 85.4002 LR0.00010000
+epoch: 963 train loss: 0.3592 train acc: 88.4982 val loss: 0.0000 val acc: 0.0000 test loss: 0.5078 test acc: 84.0107 LR0.00010000
+epoch: 964 train loss: 0.3467 train acc: 88.6784 val loss: 0.0000 val acc: 0.0000 test loss: 0.5182 test acc: 84.2061 LR0.00010000
+epoch: 965 train loss: 0.3486 train acc: 88.9467 val loss: 0.0000 val acc: 0.0000 test loss: 0.5357 test acc: 84.1551 LR0.00010000
+epoch: 966 train loss: 0.3804 train acc: 89.5841 val loss: 0.0000 val acc: 0.0000 test loss: 0.6479 test acc: 84.1709 LR0.00010000
+epoch: 967 train loss: 0.3304 train acc: 89.3307 val loss: 0.0000 val acc: 0.0000 test loss: 0.4581 test acc: 85.4156 LR0.00010000
+epoch: 968 train loss: 0.2891 train acc: 90.5748 val loss: 0.0000 val acc: 0.0000 test loss: 0.4444 test acc: 86.0130 LR0.00010000
+epoch: 969 train loss: 0.2565 train acc: 91.5276 val loss: 0.0000 val acc: 0.0000 test loss: 0.4252 test acc: 86.3315 LR0.00010000
+epoch: 970 train loss: 0.2526 train acc: 91.5464 val loss: 0.0000 val acc: 0.0000 test loss: 0.4299 test acc: 86.3704 LR0.00010000
+epoch: 971 train loss: 0.2373 train acc: 91.9893 val loss: 0.0000 val acc: 0.0000 test loss: 0.4446 test acc: 86.1723 LR0.00010000
+epoch: 972 train loss: 0.2172 train acc: 92.5875 val loss: 0.0000 val acc: 0.0000 test loss: 0.4205 test acc: 86.8110 LR0.00010000
+epoch: 973 train loss: 0.2064 train acc: 93.0552 val loss: 0.0000 val acc: 0.0000 test loss: 0.4271 test acc: 86.9454 LR0.00010000
+epoch: 974 train loss: 0.2024 train acc: 93.0977 val loss: 0.0000 val acc: 0.0000 test loss: 0.4261 test acc: 87.0129 LR0.00010000
+epoch: 975 train loss: 0.1987 train acc: 93.2407 val loss: 0.0000 val acc: 0.0000 test loss: 0.4418 test acc: 87.2967 LR0.00010000
+epoch: 976 train loss: 0.1899 train acc: 93.5344 val loss: 0.0000 val acc: 0.0000 test loss: 0.4317 test acc: 87.2721 LR0.00010000
+epoch: 977 train loss: 0.1858 train acc: 93.6532 val loss: 0.0000 val acc: 0.0000 test loss: 0.4310 test acc: 87.6875 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e977-a88-m.pt
+epoch: 978 train loss: 0.1914 train acc: 93.4254 val loss: 0.0000 val acc: 0.0000 test loss: 0.4641 test acc: 86.8486 LR0.00010000
+epoch: 979 train loss: 0.1918 train acc: 93.3776 val loss: 0.0000 val acc: 0.0000 test loss: 0.4444 test acc: 87.2337 LR0.00010000
+epoch: 980 train loss: 0.2379 train acc: 91.4929 val loss: 0.0000 val acc: 0.0000 test loss: 0.5293 test acc: 84.8464 LR0.00010000
+epoch: 981 train loss: 0.2567 train acc: 90.8000 val loss: 0.0000 val acc: 0.0000 test loss: 0.4976 test acc: 84.6879 LR0.00010000
+epoch: 982 train loss: 0.2570 train acc: 91.0429 val loss: 0.0000 val acc: 0.0000 test loss: 0.4935 test acc: 85.3279 LR0.00010000
+epoch: 983 train loss: 0.2436 train acc: 91.9281 val loss: 0.0000 val acc: 0.0000 test loss: 0.4888 test acc: 85.1642 LR0.00010000
+epoch: 984 train loss: 0.2451 train acc: 91.4880 val loss: 0.0000 val acc: 0.0000 test loss: 0.4357 test acc: 86.1650 LR0.00010000
+epoch: 985 train loss: 0.2266 train acc: 92.2220 val loss: 0.0000 val acc: 0.0000 test loss: 0.4473 test acc: 86.3747 LR0.00010000
+epoch: 986 train loss: 0.2077 train acc: 92.8413 val loss: 0.0000 val acc: 0.0000 test loss: 0.4431 test acc: 86.7025 LR0.00010000
+epoch: 987 train loss: 0.2067 train acc: 92.9582 val loss: 0.0000 val acc: 0.0000 test loss: 0.4371 test acc: 86.9214 LR0.00010000
+epoch: 988 train loss: 0.2102 train acc: 92.8807 val loss: 0.0000 val acc: 0.0000 test loss: 0.4683 test acc: 86.3750 LR0.00010000
+epoch: 989 train loss: 0.2331 train acc: 91.9100 val loss: 0.0000 val acc: 0.0000 test loss: 0.4549 test acc: 86.3370 LR0.00010000
+epoch: 990 train loss: 0.2370 train acc: 92.1893 val loss: 0.0000 val acc: 0.0000 test loss: 0.5323 test acc: 85.5299 LR0.00010000
+epoch: 991 train loss: 0.3389 train acc: 88.2680 val loss: 0.0000 val acc: 0.0000 test loss: 0.5110 test acc: 84.0609 LR0.00010000
+epoch: 992 train loss: 0.3141 train acc: 90.3176 val loss: 0.0000 val acc: 0.0000 test loss: 0.4588 test acc: 85.6042 LR0.00010000
+epoch: 993 train loss: 0.2808 train acc: 90.9740 val loss: 0.0000 val acc: 0.0000 test loss: 0.4628 test acc: 86.0266 LR0.00010000
+epoch: 994 train loss: 0.2526 train acc: 91.7476 val loss: 0.0000 val acc: 0.0000 test loss: 0.4896 test acc: 86.3722 LR0.00010000
+epoch: 995 train loss: 0.2411 train acc: 91.7593 val loss: 0.0000 val acc: 0.0000 test loss: 0.4198 test acc: 86.5452 LR0.00010000
+epoch: 996 train loss: 0.2222 train acc: 92.5661 val loss: 0.0000 val acc: 0.0000 test loss: 0.4250 test acc: 86.7197 LR0.00010000
+epoch: 997 train loss: 0.2085 train acc: 92.9070 val loss: 0.0000 val acc: 0.0000 test loss: 0.4196 test acc: 87.3810 LR0.00010000
+epoch: 998 train loss: 0.2282 train acc: 91.9312 val loss: 0.0000 val acc: 0.0000 test loss: 0.4696 test acc: 85.5665 LR0.00010000
+epoch: 999 train loss: 0.2250 train acc: 92.2278 val loss: 0.0000 val acc: 0.0000 test loss: 0.4593 test acc: 86.0463 LR0.00010000
+epoch: 1000 train loss: 0.2163 train acc: 92.5203 val loss: 0.0000 val acc: 0.0000 test loss: 0.4478 test acc: 86.3934 LR0.00010000
+epoch: 1001 train loss: 0.2120 train acc: 92.8316 val loss: 0.0000 val acc: 0.0000 test loss: 0.4731 test acc: 86.1847 LR0.00010000
+epoch: 1002 train loss: 0.2062 train acc: 93.1213 val loss: 0.0000 val acc: 0.0000 test loss: 0.4312 test acc: 87.0196 LR0.00010000
+epoch: 1003 train loss: 0.1908 train acc: 93.5942 val loss: 0.0000 val acc: 0.0000 test loss: 0.4206 test acc: 87.3521 LR0.00010000
+epoch: 1004 train loss: 0.1845 train acc: 93.7525 val loss: 0.0000 val acc: 0.0000 test loss: 0.4395 test acc: 87.4493 LR0.00010000
+epoch: 1005 train loss: 0.1786 train acc: 93.8737 val loss: 0.0000 val acc: 0.0000 test loss: 0.4297 test acc: 87.5115 LR0.00010000
+epoch: 1006 train loss: 0.1759 train acc: 94.0046 val loss: 0.0000 val acc: 0.0000 test loss: 0.4372 test acc: 87.6338 LR0.00010000
+epoch: 1007 train loss: 0.1739 train acc: 94.0449 val loss: 0.0000 val acc: 0.0000 test loss: 0.4268 test acc: 87.7292 LR0.00010000
+# Saving Model : ./experiments/cityscape8sup/cityscape_cat_shvae_baseline@sup100/model-e1007-a88-m.pt
+epoch: 1008 train loss: 0.1722 train acc: 94.0904 val loss: 0.0000 val acc: 0.0000 test loss: 0.4479 test acc: 87.4546 LR0.00010000
+epoch: 1009 train loss: 0.1746 train acc: 93.9767 val loss: 0.0000 val acc: 0.0000 test loss: 0.4454 test acc: 87.6366 LR0.00010000
+epoch: 1010 train loss: 0.2044 train acc: 92.6633 val loss: 0.0000 val acc: 0.0000 test loss: 0.5062 test acc: 85.6282 LR0.00010000
+epoch: 1011 train loss: 0.2083 train acc: 92.6862 val loss: 0.0000 val acc: 0.0000 test loss: 0.4847 test acc: 85.8117 LR0.00010000
+epoch: 1012 train loss: 0.1986 train acc: 93.2667 val loss: 0.0000 val acc: 0.0000 test loss: 0.4750 test acc: 86.4957 LR0.00010000
+epoch: 1013 train loss: 0.1942 train acc: 93.3383 val loss: 0.0000 val acc: 0.0000 test loss: 0.4852 test acc: 86.4519 LR0.00010000
+epoch: 1014 train loss: 0.1917 train acc: 93.5788 val loss: 0.0000 val acc: 0.0000 test loss: 0.4515 test acc: 87.0744 LR0.00010000
+epoch: 1015 train loss: 0.1831 train acc: 93.6801 val loss: 0.0000 val acc: 0.0000 test loss: 0.4774 test acc: 87.0095 LR0.00010000
+epoch: 1016 train loss: 0.1801 train acc: 93.8279 val loss: 0.0000 val acc: 0.0000 test loss: 0.4652 test acc: 87.1795 LR0.00010000
+epoch: 1017 train loss: 0.1839 train acc: 93.7198 val loss: 0.0000 val acc: 0.0000 test loss: 0.4742 test acc: 87.1926 LR0.00010000
+epoch: 1018 train loss: 0.1808 train acc: 93.8604 val loss: 0.0000 val acc: 0.0000 test loss: 0.4674 test acc: 87.2265 LR0.00010000
+epoch: 1019 train loss: 0.1766 train acc: 93.9555 val loss: 0.0000 val acc: 0.0000 test loss: 0.4618 test acc: 87.1636 LR0.00010000
+epoch: 1020 train loss: 0.1811 train acc: 93.7507 val loss: 0.0000 val acc: 0.0000 test loss: 0.4557 test acc: 87.3328 LR0.00010000
+epoch: 1021 train loss: 0.1901 train acc: 93.4826 val loss: 0.0000 val acc: 0.0000 test loss: 0.4644 test acc: 86.6425 LR0.00010000
+epoch: 1022 train loss: 0.1895 train acc: 93.5642 val loss: 0.0000 val acc: 0.0000 test loss: 0.4536 test acc: 87.3744 LR0.00010000
+epoch: 1023 train loss: 0.1959 train acc: 93.3270 val loss: 0.0000 val acc: 0.0000 test loss: 0.4788 test acc: 86.0693 LR0.00010000
+epoch: 1024 train loss: 0.2093 train acc: 92.9917 val loss: 0.0000 val acc: 0.0000 test loss: 0.5019 test acc: 86.8478 LR0.00010000

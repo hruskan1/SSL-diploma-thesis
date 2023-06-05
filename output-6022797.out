@@ -1,2 +1,0 @@
-Running conda run -n refmix python  ./sym_vae/shvae_cifar_train.py -c ./sym_vae/config-3-boris.yaml
-slurmstepd: error: *** JOB 6022797 ON n30 CANCELLED AT 2023-05-23T12:55:46 ***

@@ -1,0 +1,566 @@
+# Starting
+# parameters dec, enc: 7380038, 7046592
+epoch: 0 sup_dt: -1.21e+07 sup_et: -2.15e+05 unsup_dt: -1.14e+07 unsup_et: -1.75e+07 trnloss: 2.02 trnacc: 0.6574 valloss: 2.296 valacc: 0.6397
+# Saving models ...
+epoch: 1 sup_dt: -7.8e+06 sup_et: -1.72e+05 unsup_dt: -7.36e+06 unsup_et: -1.09e+07 trnloss: 2.239 trnacc: 0.6572 valloss: 2.545 valacc: 0.648
+# Saving models ...
+epoch: 2 sup_dt: -5.21e+06 sup_et: -1.41e+05 unsup_dt: -4.95e+06 unsup_et: -6.91e+06 trnloss: 2.092 trnacc: 0.734 valloss: 2.405 valacc: 0.7273
+# Saving models ...
+epoch: 3 sup_dt: -3.98e+06 sup_et: -1.19e+05 unsup_dt: -3.82e+06 unsup_et: -4.85e+06 trnloss: 2.242 trnacc: 0.7621 valloss: 2.624 valacc: 0.7478
+# Saving models ...
+epoch: 4 sup_dt: -3.21e+06 sup_et: -1.03e+05 unsup_dt: -3.11e+06 unsup_et: -3.57e+06 trnloss: 2.369 trnacc: 0.7616 valloss: 2.751 valacc: 0.7602
+# Saving models ...
+epoch: 5 sup_dt: -2.71e+06 sup_et: -9.25e+04 unsup_dt: -2.65e+06 unsup_et: -2.75e+06 trnloss: 2.279 trnacc: 0.7814 valloss: 2.657 valacc: 0.7791
+# Saving models ...
+epoch: 6 sup_dt: -2.4e+06 sup_et: -8.36e+04 unsup_dt: -2.36e+06 unsup_et: -2.25e+06 trnloss: 2.425 trnacc: 0.7815 valloss: 2.839 valacc: 0.7819
+# Saving models ...
+epoch: 7 sup_dt: -2.23e+06 sup_et: -7.7e+04 unsup_dt: -2.2e+06 unsup_et: -1.96e+06 trnloss: 2.514 trnacc: 0.7587 valloss: 2.977 valacc: 0.7403
+epoch: 8 sup_dt: -2.15e+06 sup_et: -7.09e+04 unsup_dt: -2.13e+06 unsup_et: -1.81e+06 trnloss: 2.51 trnacc: 0.8288 valloss: 2.986 valacc: 0.8182
+# Saving models ...
+epoch: 9 sup_dt: -2.14e+06 sup_et: -6.59e+04 unsup_dt: -2.13e+06 unsup_et: -1.76e+06 trnloss: 2.42 trnacc: 0.84 valloss: 2.867 valacc: 0.8286
+# Saving models ...
+epoch: 10 sup_dt: -2.14e+06 sup_et: -6.14e+04 unsup_dt: -2.13e+06 unsup_et: -1.73e+06 trnloss: 2.511 trnacc: 0.8501 valloss: 2.98 valacc: 0.8441
+# Saving models ...
+epoch: 11 sup_dt: -2.19e+06 sup_et: -5.79e+04 unsup_dt: -2.18e+06 unsup_et: -1.76e+06 trnloss: 2.605 trnacc: 0.8595 valloss: 3.103 valacc: 0.8474
+# Saving models ...
+epoch: 12 sup_dt: -2.24e+06 sup_et: -5.45e+04 unsup_dt: -2.24e+06 unsup_et: -1.8e+06 trnloss: 2.581 trnacc: 0.8596 valloss: 3.054 valacc: 0.8425
+epoch: 13 sup_dt: -2.26e+06 sup_et: -5.26e+04 unsup_dt: -2.26e+06 unsup_et: -1.82e+06 trnloss: 2.687 trnacc: 0.8732 valloss: 3.205 valacc: 0.8645
+# Saving models ...
+epoch: 14 sup_dt: -2.26e+06 sup_et: -4.98e+04 unsup_dt: -2.26e+06 unsup_et: -1.81e+06 trnloss: 2.749 trnacc: 0.8789 valloss: 3.304 valacc: 0.8625
+epoch: 15 sup_dt: -2.29e+06 sup_et: -4.79e+04 unsup_dt: -2.29e+06 unsup_et: -1.84e+06 trnloss: 2.791 trnacc: 0.8853 valloss: 3.352 valacc: 0.8713
+# Saving models ...
+epoch: 16 sup_dt: -2.32e+06 sup_et: -4.57e+04 unsup_dt: -2.31e+06 unsup_et: -1.86e+06 trnloss: 2.82 trnacc: 0.8787 valloss: 3.386 valacc: 0.8633
+epoch: 17 sup_dt: -2.33e+06 sup_et: -4.48e+04 unsup_dt: -2.33e+06 unsup_et: -1.87e+06 trnloss: 2.855 trnacc: 0.8789 valloss: 3.42 valacc: 0.8642
+epoch: 18 sup_dt: -2.34e+06 sup_et: -4.34e+04 unsup_dt: -2.34e+06 unsup_et: -1.88e+06 trnloss: 2.97 trnacc: 0.8836 valloss: 3.571 valacc: 0.8687
+epoch: 19 sup_dt: -2.35e+06 sup_et: -4.2e+04 unsup_dt: -2.35e+06 unsup_et: -1.9e+06 trnloss: 3.053 trnacc: 0.8984 valloss: 3.68 valacc: 0.8847
+# Saving models ...
+epoch: 20 sup_dt: -2.34e+06 sup_et: -4.1e+04 unsup_dt: -2.35e+06 unsup_et: -1.88e+06 trnloss: 3.088 trnacc: 0.8947 valloss: 3.716 valacc: 0.878
+epoch: 21 sup_dt: -2.32e+06 sup_et: -3.97e+04 unsup_dt: -2.33e+06 unsup_et: -1.87e+06 trnloss: 3.137 trnacc: 0.9011 valloss: 3.793 valacc: 0.8849
+# Saving models ...
+epoch: 22 sup_dt: -2.33e+06 sup_et: -3.9e+04 unsup_dt: -2.33e+06 unsup_et: -1.87e+06 trnloss: 3.14 trnacc: 0.8985 valloss: 3.791 valacc: 0.881
+epoch: 23 sup_dt: -2.32e+06 sup_et: -3.75e+04 unsup_dt: -2.33e+06 unsup_et: -1.86e+06 trnloss: 3.293 trnacc: 0.9011 valloss: 3.985 valacc: 0.8816
+epoch: 24 sup_dt: -2.32e+06 sup_et: -3.7e+04 unsup_dt: -2.33e+06 unsup_et: -1.86e+06 trnloss: 3.197 trnacc: 0.8954 valloss: 3.861 valacc: 0.8792
+epoch: 25 sup_dt: -2.32e+06 sup_et: -3.59e+04 unsup_dt: -2.34e+06 unsup_et: -1.86e+06 trnloss: 3.384 trnacc: 0.8848 valloss: 4.116 valacc: 0.8625
+epoch: 26 sup_dt: -2.32e+06 sup_et: -3.51e+04 unsup_dt: -2.34e+06 unsup_et: -1.86e+06 trnloss: 3.389 trnacc: 0.904 valloss: 4.108 valacc: 0.8843
+epoch: 27 sup_dt: -2.34e+06 sup_et: -3.42e+04 unsup_dt: -2.36e+06 unsup_et: -1.89e+06 trnloss: 3.528 trnacc: 0.9071 valloss: 4.302 valacc: 0.8894
+# Saving models ...
+epoch: 28 sup_dt: -2.32e+06 sup_et: -3.4e+04 unsup_dt: -2.35e+06 unsup_et: -1.86e+06 trnloss: 3.543 trnacc: 0.9135 valloss: 4.315 valacc: 0.8961
+# Saving models ...
+epoch: 29 sup_dt: -2.33e+06 sup_et: -3.3e+04 unsup_dt: -2.35e+06 unsup_et: -1.87e+06 trnloss: 3.573 trnacc: 0.9071 valloss: 4.345 valacc: 0.8849
+# Saving models ...
+epoch: 30 sup_dt: -2.32e+06 sup_et: -3.22e+04 unsup_dt: -2.34e+06 unsup_et: -1.86e+06 trnloss: 3.712 trnacc: 0.9085 valloss: 4.514 valacc: 0.8864
+epoch: 31 sup_dt: -2.3e+06 sup_et: -3.16e+04 unsup_dt: -2.33e+06 unsup_et: -1.84e+06 trnloss: 3.677 trnacc: 0.908 valloss: 4.45 valacc: 0.885
+epoch: 32 sup_dt: -2.29e+06 sup_et: -3.12e+04 unsup_dt: -2.32e+06 unsup_et: -1.83e+06 trnloss: 3.645 trnacc: 0.9192 valloss: 4.437 valacc: 0.896
+epoch: 33 sup_dt: -2.28e+06 sup_et: -3.02e+04 unsup_dt: -2.31e+06 unsup_et: -1.82e+06 trnloss: 3.633 trnacc: 0.9146 valloss: 4.438 valacc: 0.8893
+epoch: 34 sup_dt: -2.26e+06 sup_et: -2.96e+04 unsup_dt: -2.28e+06 unsup_et: -1.81e+06 trnloss: 3.7 trnacc: 0.9141 valloss: 4.519 valacc: 0.891
+epoch: 35 sup_dt: -2.24e+06 sup_et: -2.87e+04 unsup_dt: -2.26e+06 unsup_et: -1.78e+06 trnloss: 3.921 trnacc: 0.9211 valloss: 4.807 valacc: 0.8991
+# Saving models ...
+epoch: 36 sup_dt: -2.22e+06 sup_et: -2.83e+04 unsup_dt: -2.25e+06 unsup_et: -1.76e+06 trnloss: 3.881 trnacc: 0.9294 valloss: 4.754 valacc: 0.9027
+# Saving models ...
+epoch: 37 sup_dt: -2.22e+06 sup_et: -2.75e+04 unsup_dt: -2.24e+06 unsup_et: -1.76e+06 trnloss: 3.911 trnacc: 0.9308 valloss: 4.809 valacc: 0.9018
+epoch: 38 sup_dt: -2.21e+06 sup_et: -2.76e+04 unsup_dt: -2.24e+06 unsup_et: -1.75e+06 trnloss: 3.995 trnacc: 0.9271 valloss: 4.879 valacc: 0.9006
+epoch: 39 sup_dt: -2.21e+06 sup_et: -2.68e+04 unsup_dt: -2.23e+06 unsup_et: -1.75e+06 trnloss: 4.02 trnacc: 0.9323 valloss: 4.923 valacc: 0.9053
+# Saving models ...
+epoch: 40 sup_dt: -2.2e+06 sup_et: -2.61e+04 unsup_dt: -2.22e+06 unsup_et: -1.74e+06 trnloss: 4.144 trnacc: 0.9177 valloss: 5.095 valacc: 0.8879
+epoch: 41 sup_dt: -2.17e+06 sup_et: -2.53e+04 unsup_dt: -2.2e+06 unsup_et: -1.71e+06 trnloss: 4.225 trnacc: 0.9347 valloss: 5.203 valacc: 0.9041
+epoch: 42 sup_dt: -2.18e+06 sup_et: -2.51e+04 unsup_dt: -2.21e+06 unsup_et: -1.72e+06 trnloss: 4.272 trnacc: 0.9343 valloss: 5.259 valacc: 0.9047
+epoch: 43 sup_dt: -2.18e+06 sup_et: -2.49e+04 unsup_dt: -2.2e+06 unsup_et: -1.72e+06 trnloss: 4.304 trnacc: 0.9325 valloss: 5.281 valacc: 0.903
+epoch: 44 sup_dt: -2.17e+06 sup_et: -2.41e+04 unsup_dt: -2.2e+06 unsup_et: -1.72e+06 trnloss: 4.272 trnacc: 0.9407 valloss: 5.261 valacc: 0.9078
+# Saving models ...
+epoch: 45 sup_dt: -2.17e+06 sup_et: -2.46e+04 unsup_dt: -2.19e+06 unsup_et: -1.71e+06 trnloss: 4.163 trnacc: 0.922 valloss: 5.087 valacc: 0.8927
+epoch: 46 sup_dt: -2.15e+06 sup_et: -2.35e+04 unsup_dt: -2.17e+06 unsup_et: -1.69e+06 trnloss: 4.362 trnacc: 0.9396 valloss: 5.384 valacc: 0.9052
+epoch: 47 sup_dt: -2.14e+06 sup_et: -2.29e+04 unsup_dt: -2.16e+06 unsup_et: -1.69e+06 trnloss: 4.523 trnacc: 0.912 valloss: 5.541 valacc: 0.8884
+epoch: 48 sup_dt: -2.13e+06 sup_et: -2.2e+04 unsup_dt: -2.15e+06 unsup_et: -1.67e+06 trnloss: 4.563 trnacc: 0.9449 valloss: 5.629 valacc: 0.907
+epoch: 49 sup_dt: -2.12e+06 sup_et: -2.22e+04 unsup_dt: -2.14e+06 unsup_et: -1.66e+06 trnloss: 4.616 trnacc: 0.933 valloss: 5.694 valacc: 0.8994
+# Saving models ...
+epoch: 50 sup_dt: -2.08e+06 sup_et: -2.2e+04 unsup_dt: -2.12e+06 unsup_et: -1.62e+06 trnloss: 4.629 trnacc: 0.9379 valloss: 5.731 valacc: 0.8985
+epoch: 51 sup_dt: -2.05e+06 sup_et: -2.12e+04 unsup_dt: -2.1e+06 unsup_et: -1.59e+06 trnloss: 4.777 trnacc: 0.9433 valloss: 5.915 valacc: 0.9079
+# Saving models ...
+epoch: 52 sup_dt: -2.02e+06 sup_et: -2.09e+04 unsup_dt: -2.07e+06 unsup_et: -1.55e+06 trnloss: 4.606 trnacc: 0.941 valloss: 5.693 valacc: 0.9051
+epoch: 53 sup_dt: -1.99e+06 sup_et: -2.05e+04 unsup_dt: -2.05e+06 unsup_et: -1.52e+06 trnloss: 4.756 trnacc: 0.9351 valloss: 5.884 valacc: 0.8924
+epoch: 54 sup_dt: -2e+06 sup_et: -2.03e+04 unsup_dt: -2.05e+06 unsup_et: -1.53e+06 trnloss: 4.87 trnacc: 0.9466 valloss: 6.035 valacc: 0.9068
+epoch: 55 sup_dt: -2e+06 sup_et: -1.98e+04 unsup_dt: -2.05e+06 unsup_et: -1.52e+06 trnloss: 4.804 trnacc: 0.9424 valloss: 5.965 valacc: 0.9035
+epoch: 56 sup_dt: -2.01e+06 sup_et: -2e+04 unsup_dt: -2.07e+06 unsup_et: -1.54e+06 trnloss: 4.962 trnacc: 0.948 valloss: 6.152 valacc: 0.9081
+# Saving models ...
+epoch: 57 sup_dt: -2e+06 sup_et: -1.99e+04 unsup_dt: -2.06e+06 unsup_et: -1.53e+06 trnloss: 4.913 trnacc: 0.939 valloss: 6.132 valacc: 0.8982
+epoch: 58 sup_dt: -1.99e+06 sup_et: -1.91e+04 unsup_dt: -2.05e+06 unsup_et: -1.52e+06 trnloss: 4.889 trnacc: 0.9496 valloss: 6.103 valacc: 0.9068
+epoch: 59 sup_dt: -1.99e+06 sup_et: -1.88e+04 unsup_dt: -2.05e+06 unsup_et: -1.52e+06 trnloss: 4.895 trnacc: 0.9469 valloss: 6.103 valacc: 0.9031
+# Saving models ...
+epoch: 60 sup_dt: -2.01e+06 sup_et: -1.92e+04 unsup_dt: -2.06e+06 unsup_et: -1.53e+06 trnloss: 4.934 trnacc: 0.9479 valloss: 6.113 valacc: 0.9061
+epoch: 61 sup_dt: -2.01e+06 sup_et: -1.9e+04 unsup_dt: -2.06e+06 unsup_et: -1.53e+06 trnloss: 4.825 trnacc: 0.9449 valloss: 5.948 valacc: 0.9058
+epoch: 62 sup_dt: -2e+06 sup_et: -1.84e+04 unsup_dt: -2.05e+06 unsup_et: -1.52e+06 trnloss: 4.931 trnacc: 0.9514 valloss: 6.135 valacc: 0.9082
+# Saving models ...
+epoch: 63 sup_dt: -2e+06 sup_et: -1.81e+04 unsup_dt: -2.04e+06 unsup_et: -1.52e+06 trnloss: 4.88 trnacc: 0.9495 valloss: 6.068 valacc: 0.9047
+epoch: 64 sup_dt: -1.99e+06 sup_et: -1.79e+04 unsup_dt: -2.04e+06 unsup_et: -1.51e+06 trnloss: 4.912 trnacc: 0.9513 valloss: 6.101 valacc: 0.907
+epoch: 65 sup_dt: -1.98e+06 sup_et: -1.74e+04 unsup_dt: -2.02e+06 unsup_et: -1.49e+06 trnloss: 5.009 trnacc: 0.948 valloss: 6.223 valacc: 0.9054
+epoch: 66 sup_dt: -1.97e+06 sup_et: -1.73e+04 unsup_dt: -2.01e+06 unsup_et: -1.49e+06 trnloss: 4.954 trnacc: 0.9535 valloss: 6.181 valacc: 0.9068
+epoch: 67 sup_dt: -1.97e+06 sup_et: -1.71e+04 unsup_dt: -2.01e+06 unsup_et: -1.48e+06 trnloss: 5.065 trnacc: 0.9463 valloss: 6.288 valacc: 0.9002
+epoch: 68 sup_dt: -1.95e+06 sup_et: -1.69e+04 unsup_dt: -1.99e+06 unsup_et: -1.47e+06 trnloss: 4.994 trnacc: 0.954 valloss: 6.226 valacc: 0.9112
+# Saving models ...
+epoch: 69 sup_dt: -1.95e+06 sup_et: -1.65e+04 unsup_dt: -1.99e+06 unsup_et: -1.47e+06 trnloss: 4.958 trnacc: 0.9527 valloss: 6.177 valacc: 0.9062
+# Saving models ...
+epoch: 70 sup_dt: -1.96e+06 sup_et: -1.64e+04 unsup_dt: -2e+06 unsup_et: -1.47e+06 trnloss: 4.979 trnacc: 0.9537 valloss: 6.217 valacc: 0.9074
+epoch: 71 sup_dt: -1.95e+06 sup_et: -1.61e+04 unsup_dt: -2e+06 unsup_et: -1.47e+06 trnloss: 5.095 trnacc: 0.9542 valloss: 6.343 valacc: 0.908
+epoch: 72 sup_dt: -1.94e+06 sup_et: -1.61e+04 unsup_dt: -1.99e+06 unsup_et: -1.46e+06 trnloss: 5.047 trnacc: 0.9556 valloss: 6.308 valacc: 0.908
+epoch: 73 sup_dt: -1.92e+06 sup_et: -1.62e+04 unsup_dt: -1.97e+06 unsup_et: -1.43e+06 trnloss: 4.929 trnacc: 0.952 valloss: 6.122 valacc: 0.9085
+epoch: 74 sup_dt: -1.92e+06 sup_et: -1.57e+04 unsup_dt: -1.97e+06 unsup_et: -1.44e+06 trnloss: 5.135 trnacc: 0.9582 valloss: 6.379 valacc: 0.9131
+# Saving models ...
+epoch: 75 sup_dt: -1.92e+06 sup_et: -1.56e+04 unsup_dt: -1.97e+06 unsup_et: -1.44e+06 trnloss: 5.116 trnacc: 0.9467 valloss: 6.347 valacc: 0.9001
+epoch: 76 sup_dt: -1.91e+06 sup_et: -1.53e+04 unsup_dt: -1.97e+06 unsup_et: -1.43e+06 trnloss: 5.12 trnacc: 0.9533 valloss: 6.378 valacc: 0.9088
+epoch: 77 sup_dt: -1.91e+06 sup_et: -1.54e+04 unsup_dt: -1.96e+06 unsup_et: -1.42e+06 trnloss: 5.152 trnacc: 0.9603 valloss: 6.423 valacc: 0.9112
+epoch: 78 sup_dt: -1.92e+06 sup_et: -1.53e+04 unsup_dt: -1.98e+06 unsup_et: -1.43e+06 trnloss: 5.137 trnacc: 0.962 valloss: 6.424 valacc: 0.9123
+epoch: 79 sup_dt: -1.92e+06 sup_et: -1.51e+04 unsup_dt: -1.98e+06 unsup_et: -1.43e+06 trnloss: 5.139 trnacc: 0.9538 valloss: 6.404 valacc: 0.907
+# Saving models ...
+epoch: 80 sup_dt: -1.91e+06 sup_et: -1.48e+04 unsup_dt: -1.97e+06 unsup_et: -1.42e+06 trnloss: 5.105 trnacc: 0.9568 valloss: 6.378 valacc: 0.9071
+epoch: 81 sup_dt: -1.9e+06 sup_et: -1.44e+04 unsup_dt: -1.96e+06 unsup_et: -1.41e+06 trnloss: 5.038 trnacc: 0.9594 valloss: 6.301 valacc: 0.9084
+epoch: 82 sup_dt: -1.9e+06 sup_et: -1.41e+04 unsup_dt: -1.96e+06 unsup_et: -1.41e+06 trnloss: 5.123 trnacc: 0.9541 valloss: 6.379 valacc: 0.9067
+epoch: 83 sup_dt: -1.89e+06 sup_et: -1.47e+04 unsup_dt: -1.95e+06 unsup_et: -1.41e+06 trnloss: 5.068 trnacc: 0.9564 valloss: 6.326 valacc: 0.904
+epoch: 84 sup_dt: -1.88e+06 sup_et: -1.42e+04 unsup_dt: -1.94e+06 unsup_et: -1.4e+06 trnloss: 5.24 trnacc: 0.9623 valloss: 6.535 valacc: 0.9129
+epoch: 85 sup_dt: -1.88e+06 sup_et: -1.39e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.091 trnacc: 0.9524 valloss: 6.362 valacc: 0.9033
+epoch: 86 sup_dt: -1.88e+06 sup_et: -1.4e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.051 trnacc: 0.9627 valloss: 6.322 valacc: 0.9116
+epoch: 87 sup_dt: -1.87e+06 sup_et: -1.38e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.074 trnacc: 0.9641 valloss: 6.353 valacc: 0.914
+# Saving models ...
+epoch: 88 sup_dt: -1.88e+06 sup_et: -1.38e+04 unsup_dt: -1.94e+06 unsup_et: -1.39e+06 trnloss: 5.295 trnacc: 0.9644 valloss: 6.639 valacc: 0.9123
+epoch: 89 sup_dt: -1.87e+06 sup_et: -1.36e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.098 trnacc: 0.9571 valloss: 6.403 valacc: 0.9031
+# Saving models ...
+epoch: 90 sup_dt: -1.86e+06 sup_et: -1.37e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.155 trnacc: 0.964 valloss: 6.452 valacc: 0.9125
+epoch: 91 sup_dt: -1.86e+06 sup_et: -1.31e+04 unsup_dt: -1.91e+06 unsup_et: -1.38e+06 trnloss: 5.225 trnacc: 0.9666 valloss: 6.549 valacc: 0.9152
+# Saving models ...
+epoch: 92 sup_dt: -1.88e+06 sup_et: -1.33e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.164 trnacc: 0.9626 valloss: 6.475 valacc: 0.9088
+epoch: 93 sup_dt: -1.88e+06 sup_et: -1.3e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.113 trnacc: 0.9609 valloss: 6.393 valacc: 0.9066
+epoch: 94 sup_dt: -1.89e+06 sup_et: -1.31e+04 unsup_dt: -1.94e+06 unsup_et: -1.4e+06 trnloss: 5.202 trnacc: 0.9614 valloss: 6.495 valacc: 0.9116
+epoch: 95 sup_dt: -1.88e+06 sup_et: -1.28e+04 unsup_dt: -1.93e+06 unsup_et: -1.39e+06 trnloss: 5.305 trnacc: 0.9626 valloss: 6.648 valacc: 0.9106
+epoch: 96 sup_dt: -1.87e+06 sup_et: -1.28e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.19 trnacc: 0.967 valloss: 6.508 valacc: 0.9143
+epoch: 97 sup_dt: -1.88e+06 sup_et: -1.26e+04 unsup_dt: -1.92e+06 unsup_et: -1.39e+06 trnloss: 5.288 trnacc: 0.9619 valloss: 6.625 valacc: 0.9098
+epoch: 98 sup_dt: -1.87e+06 sup_et: -1.25e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 4.992 trnacc: 0.9558 valloss: 6.287 valacc: 0.9002
+epoch: 99 sup_dt: -1.87e+06 sup_et: -1.23e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.144 trnacc: 0.9622 valloss: 6.456 valacc: 0.9101
+# Saving models ...
+epoch: 100 sup_dt: -1.86e+06 sup_et: -1.22e+04 unsup_dt: -1.9e+06 unsup_et: -1.37e+06 trnloss: 5.147 trnacc: 0.9662 valloss: 6.498 valacc: 0.9118
+epoch: 101 sup_dt: -1.86e+06 sup_et: -1.29e+04 unsup_dt: -1.91e+06 unsup_et: -1.38e+06 trnloss: 5.281 trnacc: 0.9655 valloss: 6.606 valacc: 0.9129
+epoch: 102 sup_dt: -1.86e+06 sup_et: -1.24e+04 unsup_dt: -1.91e+06 unsup_et: -1.37e+06 trnloss: 5.247 trnacc: 0.967 valloss: 6.594 valacc: 0.9138
+epoch: 103 sup_dt: -1.87e+06 sup_et: -1.22e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.078 trnacc: 0.9662 valloss: 6.355 valacc: 0.9129
+epoch: 104 sup_dt: -1.88e+06 sup_et: -1.21e+04 unsup_dt: -1.94e+06 unsup_et: -1.4e+06 trnloss: 5.252 trnacc: 0.9643 valloss: 6.581 valacc: 0.9109
+epoch: 105 sup_dt: -1.87e+06 sup_et: -1.17e+04 unsup_dt: -1.92e+06 unsup_et: -1.39e+06 trnloss: 5.161 trnacc: 0.9682 valloss: 6.478 valacc: 0.9121
+epoch: 106 sup_dt: -1.86e+06 sup_et: -1.14e+04 unsup_dt: -1.91e+06 unsup_et: -1.37e+06 trnloss: 5.283 trnacc: 0.9616 valloss: 6.672 valacc: 0.9052
+epoch: 107 sup_dt: -1.87e+06 sup_et: -1.17e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.23 trnacc: 0.9677 valloss: 6.574 valacc: 0.9128
+epoch: 108 sup_dt: -1.87e+06 sup_et: -1.13e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.079 trnacc: 0.9631 valloss: 6.395 valacc: 0.9051
+epoch: 109 sup_dt: -1.87e+06 sup_et: -1.16e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.316 trnacc: 0.969 valloss: 6.717 valacc: 0.9132
+# Saving models ...
+epoch: 110 sup_dt: -1.87e+06 sup_et: -1.12e+04 unsup_dt: -1.92e+06 unsup_et: -1.38e+06 trnloss: 5.322 trnacc: 0.9684 valloss: 6.699 valacc: 0.9123
+epoch: 111 sup_dt: -1.87e+06 sup_et: -1.11e+04 unsup_dt: -1.92e+06 unsup_et: -1.39e+06 trnloss: 5.049 trnacc: 0.9666 valloss: 6.356 valacc: 0.9085
+epoch: 112 sup_dt: -1.86e+06 sup_et: -1.1e+04 unsup_dt: -1.91e+06 unsup_et: -1.38e+06 trnloss: 4.953 trnacc: 0.9679 valloss: 6.253 valacc: 0.9122
+epoch: 113 sup_dt: -1.85e+06 sup_et: -1.08e+04 unsup_dt: -1.89e+06 unsup_et: -1.36e+06 trnloss: 5.211 trnacc: 0.9694 valloss: 6.579 valacc: 0.9144
+epoch: 114 sup_dt: -1.86e+06 sup_et: -1.11e+04 unsup_dt: -1.9e+06 unsup_et: -1.37e+06 trnloss: 5.328 trnacc: 0.9704 valloss: 6.719 valacc: 0.9132
+epoch: 115 sup_dt: -1.85e+06 sup_et: -1.08e+04 unsup_dt: -1.89e+06 unsup_et: -1.37e+06 trnloss: 5.207 trnacc: 0.9682 valloss: 6.55 valacc: 0.9132
+epoch: 116 sup_dt: -1.85e+06 sup_et: -1.13e+04 unsup_dt: -1.89e+06 unsup_et: -1.36e+06 trnloss: 5.014 trnacc: 0.967 valloss: 6.303 valacc: 0.9096
+epoch: 117 sup_dt: -1.85e+06 sup_et: -1.09e+04 unsup_dt: -1.89e+06 unsup_et: -1.36e+06 trnloss: 5.222 trnacc: 0.9708 valloss: 6.578 valacc: 0.9148
+epoch: 118 sup_dt: -1.84e+06 sup_et: -1.08e+04 unsup_dt: -1.88e+06 unsup_et: -1.35e+06 trnloss: 5.113 trnacc: 0.9709 valloss: 6.45 valacc: 0.9133
+epoch: 119 sup_dt: -1.82e+06 sup_et: -1.04e+04 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.167 trnacc: 0.9621 valloss: 6.565 valacc: 0.9017
+# Saving models ...
+epoch: 120 sup_dt: -1.82e+06 sup_et: -1.08e+04 unsup_dt: -1.87e+06 unsup_et: -1.33e+06 trnloss: 5.284 trnacc: 0.9697 valloss: 6.65 valacc: 0.9134
+epoch: 121 sup_dt: -1.81e+06 sup_et: -1.05e+04 unsup_dt: -1.87e+06 unsup_et: -1.33e+06 trnloss: 5.197 trnacc: 0.9673 valloss: 6.568 valacc: 0.91
+epoch: 122 sup_dt: -1.8e+06 sup_et: -1.04e+04 unsup_dt: -1.86e+06 unsup_et: -1.32e+06 trnloss: 5.288 trnacc: 0.9712 valloss: 6.675 valacc: 0.9123
+epoch: 123 sup_dt: -1.8e+06 sup_et: -1.03e+04 unsup_dt: -1.85e+06 unsup_et: -1.31e+06 trnloss: 5.134 trnacc: 0.9721 valloss: 6.479 valacc: 0.9148
+epoch: 124 sup_dt: -1.8e+06 sup_et: -1.02e+04 unsup_dt: -1.85e+06 unsup_et: -1.32e+06 trnloss: 5.246 trnacc: 0.9719 valloss: 6.621 valacc: 0.9153
+# Saving models ...
+epoch: 125 sup_dt: -1.82e+06 sup_et: -1.01e+04 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.188 trnacc: 0.9711 valloss: 6.541 valacc: 0.9143
+epoch: 126 sup_dt: -1.82e+06 sup_et: -9.94e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 4.894 trnacc: 0.9695 valloss: 6.172 valacc: 0.9116
+epoch: 127 sup_dt: -1.81e+06 sup_et: -9.85e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.273 trnacc: 0.9699 valloss: 6.676 valacc: 0.9124
+epoch: 128 sup_dt: -1.8e+06 sup_et: -9.85e+03 unsup_dt: -1.85e+06 unsup_et: -1.32e+06 trnloss: 5.195 trnacc: 0.9713 valloss: 6.582 valacc: 0.9128
+epoch: 129 sup_dt: -1.81e+06 sup_et: -9.88e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.105 trnacc: 0.9715 valloss: 6.434 valacc: 0.913
+# Saving models ...
+epoch: 130 sup_dt: -1.85e+06 sup_et: -1.01e+04 unsup_dt: -1.9e+06 unsup_et: -1.36e+06 trnloss: 5.194 trnacc: 0.9713 valloss: 6.567 valacc: 0.9123
+epoch: 131 sup_dt: -1.85e+06 sup_et: -1.02e+04 unsup_dt: -1.91e+06 unsup_et: -1.37e+06 trnloss: 4.962 trnacc: 0.9698 valloss: 6.252 valacc: 0.9121
+epoch: 132 sup_dt: -1.86e+06 sup_et: -1e+04 unsup_dt: -1.91e+06 unsup_et: -1.37e+06 trnloss: 5.129 trnacc: 0.9714 valloss: 6.466 valacc: 0.914
+epoch: 133 sup_dt: -1.85e+06 sup_et: -9.85e+03 unsup_dt: -1.89e+06 unsup_et: -1.36e+06 trnloss: 5.17 trnacc: 0.9728 valloss: 6.514 valacc: 0.9142
+epoch: 134 sup_dt: -1.82e+06 sup_et: -9.57e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.261 trnacc: 0.9726 valloss: 6.673 valacc: 0.9119
+epoch: 135 sup_dt: -1.82e+06 sup_et: -9.5e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.244 trnacc: 0.9732 valloss: 6.635 valacc: 0.9146
+epoch: 136 sup_dt: -1.82e+06 sup_et: -9.57e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.222 trnacc: 0.9729 valloss: 6.609 valacc: 0.9148
+epoch: 137 sup_dt: -1.82e+06 sup_et: -9.61e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.082 trnacc: 0.9729 valloss: 6.447 valacc: 0.9129
+epoch: 138 sup_dt: -1.82e+06 sup_et: -9.39e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 4.907 trnacc: 0.968 valloss: 6.211 valacc: 0.9067
+epoch: 139 sup_dt: -1.82e+06 sup_et: -9.37e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.1 trnacc: 0.9647 valloss: 6.481 valacc: 0.9048
+# Saving models ...
+epoch: 140 sup_dt: -1.82e+06 sup_et: -9.24e+03 unsup_dt: -1.87e+06 unsup_et: -1.33e+06 trnloss: 5.139 trnacc: 0.9726 valloss: 6.504 valacc: 0.9134
+epoch: 141 sup_dt: -1.8e+06 sup_et: -9.11e+03 unsup_dt: -1.86e+06 unsup_et: -1.32e+06 trnloss: 5.175 trnacc: 0.9721 valloss: 6.557 valacc: 0.9136
+epoch: 142 sup_dt: -1.81e+06 sup_et: -9.02e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.333 trnacc: 0.9654 valloss: 6.726 valacc: 0.9054
+epoch: 143 sup_dt: -1.81e+06 sup_et: -9e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 4.961 trnacc: 0.9616 valloss: 6.272 valacc: 0.9007
+epoch: 144 sup_dt: -1.82e+06 sup_et: -9e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.246 trnacc: 0.9759 valloss: 6.654 valacc: 0.9155
+# Saving models ...
+epoch: 145 sup_dt: -1.82e+06 sup_et: -8.73e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.332 trnacc: 0.9749 valloss: 6.763 valacc: 0.9161
+# Saving models ...
+epoch: 146 sup_dt: -1.82e+06 sup_et: -8.79e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.169 trnacc: 0.9733 valloss: 6.557 valacc: 0.9132
+epoch: 147 sup_dt: -1.82e+06 sup_et: -8.74e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.375 trnacc: 0.9755 valloss: 6.829 valacc: 0.9141
+epoch: 148 sup_dt: -1.82e+06 sup_et: -8.92e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.226 trnacc: 0.9735 valloss: 6.627 valacc: 0.9134
+epoch: 149 sup_dt: -1.83e+06 sup_et: -8.8e+03 unsup_dt: -1.88e+06 unsup_et: -1.35e+06 trnloss: 5.25 trnacc: 0.9741 valloss: 6.686 valacc: 0.912
+# Saving models ...
+epoch: 150 sup_dt: -1.83e+06 sup_et: -8.6e+03 unsup_dt: -1.88e+06 unsup_et: -1.35e+06 trnloss: 5.426 trnacc: 0.9744 valloss: 6.892 valacc: 0.9146
+epoch: 151 sup_dt: -1.81e+06 sup_et: -8.56e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.379 trnacc: 0.9747 valloss: 6.816 valacc: 0.9129
+epoch: 152 sup_dt: -1.81e+06 sup_et: -8.4e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.409 trnacc: 0.974 valloss: 6.871 valacc: 0.9135
+epoch: 153 sup_dt: -1.83e+06 sup_et: -8.59e+03 unsup_dt: -1.88e+06 unsup_et: -1.35e+06 trnloss: 5.352 trnacc: 0.9751 valloss: 6.823 valacc: 0.9133
+epoch: 154 sup_dt: -1.82e+06 sup_et: -8.47e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.332 trnacc: 0.9746 valloss: 6.767 valacc: 0.9132
+epoch: 155 sup_dt: -1.82e+06 sup_et: -8.45e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.28 trnacc: 0.9762 valloss: 6.721 valacc: 0.9144
+epoch: 156 sup_dt: -1.83e+06 sup_et: -8.43e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.294 trnacc: 0.9731 valloss: 6.719 valacc: 0.9128
+epoch: 157 sup_dt: -1.82e+06 sup_et: -8.37e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.327 trnacc: 0.9763 valloss: 6.775 valacc: 0.9144
+epoch: 158 sup_dt: -1.82e+06 sup_et: -8.15e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.393 trnacc: 0.9759 valloss: 6.871 valacc: 0.9135
+epoch: 159 sup_dt: -1.81e+06 sup_et: -8.31e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.254 trnacc: 0.9748 valloss: 6.663 valacc: 0.914
+# Saving models ...
+epoch: 160 sup_dt: -1.85e+06 sup_et: -9.39e+03 unsup_dt: -1.89e+06 unsup_et: -1.37e+06 trnloss: 5.24 trnacc: 0.9756 valloss: 6.626 valacc: 0.9137
+epoch: 161 sup_dt: -1.86e+06 sup_et: -8.88e+03 unsup_dt: -1.89e+06 unsup_et: -1.37e+06 trnloss: 5.183 trnacc: 0.975 valloss: 6.591 valacc: 0.9143
+epoch: 162 sup_dt: -1.84e+06 sup_et: -8.56e+03 unsup_dt: -1.88e+06 unsup_et: -1.36e+06 trnloss: 5.146 trnacc: 0.9701 valloss: 6.53 valacc: 0.9103
+epoch: 163 sup_dt: -1.83e+06 sup_et: -8.33e+03 unsup_dt: -1.87e+06 unsup_et: -1.35e+06 trnloss: 5.345 trnacc: 0.9767 valloss: 6.774 valacc: 0.9141
+epoch: 164 sup_dt: -1.84e+06 sup_et: -8.61e+03 unsup_dt: -1.88e+06 unsup_et: -1.36e+06 trnloss: 5.248 trnacc: 0.9755 valloss: 6.641 valacc: 0.9141
+epoch: 165 sup_dt: -1.83e+06 sup_et: -8.45e+03 unsup_dt: -1.88e+06 unsup_et: -1.35e+06 trnloss: 5.264 trnacc: 0.9747 valloss: 6.706 valacc: 0.911
+epoch: 166 sup_dt: -1.83e+06 sup_et: -8.07e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.088 trnacc: 0.974 valloss: 6.457 valacc: 0.912
+epoch: 167 sup_dt: -1.82e+06 sup_et: -8.01e+03 unsup_dt: -1.87e+06 unsup_et: -1.34e+06 trnloss: 5.108 trnacc: 0.9718 valloss: 6.499 valacc: 0.9085
+epoch: 168 sup_dt: -1.82e+06 sup_et: -7.88e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.354 trnacc: 0.9751 valloss: 6.787 valacc: 0.9124
+epoch: 169 sup_dt: -1.82e+06 sup_et: -7.96e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.406 trnacc: 0.9771 valloss: 6.899 valacc: 0.915
+# Saving models ...
+epoch: 170 sup_dt: -1.81e+06 sup_et: -7.8e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.247 trnacc: 0.9724 valloss: 6.715 valacc: 0.9086
+epoch: 171 sup_dt: -1.81e+06 sup_et: -7.74e+03 unsup_dt: -1.85e+06 unsup_et: -1.32e+06 trnloss: 5.109 trnacc: 0.9762 valloss: 6.505 valacc: 0.9132
+epoch: 172 sup_dt: -1.82e+06 sup_et: -8.12e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.051 trnacc: 0.9699 valloss: 6.408 valacc: 0.905
+epoch: 173 sup_dt: -1.82e+06 sup_et: -7.84e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.326 trnacc: 0.9779 valloss: 6.769 valacc: 0.9151
+epoch: 174 sup_dt: -1.8e+06 sup_et: -7.73e+03 unsup_dt: -1.85e+06 unsup_et: -1.32e+06 trnloss: 5.259 trnacc: 0.9766 valloss: 6.697 valacc: 0.9126
+epoch: 175 sup_dt: -1.81e+06 sup_et: -7.77e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.171 trnacc: 0.9778 valloss: 6.59 valacc: 0.9149
+epoch: 176 sup_dt: -1.82e+06 sup_et: -7.71e+03 unsup_dt: -1.86e+06 unsup_et: -1.33e+06 trnloss: 5.051 trnacc: 0.9777 valloss: 6.455 valacc: 0.9143
+epoch: 177 sup_dt: -1.81e+06 sup_et: -7.54e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.216 trnacc: 0.9784 valloss: 6.665 valacc: 0.9154
+epoch: 178 sup_dt: -1.8e+06 sup_et: -7.41e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.134 trnacc: 0.9763 valloss: 6.546 valacc: 0.913
+epoch: 179 sup_dt: -1.8e+06 sup_et: -7.29e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.157 trnacc: 0.9767 valloss: 6.6 valacc: 0.9148
+# Saving models ...
+epoch: 180 sup_dt: -1.8e+06 sup_et: -7.47e+03 unsup_dt: -1.84e+06 unsup_et: -1.31e+06 trnloss: 5.209 trnacc: 0.9614 valloss: 6.648 valacc: 0.8991
+epoch: 181 sup_dt: -1.8e+06 sup_et: -7.43e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.235 trnacc: 0.9746 valloss: 6.659 valacc: 0.909
+epoch: 182 sup_dt: -1.79e+06 sup_et: -7.33e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.042 trnacc: 0.9761 valloss: 6.427 valacc: 0.9107
+epoch: 183 sup_dt: -1.78e+06 sup_et: -7.2e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.234 trnacc: 0.9783 valloss: 6.683 valacc: 0.9152
+epoch: 184 sup_dt: -1.78e+06 sup_et: -7.15e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 4.806 trnacc: 0.9754 valloss: 6.162 valacc: 0.9111
+epoch: 185 sup_dt: -1.78e+06 sup_et: -7.13e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 4.927 trnacc: 0.9758 valloss: 6.261 valacc: 0.9089
+epoch: 186 sup_dt: -1.77e+06 sup_et: -7.19e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 4.973 trnacc: 0.9766 valloss: 6.337 valacc: 0.9122
+epoch: 187 sup_dt: -1.77e+06 sup_et: -7.11e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.117 trnacc: 0.9776 valloss: 6.584 valacc: 0.9135
+epoch: 188 sup_dt: -1.76e+06 sup_et: -7.05e+03 unsup_dt: -1.8e+06 unsup_et: -1.28e+06 trnloss: 4.988 trnacc: 0.9789 valloss: 6.384 valacc: 0.915
+epoch: 189 sup_dt: -1.76e+06 sup_et: -7.03e+03 unsup_dt: -1.8e+06 unsup_et: -1.28e+06 trnloss: 4.992 trnacc: 0.9783 valloss: 6.386 valacc: 0.9138
+# Saving models ...
+epoch: 190 sup_dt: -1.78e+06 sup_et: -7.23e+03 unsup_dt: -1.83e+06 unsup_et: -1.3e+06 trnloss: 4.883 trnacc: 0.9783 valloss: 6.257 valacc: 0.9126
+epoch: 191 sup_dt: -1.79e+06 sup_et: -7.11e+03 unsup_dt: -1.83e+06 unsup_et: -1.3e+06 trnloss: 4.864 trnacc: 0.9773 valloss: 6.219 valacc: 0.9139
+epoch: 192 sup_dt: -1.79e+06 sup_et: -6.94e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 4.976 trnacc: 0.9789 valloss: 6.368 valacc: 0.9139
+epoch: 193 sup_dt: -1.78e+06 sup_et: -6.9e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.024 trnacc: 0.9796 valloss: 6.429 valacc: 0.9156
+epoch: 194 sup_dt: -1.8e+06 sup_et: -7.13e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.061 trnacc: 0.9789 valloss: 6.466 valacc: 0.9145
+epoch: 195 sup_dt: -1.81e+06 sup_et: -7.11e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 4.933 trnacc: 0.978 valloss: 6.292 valacc: 0.9128
+epoch: 196 sup_dt: -1.84e+06 sup_et: -7.22e+03 unsup_dt: -1.87e+06 unsup_et: -1.35e+06 trnloss: 4.814 trnacc: 0.9761 valloss: 6.153 valacc: 0.9097
+epoch: 197 sup_dt: -1.86e+06 sup_et: -7.11e+03 unsup_dt: -1.89e+06 unsup_et: -1.38e+06 trnloss: 4.92 trnacc: 0.9805 valloss: 6.324 valacc: 0.9166
+# Saving models ...
+epoch: 198 sup_dt: -1.87e+06 sup_et: -6.94e+03 unsup_dt: -1.89e+06 unsup_et: -1.38e+06 trnloss: 4.895 trnacc: 0.9792 valloss: 6.268 valacc: 0.914
+epoch: 199 sup_dt: -1.85e+06 sup_et: -6.83e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 4.929 trnacc: 0.9804 valloss: 6.356 valacc: 0.9158
+# Saving models ...
+epoch: 200 sup_dt: -1.85e+06 sup_et: -7.08e+03 unsup_dt: -1.87e+06 unsup_et: -1.36e+06 trnloss: 4.908 trnacc: 0.9782 valloss: 6.271 valacc: 0.9148
+epoch: 201 sup_dt: -1.85e+06 sup_et: -7.04e+03 unsup_dt: -1.88e+06 unsup_et: -1.37e+06 trnloss: 4.853 trnacc: 0.9782 valloss: 6.212 valacc: 0.9132
+epoch: 202 sup_dt: -1.85e+06 sup_et: -7.17e+03 unsup_dt: -1.88e+06 unsup_et: -1.37e+06 trnloss: 4.968 trnacc: 0.9773 valloss: 6.394 valacc: 0.9124
+epoch: 203 sup_dt: -1.83e+06 sup_et: -6.88e+03 unsup_dt: -1.86e+06 unsup_et: -1.35e+06 trnloss: 5.114 trnacc: 0.9799 valloss: 6.552 valacc: 0.9139
+epoch: 204 sup_dt: -1.82e+06 sup_et: -6.77e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.105 trnacc: 0.979 valloss: 6.554 valacc: 0.9149
+epoch: 205 sup_dt: -1.81e+06 sup_et: -6.68e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.02 trnacc: 0.9803 valloss: 6.446 valacc: 0.9159
+epoch: 206 sup_dt: -1.81e+06 sup_et: -6.63e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 4.926 trnacc: 0.9805 valloss: 6.297 valacc: 0.915
+epoch: 207 sup_dt: -1.81e+06 sup_et: -6.55e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.074 trnacc: 0.9809 valloss: 6.512 valacc: 0.916
+epoch: 208 sup_dt: -1.81e+06 sup_et: -6.81e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.25 trnacc: 0.9757 valloss: 6.703 valacc: 0.9105
+epoch: 209 sup_dt: -1.82e+06 sup_et: -6.63e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.038 trnacc: 0.98 valloss: 6.465 valacc: 0.9142
+# Saving models ...
+epoch: 210 sup_dt: -1.82e+06 sup_et: -6.64e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 4.985 trnacc: 0.978 valloss: 6.396 valacc: 0.9118
+epoch: 211 sup_dt: -1.82e+06 sup_et: -6.51e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.117 trnacc: 0.9792 valloss: 6.571 valacc: 0.9125
+epoch: 212 sup_dt: -1.8e+06 sup_et: -6.42e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.005 trnacc: 0.9806 valloss: 6.434 valacc: 0.915
+epoch: 213 sup_dt: -1.85e+06 sup_et: -6.63e+03 unsup_dt: -1.88e+06 unsup_et: -1.37e+06 trnloss: 5.017 trnacc: 0.9786 valloss: 6.429 valacc: 0.9109
+epoch: 214 sup_dt: -1.85e+06 sup_et: -6.46e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 4.822 trnacc: 0.9739 valloss: 6.2 valacc: 0.9068
+epoch: 215 sup_dt: -1.84e+06 sup_et: -6.43e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.103 trnacc: 0.9813 valloss: 6.552 valacc: 0.9156
+epoch: 216 sup_dt: -1.82e+06 sup_et: -6.4e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 4.873 trnacc: 0.9772 valloss: 6.238 valacc: 0.9114
+epoch: 217 sup_dt: -1.84e+06 sup_et: -6.39e+03 unsup_dt: -1.86e+06 unsup_et: -1.35e+06 trnloss: 5.23 trnacc: 0.9815 valloss: 6.707 valacc: 0.9151
+epoch: 218 sup_dt: -1.83e+06 sup_et: -6.25e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 4.918 trnacc: 0.9774 valloss: 6.333 valacc: 0.9083
+epoch: 219 sup_dt: -1.82e+06 sup_et: -6.29e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 4.998 trnacc: 0.9801 valloss: 6.415 valacc: 0.9118
+# Saving models ...
+epoch: 220 sup_dt: -1.81e+06 sup_et: -6.24e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.189 trnacc: 0.9796 valloss: 6.703 valacc: 0.9138
+epoch: 221 sup_dt: -1.81e+06 sup_et: -6.23e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.081 trnacc: 0.9786 valloss: 6.523 valacc: 0.9104
+epoch: 222 sup_dt: -1.82e+06 sup_et: -6.27e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.211 trnacc: 0.9811 valloss: 6.706 valacc: 0.9145
+epoch: 223 sup_dt: -1.82e+06 sup_et: -6.22e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 4.952 trnacc: 0.9805 valloss: 6.358 valacc: 0.9148
+epoch: 224 sup_dt: -1.82e+06 sup_et: -6.17e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.268 trnacc: 0.9812 valloss: 6.781 valacc: 0.9157
+epoch: 225 sup_dt: -1.82e+06 sup_et: -6.11e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.304 trnacc: 0.9807 valloss: 6.787 valacc: 0.9137
+epoch: 226 sup_dt: -1.83e+06 sup_et: -6.03e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.118 trnacc: 0.9798 valloss: 6.575 valacc: 0.9108
+epoch: 227 sup_dt: -1.83e+06 sup_et: -6.06e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.091 trnacc: 0.981 valloss: 6.532 valacc: 0.9131
+epoch: 228 sup_dt: -1.82e+06 sup_et: -6e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.234 trnacc: 0.9813 valloss: 6.767 valacc: 0.9138
+epoch: 229 sup_dt: -1.83e+06 sup_et: -6.13e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.328 trnacc: 0.9819 valloss: 6.867 valacc: 0.9152
+# Saving models ...
+epoch: 230 sup_dt: -1.82e+06 sup_et: -6.12e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.076 trnacc: 0.9799 valloss: 6.53 valacc: 0.9126
+epoch: 231 sup_dt: -1.81e+06 sup_et: -5.99e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.242 trnacc: 0.9812 valloss: 6.759 valacc: 0.9149
+epoch: 232 sup_dt: -1.82e+06 sup_et: -5.87e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.286 trnacc: 0.9827 valloss: 6.808 valacc: 0.915
+epoch: 233 sup_dt: -1.82e+06 sup_et: -5.78e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.147 trnacc: 0.976 valloss: 6.636 valacc: 0.9046
+epoch: 234 sup_dt: -1.83e+06 sup_et: -5.93e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.196 trnacc: 0.981 valloss: 6.673 valacc: 0.9155
+epoch: 235 sup_dt: -1.82e+06 sup_et: -5.88e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.165 trnacc: 0.9811 valloss: 6.647 valacc: 0.9142
+epoch: 236 sup_dt: -1.81e+06 sup_et: -5.82e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.249 trnacc: 0.983 valloss: 6.759 valacc: 0.9168
+# Saving models ...
+epoch: 237 sup_dt: -1.82e+06 sup_et: -6.05e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.143 trnacc: 0.9803 valloss: 6.558 valacc: 0.9145
+epoch: 238 sup_dt: -1.82e+06 sup_et: -5.92e+03 unsup_dt: -1.86e+06 unsup_et: -1.34e+06 trnloss: 5.347 trnacc: 0.9826 valloss: 6.885 valacc: 0.9155
+epoch: 239 sup_dt: -1.82e+06 sup_et: -5.79e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.374 trnacc: 0.9809 valloss: 6.928 valacc: 0.9133
+# Saving models ...
+epoch: 240 sup_dt: -1.8e+06 sup_et: -5.84e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.33 trnacc: 0.9799 valloss: 6.837 valacc: 0.9137
+epoch: 241 sup_dt: -1.79e+06 sup_et: -5.78e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.227 trnacc: 0.9807 valloss: 6.702 valacc: 0.9133
+epoch: 242 sup_dt: -1.78e+06 sup_et: -5.71e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 4.996 trnacc: 0.9814 valloss: 6.417 valacc: 0.9133
+epoch: 243 sup_dt: -1.78e+06 sup_et: -5.74e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.39 trnacc: 0.981 valloss: 6.932 valacc: 0.9136
+epoch: 244 sup_dt: -1.78e+06 sup_et: -5.63e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.351 trnacc: 0.9832 valloss: 6.888 valacc: 0.9146
+epoch: 245 sup_dt: -1.78e+06 sup_et: -5.71e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.239 trnacc: 0.9802 valloss: 6.718 valacc: 0.9134
+epoch: 246 sup_dt: -1.78e+06 sup_et: -5.66e+03 unsup_dt: -1.82e+06 unsup_et: -1.29e+06 trnloss: 5.315 trnacc: 0.9832 valloss: 6.864 valacc: 0.9153
+epoch: 247 sup_dt: -1.78e+06 sup_et: -5.56e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.37 trnacc: 0.981 valloss: 6.891 valacc: 0.9129
+epoch: 248 sup_dt: -1.78e+06 sup_et: -5.54e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.214 trnacc: 0.982 valloss: 6.68 valacc: 0.9131
+epoch: 249 sup_dt: -1.8e+06 sup_et: -5.7e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.215 trnacc: 0.9822 valloss: 6.708 valacc: 0.9139
+# Saving models ...
+epoch: 250 sup_dt: -1.78e+06 sup_et: -5.58e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.219 trnacc: 0.9825 valloss: 6.742 valacc: 0.914
+epoch: 251 sup_dt: -1.77e+06 sup_et: -5.46e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.344 trnacc: 0.9822 valloss: 6.894 valacc: 0.9136
+epoch: 252 sup_dt: -1.77e+06 sup_et: -5.5e+03 unsup_dt: -1.8e+06 unsup_et: -1.29e+06 trnloss: 5.294 trnacc: 0.9842 valloss: 6.826 valacc: 0.9155
+epoch: 253 sup_dt: -1.77e+06 sup_et: -5.48e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.298 trnacc: 0.9833 valloss: 6.825 valacc: 0.9154
+epoch: 254 sup_dt: -1.77e+06 sup_et: -5.44e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.296 trnacc: 0.9828 valloss: 6.828 valacc: 0.9149
+epoch: 255 sup_dt: -1.77e+06 sup_et: -5.54e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.15 trnacc: 0.972 valloss: 6.59 valacc: 0.9044
+epoch: 256 sup_dt: -1.78e+06 sup_et: -5.49e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.437 trnacc: 0.9831 valloss: 7.001 valacc: 0.9141
+epoch: 257 sup_dt: -1.78e+06 sup_et: -5.48e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.198 trnacc: 0.9832 valloss: 6.702 valacc: 0.9161
+epoch: 258 sup_dt: -1.77e+06 sup_et: -5.42e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.289 trnacc: 0.9836 valloss: 6.812 valacc: 0.9149
+epoch: 259 sup_dt: -1.77e+06 sup_et: -5.37e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.435 trnacc: 0.9828 valloss: 7.0 valacc: 0.9143
+# Saving models ...
+epoch: 260 sup_dt: -1.78e+06 sup_et: -5.37e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.363 trnacc: 0.9838 valloss: 6.924 valacc: 0.9161
+epoch: 261 sup_dt: -1.8e+06 sup_et: -5.48e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.292 trnacc: 0.982 valloss: 6.821 valacc: 0.9147
+epoch: 262 sup_dt: -1.81e+06 sup_et: -5.42e+03 unsup_dt: -1.85e+06 unsup_et: -1.33e+06 trnloss: 5.287 trnacc: 0.9829 valloss: 6.809 valacc: 0.915
+epoch: 263 sup_dt: -1.81e+06 sup_et: -5.36e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.347 trnacc: 0.9838 valloss: 6.89 valacc: 0.917
+# Saving models ...
+epoch: 264 sup_dt: -1.8e+06 sup_et: -5.28e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.412 trnacc: 0.9829 valloss: 6.977 valacc: 0.9127
+epoch: 265 sup_dt: -1.79e+06 sup_et: -5.26e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.322 trnacc: 0.9836 valloss: 6.873 valacc: 0.9143
+epoch: 266 sup_dt: -1.78e+06 sup_et: -5.32e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.454 trnacc: 0.9834 valloss: 7.031 valacc: 0.915
+epoch: 267 sup_dt: -1.77e+06 sup_et: -5.3e+03 unsup_dt: -1.82e+06 unsup_et: -1.29e+06 trnloss: 5.344 trnacc: 0.9835 valloss: 6.904 valacc: 0.9129
+epoch: 268 sup_dt: -1.77e+06 sup_et: -5.41e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.38 trnacc: 0.9825 valloss: 6.988 valacc: 0.914
+epoch: 269 sup_dt: -1.77e+06 sup_et: -5.26e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.341 trnacc: 0.9834 valloss: 6.933 valacc: 0.9136
+# Saving models ...
+epoch: 270 sup_dt: -1.78e+06 sup_et: -5.13e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.355 trnacc: 0.9831 valloss: 6.94 valacc: 0.9128
+epoch: 271 sup_dt: -1.79e+06 sup_et: -5.44e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.383 trnacc: 0.9829 valloss: 6.935 valacc: 0.9151
+epoch: 272 sup_dt: -1.79e+06 sup_et: -5.29e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.32 trnacc: 0.9827 valloss: 6.882 valacc: 0.912
+epoch: 273 sup_dt: -1.78e+06 sup_et: -5.17e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.417 trnacc: 0.9847 valloss: 7.016 valacc: 0.9146
+epoch: 274 sup_dt: -1.78e+06 sup_et: -5.14e+03 unsup_dt: -1.82e+06 unsup_et: -1.3e+06 trnloss: 5.286 trnacc: 0.9841 valloss: 6.843 valacc: 0.9146
+epoch: 275 sup_dt: -1.77e+06 sup_et: -5.11e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.379 trnacc: 0.9841 valloss: 6.948 valacc: 0.9139
+epoch: 276 sup_dt: -1.77e+06 sup_et: -5.02e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.271 trnacc: 0.9797 valloss: 6.757 valacc: 0.9062
+epoch: 277 sup_dt: -1.79e+06 sup_et: -5.36e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.084 trnacc: 0.9807 valloss: 6.546 valacc: 0.9145
+epoch: 278 sup_dt: -1.8e+06 sup_et: -5.28e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.262 trnacc: 0.9834 valloss: 6.765 valacc: 0.9148
+epoch: 279 sup_dt: -1.8e+06 sup_et: -5.12e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.299 trnacc: 0.9821 valloss: 6.798 valacc: 0.9114
+# Saving models ...
+epoch: 280 sup_dt: -1.8e+06 sup_et: -5.03e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.478 trnacc: 0.9848 valloss: 7.051 valacc: 0.9142
+epoch: 281 sup_dt: -1.8e+06 sup_et: -5.04e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.252 trnacc: 0.9846 valloss: 6.784 valacc: 0.9156
+epoch: 282 sup_dt: -1.8e+06 sup_et: -4.98e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.243 trnacc: 0.9837 valloss: 6.759 valacc: 0.9152
+epoch: 283 sup_dt: -1.8e+06 sup_et: -4.92e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.316 trnacc: 0.9852 valloss: 6.885 valacc: 0.9162
+epoch: 284 sup_dt: -1.8e+06 sup_et: -4.99e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 4.985 trnacc: 0.9798 valloss: 6.413 valacc: 0.9118
+epoch: 285 sup_dt: -1.8e+06 sup_et: -4.98e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.275 trnacc: 0.9855 valloss: 6.836 valacc: 0.9163
+epoch: 286 sup_dt: -1.81e+06 sup_et: -4.96e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 4.928 trnacc: 0.9832 valloss: 6.357 valacc: 0.9139
+epoch: 287 sup_dt: -1.81e+06 sup_et: -4.92e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.241 trnacc: 0.9845 valloss: 6.79 valacc: 0.9166
+epoch: 288 sup_dt: -1.8e+06 sup_et: -5e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.134 trnacc: 0.9843 valloss: 6.636 valacc: 0.9157
+epoch: 289 sup_dt: -1.8e+06 sup_et: -5.13e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.084 trnacc: 0.9838 valloss: 6.548 valacc: 0.9134
+# Saving models ...
+epoch: 290 sup_dt: -1.79e+06 sup_et: -5.01e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.302 trnacc: 0.9855 valloss: 6.848 valacc: 0.9156
+epoch: 291 sup_dt: -1.8e+06 sup_et: -4.91e+03 unsup_dt: -1.84e+06 unsup_et: -1.32e+06 trnloss: 5.275 trnacc: 0.9844 valloss: 6.849 valacc: 0.914
+epoch: 292 sup_dt: -1.79e+06 sup_et: -4.85e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.35 trnacc: 0.9853 valloss: 6.924 valacc: 0.9159
+epoch: 293 sup_dt: -1.79e+06 sup_et: -4.81e+03 unsup_dt: -1.83e+06 unsup_et: -1.31e+06 trnloss: 5.306 trnacc: 0.9855 valloss: 6.838 valacc: 0.915
+epoch: 294 sup_dt: -1.79e+06 sup_et: -4.76e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.39 trnacc: 0.9848 valloss: 6.956 valacc: 0.9144
+epoch: 295 sup_dt: -1.79e+06 sup_et: -4.92e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.319 trnacc: 0.9846 valloss: 6.878 valacc: 0.9158
+epoch: 296 sup_dt: -1.78e+06 sup_et: -4.88e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.371 trnacc: 0.9846 valloss: 6.978 valacc: 0.9124
+epoch: 297 sup_dt: -1.79e+06 sup_et: -5.03e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.138 trnacc: 0.9831 valloss: 6.618 valacc: 0.914
+epoch: 298 sup_dt: -1.8e+06 sup_et: -4.9e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.206 trnacc: 0.9827 valloss: 6.684 valacc: 0.9103
+epoch: 299 sup_dt: -1.8e+06 sup_et: -4.79e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.235 trnacc: 0.9844 valloss: 6.739 valacc: 0.9144
+# Saving models ...
+epoch: 300 sup_dt: -1.79e+06 sup_et: -4.75e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.379 trnacc: 0.9629 valloss: 7.054 valacc: 0.8853
+epoch: 301 sup_dt: -1.8e+06 sup_et: -5.17e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.31 trnacc: 0.9847 valloss: 6.85 valacc: 0.9161
+epoch: 302 sup_dt: -1.8e+06 sup_et: -5.09e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.112 trnacc: 0.9828 valloss: 6.574 valacc: 0.9122
+epoch: 303 sup_dt: -1.8e+06 sup_et: -4.9e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.36 trnacc: 0.9852 valloss: 6.948 valacc: 0.9165
+epoch: 304 sup_dt: -1.8e+06 sup_et: -4.78e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.272 trnacc: 0.9851 valloss: 6.845 valacc: 0.9147
+epoch: 305 sup_dt: -1.79e+06 sup_et: -4.72e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.488 trnacc: 0.986 valloss: 7.104 valacc: 0.9165
+epoch: 306 sup_dt: -1.78e+06 sup_et: -4.7e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.505 trnacc: 0.9839 valloss: 7.111 valacc: 0.9165
+epoch: 307 sup_dt: -1.79e+06 sup_et: -4.75e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.291 trnacc: 0.9809 valloss: 6.829 valacc: 0.907
+epoch: 308 sup_dt: -1.79e+06 sup_et: -4.69e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.281 trnacc: 0.9849 valloss: 6.796 valacc: 0.9129
+epoch: 309 sup_dt: -1.77e+06 sup_et: -4.63e+03 unsup_dt: -1.81e+06 unsup_et: -1.29e+06 trnloss: 5.393 trnacc: 0.9855 valloss: 6.948 valacc: 0.9147
+# Saving models ...
+epoch: 310 sup_dt: -1.77e+06 sup_et: -4.56e+03 unsup_dt: -1.8e+06 unsup_et: -1.29e+06 trnloss: 5.519 trnacc: 0.9862 valloss: 7.142 valacc: 0.9159
+epoch: 311 sup_dt: -1.78e+06 sup_et: -4.57e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.433 trnacc: 0.9863 valloss: 7.009 valacc: 0.9155
+epoch: 312 sup_dt: -1.77e+06 sup_et: -4.56e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.414 trnacc: 0.9843 valloss: 6.996 valacc: 0.9129
+epoch: 313 sup_dt: -1.79e+06 sup_et: -4.74e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.462 trnacc: 0.9859 valloss: 7.077 valacc: 0.914
+epoch: 314 sup_dt: -1.79e+06 sup_et: -4.62e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.389 trnacc: 0.9842 valloss: 6.944 valacc: 0.914
+epoch: 315 sup_dt: -1.79e+06 sup_et: -4.58e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.467 trnacc: 0.9851 valloss: 7.037 valacc: 0.9152
+epoch: 316 sup_dt: -1.78e+06 sup_et: -4.57e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.258 trnacc: 0.9849 valloss: 6.811 valacc: 0.9144
+epoch: 317 sup_dt: -1.78e+06 sup_et: -4.53e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.449 trnacc: 0.9863 valloss: 7.044 valacc: 0.9152
+epoch: 318 sup_dt: -1.78e+06 sup_et: -4.46e+03 unsup_dt: -1.81e+06 unsup_et: -1.3e+06 trnloss: 5.587 trnacc: 0.9868 valloss: 7.223 valacc: 0.9154
+epoch: 319 sup_dt: -1.79e+06 sup_et: -4.45e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.716 trnacc: 0.9847 valloss: 7.422 valacc: 0.9138
+# Saving models ...
+epoch: 320 sup_dt: -1.79e+06 sup_et: -4.67e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.522 trnacc: 0.9853 valloss: 7.121 valacc: 0.915
+epoch: 321 sup_dt: -1.81e+06 sup_et: -4.57e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.489 trnacc: 0.9856 valloss: 7.093 valacc: 0.9147
+epoch: 322 sup_dt: -1.81e+06 sup_et: -4.59e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.471 trnacc: 0.9821 valloss: 7.012 valacc: 0.9138
+epoch: 323 sup_dt: -1.82e+06 sup_et: -4.51e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.519 trnacc: 0.986 valloss: 7.112 valacc: 0.9155
+epoch: 324 sup_dt: -1.82e+06 sup_et: -4.45e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.39 trnacc: 0.9857 valloss: 6.98 valacc: 0.916
+epoch: 325 sup_dt: -1.81e+06 sup_et: -4.55e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.352 trnacc: 0.985 valloss: 6.959 valacc: 0.915
+epoch: 326 sup_dt: -1.81e+06 sup_et: -4.48e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.386 trnacc: 0.9867 valloss: 6.963 valacc: 0.9161
+epoch: 327 sup_dt: -1.81e+06 sup_et: -4.46e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.363 trnacc: 0.9831 valloss: 6.947 valacc: 0.9096
+epoch: 328 sup_dt: -1.81e+06 sup_et: -4.4e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.516 trnacc: 0.9862 valloss: 7.136 valacc: 0.915
+epoch: 329 sup_dt: -1.81e+06 sup_et: -4.37e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.524 trnacc: 0.9861 valloss: 7.173 valacc: 0.9135
+# Saving models ...
+epoch: 330 sup_dt: -1.8e+06 sup_et: -4.33e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.271 trnacc: 0.9819 valloss: 6.798 valacc: 0.9105
+epoch: 331 sup_dt: -1.8e+06 sup_et: -4.34e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.493 trnacc: 0.9874 valloss: 7.134 valacc: 0.9156
+epoch: 332 sup_dt: -1.8e+06 sup_et: -4.32e+03 unsup_dt: -1.82e+06 unsup_et: -1.33e+06 trnloss: 5.494 trnacc: 0.9868 valloss: 7.123 valacc: 0.9154
+epoch: 333 sup_dt: -1.82e+06 sup_et: -4.29e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.578 trnacc: 0.9865 valloss: 7.254 valacc: 0.9144
+epoch: 334 sup_dt: -1.81e+06 sup_et: -4.34e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.565 trnacc: 0.9852 valloss: 7.211 valacc: 0.9143
+epoch: 335 sup_dt: -1.81e+06 sup_et: -4.28e+03 unsup_dt: -1.83e+06 unsup_et: -1.34e+06 trnloss: 5.51 trnacc: 0.9867 valloss: 7.166 valacc: 0.9156
+epoch: 336 sup_dt: -1.82e+06 sup_et: -4.28e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.478 trnacc: 0.9853 valloss: 7.115 valacc: 0.9146
+epoch: 337 sup_dt: -1.82e+06 sup_et: -4.22e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.59 trnacc: 0.9865 valloss: 7.219 valacc: 0.9144
+epoch: 338 sup_dt: -1.83e+06 sup_et: -4.28e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.487 trnacc: 0.9802 valloss: 7.121 valacc: 0.908
+epoch: 339 sup_dt: -1.84e+06 sup_et: -4.42e+03 unsup_dt: -1.86e+06 unsup_et: -1.37e+06 trnloss: 5.44 trnacc: 0.9856 valloss: 7.02 valacc: 0.9153
+# Saving models ...
+epoch: 340 sup_dt: -1.84e+06 sup_et: -4.29e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.628 trnacc: 0.9871 valloss: 7.303 valacc: 0.9154
+epoch: 341 sup_dt: -1.84e+06 sup_et: -4.55e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.072 trnacc: 0.9814 valloss: 6.487 valacc: 0.9126
+epoch: 342 sup_dt: -1.84e+06 sup_et: -4.49e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.547 trnacc: 0.9855 valloss: 7.171 valacc: 0.9129
+epoch: 343 sup_dt: -1.83e+06 sup_et: -4.32e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.537 trnacc: 0.9863 valloss: 7.178 valacc: 0.9142
+epoch: 344 sup_dt: -1.83e+06 sup_et: -4.22e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.567 trnacc: 0.9873 valloss: 7.226 valacc: 0.9158
+epoch: 345 sup_dt: -1.83e+06 sup_et: -4.23e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.481 trnacc: 0.9865 valloss: 7.077 valacc: 0.9157
+epoch: 346 sup_dt: -1.83e+06 sup_et: -4.19e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.595 trnacc: 0.9866 valloss: 7.223 valacc: 0.9147
+epoch: 347 sup_dt: -1.83e+06 sup_et: -4.16e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.518 trnacc: 0.9859 valloss: 7.12 valacc: 0.9143
+epoch: 348 sup_dt: -1.82e+06 sup_et: -4.15e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.715 trnacc: 0.9871 valloss: 7.414 valacc: 0.9148
+epoch: 349 sup_dt: -1.83e+06 sup_et: -4.32e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.373 trnacc: 0.9872 valloss: 6.954 valacc: 0.9156
+# Saving models ...
+epoch: 350 sup_dt: -1.84e+06 sup_et: -4.21e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.625 trnacc: 0.9875 valloss: 7.317 valacc: 0.9159
+epoch: 351 sup_dt: -1.85e+06 sup_et: -4.39e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 5.473 trnacc: 0.9862 valloss: 7.064 valacc: 0.9147
+epoch: 352 sup_dt: -1.84e+06 sup_et: -4.31e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 5.313 trnacc: 0.9863 valloss: 6.847 valacc: 0.9141
+epoch: 353 sup_dt: -1.83e+06 sup_et: -4.29e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.236 trnacc: 0.9865 valloss: 6.784 valacc: 0.9164
+epoch: 354 sup_dt: -1.83e+06 sup_et: -4.19e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.606 trnacc: 0.9869 valloss: 7.274 valacc: 0.9155
+epoch: 355 sup_dt: -1.83e+06 sup_et: -4.09e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.403 trnacc: 0.9853 valloss: 7.004 valacc: 0.9136
+epoch: 356 sup_dt: -1.84e+06 sup_et: -4.14e+03 unsup_dt: -1.87e+06 unsup_et: -1.36e+06 trnloss: 5.568 trnacc: 0.9868 valloss: 7.215 valacc: 0.9153
+epoch: 357 sup_dt: -1.83e+06 sup_et: -4.08e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.582 trnacc: 0.9865 valloss: 7.215 valacc: 0.9135
+epoch: 358 sup_dt: -1.82e+06 sup_et: -4.08e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.557 trnacc: 0.9878 valloss: 7.205 valacc: 0.9159
+epoch: 359 sup_dt: -1.81e+06 sup_et: -4.12e+03 unsup_dt: -1.84e+06 unsup_et: -1.33e+06 trnloss: 5.391 trnacc: 0.9876 valloss: 6.973 valacc: 0.9154
+# Saving models ...
+epoch: 360 sup_dt: -1.82e+06 sup_et: -4.07e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.464 trnacc: 0.9875 valloss: 7.099 valacc: 0.9142
+epoch: 361 sup_dt: -1.82e+06 sup_et: -4.07e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.436 trnacc: 0.9863 valloss: 7.063 valacc: 0.9125
+epoch: 362 sup_dt: -1.82e+06 sup_et: -4.26e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.299 trnacc: 0.9867 valloss: 6.872 valacc: 0.9141
+epoch: 363 sup_dt: -1.82e+06 sup_et: -4.12e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.641 trnacc: 0.9861 valloss: 7.335 valacc: 0.9132
+epoch: 364 sup_dt: -1.82e+06 sup_et: -4.07e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.632 trnacc: 0.9875 valloss: 7.305 valacc: 0.9152
+epoch: 365 sup_dt: -1.83e+06 sup_et: -3.98e+03 unsup_dt: -1.86e+06 unsup_et: -1.35e+06 trnloss: 5.525 trnacc: 0.9877 valloss: 7.181 valacc: 0.9153
+epoch: 366 sup_dt: -1.83e+06 sup_et: -4.01e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.399 trnacc: 0.9874 valloss: 7.009 valacc: 0.9144
+epoch: 367 sup_dt: -1.83e+06 sup_et: -3.97e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.651 trnacc: 0.9866 valloss: 7.334 valacc: 0.9134
+epoch: 368 sup_dt: -1.82e+06 sup_et: -4e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.481 trnacc: 0.9876 valloss: 7.148 valacc: 0.9145
+epoch: 369 sup_dt: -1.82e+06 sup_et: -3.92e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.549 trnacc: 0.9869 valloss: 7.234 valacc: 0.9139
+# Saving models ...
+epoch: 370 sup_dt: -1.86e+06 sup_et: -4.27e+03 unsup_dt: -1.88e+06 unsup_et: -1.38e+06 trnloss: 5.28 trnacc: 0.9874 valloss: 6.859 valacc: 0.9149
+epoch: 371 sup_dt: -1.87e+06 sup_et: -4.11e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.494 trnacc: 0.9874 valloss: 7.127 valacc: 0.9159
+epoch: 372 sup_dt: -1.87e+06 sup_et: -3.98e+03 unsup_dt: -1.89e+06 unsup_et: -1.39e+06 trnloss: 5.615 trnacc: 0.9872 valloss: 7.293 valacc: 0.915
+epoch: 373 sup_dt: -1.85e+06 sup_et: -3.97e+03 unsup_dt: -1.87e+06 unsup_et: -1.38e+06 trnloss: 5.399 trnacc: 0.9863 valloss: 6.975 valacc: 0.9143
+epoch: 374 sup_dt: -1.85e+06 sup_et: -3.99e+03 unsup_dt: -1.87e+06 unsup_et: -1.38e+06 trnloss: 5.467 trnacc: 0.988 valloss: 7.088 valacc: 0.9154
+epoch: 375 sup_dt: -1.85e+06 sup_et: -4.11e+03 unsup_dt: -1.87e+06 unsup_et: -1.38e+06 trnloss: 5.382 trnacc: 0.9856 valloss: 6.953 valacc: 0.9134
+epoch: 376 sup_dt: -1.89e+06 sup_et: -4.5e+03 unsup_dt: -1.9e+06 unsup_et: -1.41e+06 trnloss: 5.302 trnacc: 0.9876 valloss: 6.847 valacc: 0.9155
+epoch: 377 sup_dt: -1.88e+06 sup_et: -4.24e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.375 trnacc: 0.9877 valloss: 6.966 valacc: 0.9156
+epoch: 378 sup_dt: -1.87e+06 sup_et: -4.06e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.329 trnacc: 0.9872 valloss: 6.912 valacc: 0.9139
+epoch: 379 sup_dt: -1.87e+06 sup_et: -3.92e+03 unsup_dt: -1.88e+06 unsup_et: -1.39e+06 trnloss: 5.434 trnacc: 0.9876 valloss: 7.04 valacc: 0.9141
+# Saving models ...
+epoch: 380 sup_dt: -1.84e+06 sup_et: -3.89e+03 unsup_dt: -1.86e+06 unsup_et: -1.37e+06 trnloss: 5.582 trnacc: 0.9881 valloss: 7.253 valacc: 0.9152
+epoch: 381 sup_dt: -1.83e+06 sup_et: -3.87e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.373 trnacc: 0.9877 valloss: 6.949 valacc: 0.9147
+epoch: 382 sup_dt: -1.83e+06 sup_et: -3.84e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.643 trnacc: 0.9888 valloss: 7.309 valacc: 0.9161
+epoch: 383 sup_dt: -1.83e+06 sup_et: -3.79e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.749 trnacc: 0.9872 valloss: 7.453 valacc: 0.9139
+epoch: 384 sup_dt: -1.83e+06 sup_et: -3.8e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.704 trnacc: 0.9884 valloss: 7.386 valacc: 0.9163
+epoch: 385 sup_dt: -1.83e+06 sup_et: -3.79e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.64 trnacc: 0.988 valloss: 7.313 valacc: 0.9146
+epoch: 386 sup_dt: -1.82e+06 sup_et: -3.83e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.54 trnacc: 0.9881 valloss: 7.181 valacc: 0.9147
+epoch: 387 sup_dt: -1.81e+06 sup_et: -3.83e+03 unsup_dt: -1.83e+06 unsup_et: -1.34e+06 trnloss: 5.684 trnacc: 0.9884 valloss: 7.394 valacc: 0.9162
+epoch: 388 sup_dt: -1.81e+06 sup_et: -3.8e+03 unsup_dt: -1.83e+06 unsup_et: -1.34e+06 trnloss: 5.618 trnacc: 0.9882 valloss: 7.285 valacc: 0.9147
+epoch: 389 sup_dt: -1.81e+06 sup_et: -3.81e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.556 trnacc: 0.9876 valloss: 7.206 valacc: 0.913
+# Saving models ...
+epoch: 390 sup_dt: -1.8e+06 sup_et: -3.84e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.644 trnacc: 0.9884 valloss: 7.307 valacc: 0.9157
+epoch: 391 sup_dt: -1.79e+06 sup_et: -3.76e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.782 trnacc: 0.9882 valloss: 7.527 valacc: 0.9158
+epoch: 392 sup_dt: -1.79e+06 sup_et: -3.75e+03 unsup_dt: -1.81e+06 unsup_et: -1.32e+06 trnloss: 5.541 trnacc: 0.9882 valloss: 7.158 valacc: 0.9147
+epoch: 393 sup_dt: -1.79e+06 sup_et: -3.76e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.661 trnacc: 0.9885 valloss: 7.335 valacc: 0.9147
+epoch: 394 sup_dt: -1.79e+06 sup_et: -3.74e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.666 trnacc: 0.989 valloss: 7.365 valacc: 0.9159
+epoch: 395 sup_dt: -1.8e+06 sup_et: -3.75e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.615 trnacc: 0.9879 valloss: 7.273 valacc: 0.9147
+epoch: 396 sup_dt: -1.8e+06 sup_et: -3.72e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.588 trnacc: 0.9885 valloss: 7.248 valacc: 0.9153
+epoch: 397 sup_dt: -1.8e+06 sup_et: -3.74e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.678 trnacc: 0.9889 valloss: 7.385 valacc: 0.9158
+epoch: 398 sup_dt: -1.79e+06 sup_et: -3.7e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.444 trnacc: 0.9868 valloss: 7.015 valacc: 0.9124
+epoch: 399 sup_dt: -1.79e+06 sup_et: -3.68e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.586 trnacc: 0.9885 valloss: 7.289 valacc: 0.916
+# Saving models ...
+epoch: 400 sup_dt: -1.78e+06 sup_et: -3.71e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.558 trnacc: 0.9876 valloss: 7.201 valacc: 0.9148
+epoch: 401 sup_dt: -1.8e+06 sup_et: -3.72e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.669 trnacc: 0.9885 valloss: 7.368 valacc: 0.9146
+epoch: 402 sup_dt: -1.8e+06 sup_et: -3.89e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.672 trnacc: 0.9884 valloss: 7.361 valacc: 0.9154
+epoch: 403 sup_dt: -1.8e+06 sup_et: -3.8e+03 unsup_dt: -1.83e+06 unsup_et: -1.32e+06 trnloss: 5.474 trnacc: 0.9865 valloss: 7.088 valacc: 0.913
+epoch: 404 sup_dt: -1.8e+06 sup_et: -3.7e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.724 trnacc: 0.9885 valloss: 7.426 valacc: 0.916
+epoch: 405 sup_dt: -1.8e+06 sup_et: -3.74e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.57 trnacc: 0.9877 valloss: 7.228 valacc: 0.914
+epoch: 406 sup_dt: -1.79e+06 sup_et: -3.8e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.381 trnacc: 0.9865 valloss: 6.972 valacc: 0.9134
+epoch: 407 sup_dt: -1.79e+06 sup_et: -3.77e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.731 trnacc: 0.9865 valloss: 7.405 valacc: 0.9134
+epoch: 408 sup_dt: -1.79e+06 sup_et: -3.65e+03 unsup_dt: -1.82e+06 unsup_et: -1.31e+06 trnloss: 5.683 trnacc: 0.9892 valloss: 7.353 valacc: 0.9156
+epoch: 409 sup_dt: -1.82e+06 sup_et: -3.99e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.116 trnacc: 0.9862 valloss: 6.639 valacc: 0.9133
+# Saving models ...
+epoch: 410 sup_dt: -1.84e+06 sup_et: -3.91e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.313 trnacc: 0.9887 valloss: 6.885 valacc: 0.9138
+epoch: 411 sup_dt: -1.84e+06 sup_et: -3.76e+03 unsup_dt: -1.87e+06 unsup_et: -1.36e+06 trnloss: 5.529 trnacc: 0.9886 valloss: 7.168 valacc: 0.9159
+epoch: 412 sup_dt: -1.83e+06 sup_et: -3.69e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.58 trnacc: 0.9886 valloss: 7.215 valacc: 0.9158
+epoch: 413 sup_dt: -1.82e+06 sup_et: -3.63e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.521 trnacc: 0.9889 valloss: 7.153 valacc: 0.9155
+epoch: 414 sup_dt: -1.81e+06 sup_et: -3.64e+03 unsup_dt: -1.83e+06 unsup_et: -1.33e+06 trnloss: 5.418 trnacc: 0.9881 valloss: 7.008 valacc: 0.9147
+epoch: 415 sup_dt: -1.8e+06 sup_et: -3.62e+03 unsup_dt: -1.82e+06 unsup_et: -1.33e+06 trnloss: 5.281 trnacc: 0.9875 valloss: 6.857 valacc: 0.9136
+epoch: 416 sup_dt: -1.8e+06 sup_et: -3.58e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.583 trnacc: 0.9885 valloss: 7.218 valacc: 0.9133
+epoch: 417 sup_dt: -1.79e+06 sup_et: -3.56e+03 unsup_dt: -1.81e+06 unsup_et: -1.32e+06 trnloss: 5.615 trnacc: 0.989 valloss: 7.257 valacc: 0.9155
+epoch: 418 sup_dt: -1.79e+06 sup_et: -3.58e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.716 trnacc: 0.9859 valloss: 7.432 valacc: 0.9121
+epoch: 419 sup_dt: -1.79e+06 sup_et: -3.56e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.588 trnacc: 0.9892 valloss: 7.254 valacc: 0.9164
+# Saving models ...
+epoch: 420 sup_dt: -1.79e+06 sup_et: -3.59e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.437 trnacc: 0.9883 valloss: 7.022 valacc: 0.9149
+epoch: 421 sup_dt: -1.79e+06 sup_et: -3.54e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.567 trnacc: 0.9887 valloss: 7.233 valacc: 0.9131
+epoch: 422 sup_dt: -1.78e+06 sup_et: -3.5e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.746 trnacc: 0.989 valloss: 7.468 valacc: 0.9157
+epoch: 423 sup_dt: -1.79e+06 sup_et: -3.48e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.758 trnacc: 0.9896 valloss: 7.465 valacc: 0.9156
+epoch: 424 sup_dt: -1.79e+06 sup_et: -3.45e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.622 trnacc: 0.9879 valloss: 7.298 valacc: 0.9136
+epoch: 425 sup_dt: -1.78e+06 sup_et: -3.55e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.564 trnacc: 0.9888 valloss: 7.209 valacc: 0.9147
+epoch: 426 sup_dt: -1.78e+06 sup_et: -3.53e+03 unsup_dt: -1.81e+06 unsup_et: -1.31e+06 trnloss: 5.482 trnacc: 0.9891 valloss: 7.136 valacc: 0.9147
+epoch: 427 sup_dt: -1.8e+06 sup_et: -3.54e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.703 trnacc: 0.9896 valloss: 7.399 valacc: 0.9154
+epoch: 428 sup_dt: -1.8e+06 sup_et: -3.53e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.546 trnacc: 0.9883 valloss: 7.233 valacc: 0.9151
+epoch: 429 sup_dt: -1.8e+06 sup_et: -3.49e+03 unsup_dt: -1.82e+06 unsup_et: -1.32e+06 trnloss: 5.596 trnacc: 0.9892 valloss: 7.254 valacc: 0.9147
+# Saving models ...
+epoch: 430 sup_dt: -1.8e+06 sup_et: -3.48e+03 unsup_dt: -1.82e+06 unsup_et: -1.33e+06 trnloss: 5.521 trnacc: 0.989 valloss: 7.154 valacc: 0.9159
+epoch: 431 sup_dt: -1.82e+06 sup_et: -3.44e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.623 trnacc: 0.9892 valloss: 7.277 valacc: 0.914
+epoch: 432 sup_dt: -1.82e+06 sup_et: -3.43e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.544 trnacc: 0.987 valloss: 7.177 valacc: 0.9123
+epoch: 433 sup_dt: -1.82e+06 sup_et: -3.46e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.659 trnacc: 0.9892 valloss: 7.353 valacc: 0.9152
+epoch: 434 sup_dt: -1.81e+06 sup_et: -3.42e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.661 trnacc: 0.9882 valloss: 7.327 valacc: 0.9134
+epoch: 435 sup_dt: -1.81e+06 sup_et: -3.4e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.857 trnacc: 0.9883 valloss: 7.642 valacc: 0.9126
+epoch: 436 sup_dt: -1.82e+06 sup_et: -3.38e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.59 trnacc: 0.989 valloss: 7.222 valacc: 0.9144
+epoch: 437 sup_dt: -1.84e+06 sup_et: -3.69e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.081 trnacc: 0.9812 valloss: 6.474 valacc: 0.9069
+epoch: 438 sup_dt: -1.84e+06 sup_et: -3.65e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 5.685 trnacc: 0.9895 valloss: 7.353 valacc: 0.9157
+epoch: 439 sup_dt: -1.84e+06 sup_et: -3.5e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 5.562 trnacc: 0.9893 valloss: 7.239 valacc: 0.914
+# Saving models ...
+epoch: 440 sup_dt: -1.83e+06 sup_et: -3.42e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.586 trnacc: 0.9894 valloss: 7.244 valacc: 0.9142
+epoch: 441 sup_dt: -1.82e+06 sup_et: -3.38e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.699 trnacc: 0.988 valloss: 7.359 valacc: 0.9145
+epoch: 442 sup_dt: -1.83e+06 sup_et: -3.39e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.419 trnacc: 0.9879 valloss: 7.02 valacc: 0.914
+epoch: 443 sup_dt: -1.83e+06 sup_et: -3.57e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.459 trnacc: 0.9864 valloss: 7.003 valacc: 0.9125
+epoch: 444 sup_dt: -1.84e+06 sup_et: -3.58e+03 unsup_dt: -1.88e+06 unsup_et: -1.37e+06 trnloss: 5.528 trnacc: 0.9884 valloss: 7.163 valacc: 0.912
+epoch: 445 sup_dt: -1.85e+06 sup_et: -3.46e+03 unsup_dt: -1.89e+06 unsup_et: -1.38e+06 trnloss: 5.476 trnacc: 0.9887 valloss: 7.147 valacc: 0.9145
+epoch: 446 sup_dt: -1.84e+06 sup_et: -3.4e+03 unsup_dt: -1.87e+06 unsup_et: -1.36e+06 trnloss: 5.716 trnacc: 0.9899 valloss: 7.454 valacc: 0.9154
+epoch: 447 sup_dt: -1.83e+06 sup_et: -3.36e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.521 trnacc: 0.9893 valloss: 7.198 valacc: 0.9145
+epoch: 448 sup_dt: -1.83e+06 sup_et: -3.32e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.691 trnacc: 0.9893 valloss: 7.396 valacc: 0.915
+epoch: 449 sup_dt: -1.82e+06 sup_et: -3.31e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.764 trnacc: 0.99 valloss: 7.539 valacc: 0.9158
+# Saving models ...
+epoch: 450 sup_dt: -1.83e+06 sup_et: -3.4e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.413 trnacc: 0.9818 valloss: 6.949 valacc: 0.9106
+epoch: 451 sup_dt: -1.87e+06 sup_et: -3.73e+03 unsup_dt: -1.89e+06 unsup_et: -1.39e+06 trnloss: 5.423 trnacc: 0.9898 valloss: 7.042 valacc: 0.9161
+epoch: 452 sup_dt: -1.87e+06 sup_et: -3.54e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.449 trnacc: 0.9901 valloss: 7.116 valacc: 0.9155
+epoch: 453 sup_dt: -1.87e+06 sup_et: -3.43e+03 unsup_dt: -1.89e+06 unsup_et: -1.39e+06 trnloss: 5.302 trnacc: 0.9888 valloss: 6.916 valacc: 0.9145
+epoch: 454 sup_dt: -1.85e+06 sup_et: -3.38e+03 unsup_dt: -1.87e+06 unsup_et: -1.38e+06 trnloss: 5.482 trnacc: 0.9889 valloss: 7.171 valacc: 0.9146
+epoch: 455 sup_dt: -1.85e+06 sup_et: -3.38e+03 unsup_dt: -1.87e+06 unsup_et: -1.37e+06 trnloss: 5.607 trnacc: 0.9888 valloss: 7.306 valacc: 0.9154
+epoch: 456 sup_dt: -1.83e+06 sup_et: -3.33e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.636 trnacc: 0.9897 valloss: 7.404 valacc: 0.9156
+epoch: 457 sup_dt: -1.82e+06 sup_et: -3.28e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.583 trnacc: 0.9895 valloss: 7.291 valacc: 0.9134
+epoch: 458 sup_dt: -1.82e+06 sup_et: -3.28e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.505 trnacc: 0.99 valloss: 7.202 valacc: 0.9151
+epoch: 459 sup_dt: -1.82e+06 sup_et: -3.27e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.538 trnacc: 0.9905 valloss: 7.232 valacc: 0.9163
+# Saving models ...
+epoch: 460 sup_dt: -1.82e+06 sup_et: -3.38e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.637 trnacc: 0.9874 valloss: 7.37 valacc: 0.9134
+epoch: 461 sup_dt: -1.82e+06 sup_et: -3.35e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.6 trnacc: 0.9899 valloss: 7.296 valacc: 0.9148
+epoch: 462 sup_dt: -1.82e+06 sup_et: -3.31e+03 unsup_dt: -1.85e+06 unsup_et: -1.35e+06 trnloss: 5.533 trnacc: 0.989 valloss: 7.206 valacc: 0.9144
+epoch: 463 sup_dt: -1.83e+06 sup_et: -3.26e+03 unsup_dt: -1.85e+06 unsup_et: -1.36e+06 trnloss: 5.607 trnacc: 0.9892 valloss: 7.273 valacc: 0.9145
+epoch: 464 sup_dt: -1.83e+06 sup_et: -3.31e+03 unsup_dt: -1.86e+06 unsup_et: -1.36e+06 trnloss: 5.55 trnacc: 0.9892 valloss: 7.227 valacc: 0.915
+epoch: 465 sup_dt: -1.82e+06 sup_et: -3.27e+03 unsup_dt: -1.85e+06 unsup_et: -1.34e+06 trnloss: 5.644 trnacc: 0.9886 valloss: 7.33 valacc: 0.9146
+epoch: 466 sup_dt: -1.8e+06 sup_et: -3.23e+03 unsup_dt: -1.83e+06 unsup_et: -1.34e+06 trnloss: 5.759 trnacc: 0.9884 valloss: 7.493 valacc: 0.9135
+epoch: 467 sup_dt: -1.81e+06 sup_et: -3.23e+03 unsup_dt: -1.83e+06 unsup_et: -1.34e+06 trnloss: 5.704 trnacc: 0.9905 valloss: 7.452 valacc: 0.9156
+epoch: 468 sup_dt: -1.82e+06 sup_et: -3.21e+03 unsup_dt: -1.84e+06 unsup_et: -1.35e+06 trnloss: 5.79 trnacc: 0.9898 valloss: 7.554 valacc: 0.9162
+epoch: 469 sup_dt: -1.81e+06 sup_et: -3.18e+03 unsup_dt: -1.84e+06 unsup_et: -1.34e+06 trnloss: 5.718 trnacc: 0.9897 valloss: 7.494 valacc: 0.9152
+# Saving models ...
+epoch: 470 sup_dt: -1.84e+06 sup_et: -3.69e+03 unsup_dt: -1.86e+06 unsup_et: -1.37e+06 trnloss: 5.234 trnacc: 0.9892 valloss: 6.809 valacc: 0.9154
+epoch: 471 sup_dt: -1.86e+06 sup_et: -3.54e+03 unsup_dt: -1.88e+06 unsup_et: -1.39e+06 trnloss: 5.4 trnacc: 0.9883 valloss: 7.083 valacc: 0.9118
+epoch: 472 sup_dt: -1.88e+06 sup_et: -3.44e+03 unsup_dt: -1.89e+06 unsup_et: -1.41e+06 trnloss: 5.734 trnacc: 0.9898 valloss: 7.442 valacc: 0.9143
+epoch: 473 sup_dt: -1.87e+06 sup_et: -3.3e+03 unsup_dt: -1.88e+06 unsup_et: -1.4e+06 trnloss: 5.587 trnacc: 0.9903 valloss: 7.273 valacc: 0.916
+epoch: 474 sup_dt: -1.88e+06 sup_et: -3.33e+03 unsup_dt: -1.9e+06 unsup_et: -1.41e+06 trnloss: 5.405 trnacc: 0.9893 valloss: 7.057 valacc: 0.9139
+epoch: 475 sup_dt: -1.87e+06 sup_et: -3.27e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.488 trnacc: 0.9896 valloss: 7.168 valacc: 0.9137
+epoch: 476 sup_dt: -1.87e+06 sup_et: -3.21e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.497 trnacc: 0.9895 valloss: 7.163 valacc: 0.9138
+epoch: 477 sup_dt: -1.87e+06 sup_et: -3.32e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.434 trnacc: 0.9894 valloss: 7.053 valacc: 0.9149
+epoch: 478 sup_dt: -1.86e+06 sup_et: -3.27e+03 unsup_dt: -1.88e+06 unsup_et: -1.4e+06 trnloss: 5.475 trnacc: 0.9905 valloss: 7.144 valacc: 0.9156
+epoch: 479 sup_dt: -1.87e+06 sup_et: -3.42e+03 unsup_dt: -1.89e+06 unsup_et: -1.4e+06 trnloss: 5.527 trnacc: 0.9878 valloss: 7.174 valacc: 0.9136
+# Saving models ...
+epoch: 480 sup_dt: -1.88e+06 sup_et: -3.42e+03 unsup_dt: -1.9e+06 unsup_et: -1.41e+06 trnloss: 5.49 trnacc: 0.9888 valloss: 7.177 valacc: 0.9135
+epoch: 481 sup_dt: -1.89e+06 sup_et: -3.31e+03 unsup_dt: -1.91e+06 unsup_et: -1.42e+06 trnloss: 5.397 trnacc: 0.9902 valloss: 7.06 valacc: 0.9154
+epoch: 482 sup_dt: -1.88e+06 sup_et: -3.21e+03 unsup_dt: -1.9e+06 unsup_et: -1.41e+06 trnloss: 5.453 trnacc: 0.9907 valloss: 7.115 valacc: 0.9161
+epoch: 483 sup_dt: -1.88e+06 sup_et: -3.18e+03 unsup_dt: -1.89e+06 unsup_et: -1.41e+06 trnloss: 5.448 trnacc: 0.989 valloss: 7.122 valacc: 0.9116
+epoch: 484 sup_dt: -1.87e+06 sup_et: -3.13e+03 unsup_dt: -1.88e+06 unsup_et: -1.4e+06 trnloss: 5.549 trnacc: 0.9901 valloss: 7.249 valacc: 0.9145

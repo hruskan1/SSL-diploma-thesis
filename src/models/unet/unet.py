@@ -85,8 +85,12 @@ class DecoderBlock(nn.Module):
 
     def forward(self,x,skip_x):
         
+
         x = self.scaling_layer(x)
-        x = torch.cat((skip_x,x),dim=1) # concat skip 
+
+        if skip_x is not None:
+            x = torch.cat((skip_x,x),dim=1) # concat skip 
+
         return self.conv_layer(x)
 
 
@@ -108,6 +112,9 @@ def _select_batch(block_args,channels,group_size):
 
     elif block_args.normalization_type == 'group':
         return(nn.GroupNorm(int(max(1,channels/group_size)), channels))
+    
+    elif block_args.normalization_type == 'none':
+        return(nn.Identity())
 
 
 class Unet(nn.Module):
@@ -153,7 +160,10 @@ class Unet(nn.Module):
         x = self.bottleneck(x)
         
         for i,l in enumerate(self.decoders):
-            x = l(x,skip_outputs[-i-1])
+            if -i-1 < -len(skip_outputs):
+                x = l(x,None)
+            else:
+                x = l(x,skip_outputs[-i-1])
 
         output = self.clf(x)
         return output
