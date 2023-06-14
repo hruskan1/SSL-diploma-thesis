@@ -1,5 +1,4 @@
-\documentclass[11pt]{beamer}
-
+\documentclass[aspectratio=169,11pt]{beamer}
 \def\cl#1{\mathcal{#1}}
 \def\bb#1{\mathbb{#1}}
 
@@ -29,10 +28,13 @@
 \usepackage{amsmath}
 \usepackage{tabularx,booktabs}
 \usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 % clear the predefined navigation symbols
-% \beamertemplatenavigationsymbolsempty
-% \setbeamertemplate{footline}{\hfill \insertframenumber\,/\,\insertpresentationendpage}
+\beamertemplatenavigationsymbolsempty
+\setbeamerfont{page number in foot}{size=\Large}
+\setbeamertemplate{footline}[frame number]
 
 % print only the frame number in the footline
 
@@ -47,105 +49,102 @@
 
 \begin{frame}
     \frametitle{Motivation}
-    ESA project\footnote{At https://eo4society.esa.int/projects/spatiotemporal-sen2vhr/} in collaboration with Mapradix s.r.o.
+    ESA project: Enhanced Spatiotemporal Land Change Monitoring Based on Sentinel-2 Time Series and VHR Images
 
-    Enhanced Spatiotemporal Land Change Monitoring Based on Sentinel-2 Time Series and VHR Images
-
+    \textbf{Main motivation:}  Desire to segment the time series of satellite imagery.
     \begin{figure}[b]
         \centering
-        \includegraphics[width=0.7\linewidth]{spatio_temporal_segmenting.png}
-    \end{figure}
-
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Remote Sensing and its issues}
-    \textbf{Sentinel-2 imagery}
+        \includegraphics[width=0.75\linewidth]{spatio_temporal_segmenting.png}
+    \end{figure}  
+    
+    {\footnotesize\textbf{Challanges:}    
     \begin{itemize}
-        \item 13 spectral bands
-        \item period of 10 days
-        \item different spatial resolution (10/20/60 $m^2$)
-    \end{itemize} 
-    \textbf{Issues}
-    \begin{itemize}
-        \item Partial Oclusions: Cloud cover or snow cover (seasonal dependence)
-        \item Different viewing angle
-        \item Atmospheric calibration etc. 
-        \item Annotation process is time demanging and requires high expertise.
+            \item Only 2\% of the data is annotated. The rest is unlabeled. (5/250) 
+            \item Partial occlusion in the data (clouds, snow) = missing measurements 
+            \item No validation data 
     \end{itemize}
-
-    Semi Supervised Learning can reduce the need for large number of annotations.
-    Generative models can impaint the ocluded regions. 
+    \textbf{Proposed solutions:}
+    \begin{itemize}
+        \item Apply Semi supervised learning 
+        \item Evaluate the algorithms on the CityScape dataset instead of satellite images. 
+    \end{itemize}}
 \end{frame}
 
-
 \begin{frame}
-    \frametitle{Semi Supervised Learning}
+    \frametitle{Considered SSL methods}
     $$
     \mathcal{D} = \mathcal{X}\,\cup\,\mathcal{U}:\, \mathcal{X} = \{(\mathbf{x}_1,y_1),\dots, (\mathbf{x}_l,y_l)\},\quad \mathcal{U} = \{(\mathbf{x}_{l+1}),\dots,(\mathbf{x}_{u})\},
     $$
     where $x_i$ are features and $y_i$ are labels. 
+    \begin{enumerate}
+        \item \textbf{Discriminative model} + MixMatch 
+        \item \textbf{Generative model} (hiearchical variational autoencoder) + symmetric training
+    \end{enumerate}
     
-    Assumptions from unsupervised learning: 
-    \begin{itemize}
-        \item Smothness: $x_1$ close to $x_2$ in high density region imples $y_1$ close to $y_2$
-        \item Cluster: Points in one cluster are likely to be of the same class
-        \item Manifold: The data lie along low-dimensional latent manifolds inside that high-dimensional space.
-    \end{itemize}
+    \textbf{Main contributions:} Implementing and adapting both methods to the task of semantic segmentation 
 \end{frame}
 
 \begin{frame}
     \frametitle{MixMatch}
-    \textbf{Discriminative model} based on empirical risk minimization
-    {\footnotesize
-    \begin{itemize}
-        \item Data Augmentation
-        \item Pseudo labeling
-        \item Sharpening
-        \item MixUp
-    \end{itemize}
+    \textbf{Holistic method} combining the data augmentation, pseudo-labeling, entropy minimization and Mix Up procedure:
+{\footnotesize
     \begin{equation*}
         \begin{gathered}
             \mathcal{X}^\prime,\mathcal{U}^\prime = \text{MixMatch}(\mathcal{X}, \mathcal{U}, T, K, \alpha)\\
-            \mathcal{L}_{\mathcal{X}} = \frac{1}{|\mathcal{X}^\prime|}\sum_{x^\prime,p^\prime \in \mathcal{X}^\prime} H(p^\prime,f_\theta(x^\prime)), \quad
-            \mathcal{L}_{\mathcal{U}} = \frac{1}{L|\mathcal{U}^\prime|}\sum_{u^\prime,q^\prime \in \mathcal{U}^\prime} ||q^\prime - f_\theta(u^\prime)||_2^2 \\
-            \mathcal{L} = \mathcal{L}_{\mathcal{X}} + \lambda_\mathcal{U} \mathcal{L}_{\mathcal{U}}
+            \mathcal{L} = \frac{1}{|\mathcal{X}^\prime|}\sum_{x^\prime,p^\prime \in \mathcal{X}^\prime} H(p^\prime,f_\theta(x^\prime))
+            + \lambda_\mathcal{U} \frac{1}{L|\mathcal{U}^\prime|}\sum_{u^\prime,q^\prime \in \mathcal{U}^\prime} ||q^\prime - f_\theta(u^\prime)||_2^2 
         \end{gathered}
     \end{equation*}
-    \begin{figure}[t]
-        \centering
-        \includegraphics[width=1\linewidth]{mixmatch_label_guessing.png}
-        \caption{Mixmatch up to the point of sharpening. Source: MixMatch}
-    \end{figure}}
-    {\footnotesize \href[]{https://arxiv.org/abs/1905.02249}{\textit{MixMatch: A Holistic Approach to Semi-Supervised Learning}} }
+
+    \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.7\textwidth}
+        \centring
+        \includegraphics[width=\textwidth]{mixmatch_label_guessing.png}
+        \caption{Pseudo labeling}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.35\textwidth}
+        \centring
+        \includegraphics[width=\textwidth]{mixup.png}
+        \caption{Mix Up}
+    \end{subfigure}
+    \caption{MixMatch procedure. {\footnotesize \href[]{https://arxiv.org/abs/1905.02249}{\textit{MixMatch: A Holistic Approach to Semi-Supervised Learning}} }}
+    \end{figure}    
+}
+
 \end{frame}
 
 \begin{frame}
     \frametitle{MixMatch}
-    \textbf{After sharpening :}
+    
+    \textbf{MixUp after sharpening :}
+    {\footnotesize
     \begin{align*}
         \mathcal{X}^\star &= \{ (\tilde{x}_i,p_i)\,|\, i \in \{1,\dots,n\}  \}, \, |\mathcal{X}^\star| = n \\
         \mathcal{U}^\star &= \{ (\tilde{u}_{j,k},q_j)\,|\, j \in \{1,\dots,n\},\,k \in \{1,\dots,K\}  \}, \, |\mathcal{U}^\star| = Kn\\
-        \mathcal{W} &= \text{Shuffle}(\text{Concat}(\mathcal{X}^\star,\mathcal{U}^\star))
-    \end{align*}
-    \textbf{MixUp:}
-    \begin{align*}
+        \mathcal{W} &= \text{Shuffle}(\text{Concat}(\mathcal{X}^\star,\mathcal{U}^\star))\\
         \begin{bmatrix} \mathcal{X}^\prime \\ \mathcal{U}^\prime \end{bmatrix} &= \text{MixUp}(\begin{bmatrix} \mathcal{X}^\star \\ \mathcal{U}^\star \end{bmatrix},\mathcal{W}) 
     \end{align*}
     where the MixUp($\cdot$,$\cdot$) corresponds to following operation applied elementwise:
     \begin{align*}
-        \lambda^\prime &= \max(\lambda,1-\lambda), \text{ where } \lambda \sim \text{Beta}(\alpha,\alpha) \\
         \begin{bmatrix}x^\prime \\ p^\prime\end{bmatrix} &= \lambda^\prime \begin{bmatrix}
             x_1 \\ p_1
         \end{bmatrix} + (1-\lambda^\prime) \begin{bmatrix}
             x_2 \\ p_2
-        \end{bmatrix} \\
+        \end{bmatrix}, \quad \lambda^\prime = \max(\lambda,1-\lambda), \text{ where } \lambda \sim \text{Beta}(\alpha,\alpha)
     \end{align*}
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.8\linewidth]{mixup.png}
+        \caption{Source: https://hoya012.github.io/blog/Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks-Review/}
+    \end{figure}
+    }
+    
 \end{frame}
 
 \begin{frame}
-    \frametitle{VAE}
+    \frametitle{Variational Autoencoders}
     \textbf{Generative model} based on ML maximization
 
     Simple bayesian network with hidden variables $z$:
@@ -158,8 +157,8 @@
     $$
     p_{\theta}(x) = \int_{z} p_{\theta}(x,z)\, \d z = \frac{p_{\theta}(x,z)}{p_{\theta}(z|x)}
     $$ 
-    do not allow us to maximize the log-likelihood directly, instead we introduce the \textit{inference model} $q_{\phi}(z|x)$
-    and optimize the ELBO proxy:
+    does not allow us to maximize the log-likelihood directly, instead we introduce the \textit{inference model} $q_{\phi}(z|x)$
+    with amortized inference and optimize the ELBO proxy:
     \begin{align*}
         \log p_\theta(x) &= \EX_{q_{\phi}(z|x)} \Bigl[ \log \frac{p_\theta(x,z)q_\phi(z|x)}{q_\phi(z|x)p_\theta(z|x)} \Bigr] \\  
         &=\underbrace{\EX_{q_{\phi}(z|x)} \Bigl[ \log \frac{p_\theta(x,z)}{q_\phi(z|x)} \Bigr]}_{\mathrm{ELBO}} + 
@@ -169,52 +168,39 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{VAE}
-    \textbf{Learning :} Stochastic approach - unbaiessed estimator and reparametrization trick allow us to use SGD
-    \begin{align*}
-    \mathcal{L} = \EX_{q_{\phi}(z|x)} \Bigl[ \log {p_\theta(x,z)} \Bigr] - \EX_{q_{\phi}(z|x)} \Bigl[ \log {q_\phi(z|x)} \Bigr] 
-    \end{align*}
-    \textbf{Issues and limitations:} 
-    \begin{itemize}
-        \item Parametrization trick requires continouous latent variable
-        \item Posterior collapse: Optimization can end in an undesirable stable equilibrium: $q_{\phi}(z|x) \approx p_{\theta}(z)$
-        \item Bluriness of images: The ELBO enforces the consistent encoder and decoder pairs. This disallow the model to learn 
-        the complex data distribution. Solved by more flexible model (such as hiearchical VAE).
-    \end{itemize}
-
-\end{frame}
-
-\begin{frame}
     \frametitle{Symmetric equillibrium leaning in VAE}
     New objectives are 
     \begin{align*}
         \mathcal{L}_{p}(\theta,\phi) =& \EX_{\pi (x,z)}\bigl[\log p_{\theta}(x,z)\bigr]+
                         \EX_{\pi(z)}\bigl[\log p_{\theta}(z)\bigr] +\\
-                        &\EX_{\pi(x)}\EX_{q_{\phi}(z|x)}\bigl[\log p_{\theta}(x,z)\bigr]\\
-        \mathcal{L}_{q}(\theta,\phi) =& \EX_{\pi(x,z)}\bigl[\log q_{\phi}(z | x)\bigr] + 
-        \EX_{\pi(z)}\EX_{p_{\theta}(x | z)} \bigl[\log q_{\phi}( z | x)\bigr]
+                        &\EX_{\pi(x)}\EX_{q_{\phi}(z|x)}\bigl[\log p_{\theta}(x,z)\bigr] \to \max_{\theta} \\
+        \mathcal{L}_{q}(\theta,\phi) =& \EX_{\pi(x,z)}\bigl[\log q_{\phi}(z | x)\bigr] +\\ 
+        &\EX_{\pi(z)}\EX_{p_{\theta}(x | z)} \bigl[\log q_{\phi}( z | x)\bigr] \to \max_{\phi}
     \end{align*}
     for semi-supervised training instead of ELBO:
     $$
     \EX_{\pi(x)} \bigl[ 
     \log p_{\theta}(x) - \mathrm{KL} (q_{\phi}(z | x) || p_{\theta}(z | x)) \bigr]
     $$
-    The optimization does not require the reparametrization trick and allows for broader families of distributions,
-    such as exponential family. 
+    The $\pi(x,z)$ is underlying unknown true distribution with its marginals $\pi(x)$ and $\pi(z)$.
+    \begin{itemize}
+    \item does not require the reparametrization trick 
+    \item learning possible when both the data and latent distributions are accessible only through sampling.
+    \end{itemize}
     \textit{Symmetric Equilibrium Learning of VAE} [submitted to NeurIPS 23]
 \end{frame}
 
 \begin{frame}
-\frametitle{Methods}
+\frametitle{Methods and Experiments}
 \begin{itemize}
     \item CityScape dataset (simple 2D segmentation)
-    \item U-net backbone
     \item plain accuracy and IoU metric
-    \item hiearchical VAE for symmetric equilibrium learning 
+    \item U-net backbone for both MixMatch and HVAE encoder.
+    \item binary hiearchical VAE for symmetric equilibrium learning 
     \begin{align*}
         \mathbf{z} = (\mathbf{z}_0, \mathbf{z}_1, \dots, \mathbf{z}_m), \quad \mathbf{z}_0 = (\mathbf{s}, \mathbf{l}),\, \mathbf{z}_m = \mathbf{x}
     \end{align*}
-    with blockwise optimization:
+    where $s$ is categorical distribution to model segmentation, and $l$ is latent code.  The model is optimized blockwise:
     \begin{align*}
         \mathcal{L}_{p}(\_\theta,\_\phi) &= 
             \EX_{\pi(\_x,\_s)}\EX_{q_{\_\theta,\_\phi}(\_z_{>0},\_l \mid \_x, \_s)}\bigl[\log p_{\_\theta}(\_x,\_z)\bigr]\\
@@ -228,11 +214,36 @@
 \end{frame}
 
 \begin{frame}
+    \footnotesize 
+    R: The final architecture used is not explained to the necessary level of detail. 
+    A figure and description of the learning process desirable:
     \frametitle{Architecture of the HVAE}
     \begin{figure}[t]
         \centering
-        \includegraphics[width=\textwidth]{Unet.pdf}
+        \includegraphics[width=0.7\textwidth]{Unet.pdf}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{MixMatch adaptation}
+    \textbf{Challanges:}
+    \begin{itemize}
+        \item Augmentation must be applied to both the image and the segmentation, and it needs to be invertible to compute the average.
+        \item Part of the images can be cropped out when applying the inverse transformation. 
+    \end{itemize}
+
+    \textbf{Solution:}
+    We allow for affine transformation, which are invertible. The process is as follows:
+    \begin{itemize}
+        \item We apply K (random) augmentations to image.
+        \item We classify the augmentation by the network and invert it.
+        \item We compute the average over the K augmented views, taking into account only the valid views for each pixel. We then sharpen it.
+        \item We apply (the same) augmentations to the pseudo label and assign them to the views. 
+        \item We adapt the MixUp procedure to correctly mix cropped images without propagating empty parts.
+    \end{itemize}
+    
+
+    
 \end{frame}
 
 \begin{frame}
@@ -267,27 +278,15 @@
     \frametitle{Mixmatch results (images)}
     \begin{figure}[t]
         \centering
-        \includegraphics[width=1\textwidth]{mix10_vizualization.png}
-        \caption{Models were trained on \textbf{ten} images. The first two rows contain the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
-        while the supervised baseline predictions are in the fourth.\newline
-        The colors used in the segmentation are as follows: flat (purple), human (red), vehicle (dark blue), construction (dark grey), 
-        object (light gray), nature (green), sky (light blue), and void (black). The predictions on the "void" class are not penalized nor evaluated.}
-    \end{figure}
-\end{frame}
-\begin{frame}
-    \frametitle{Mixmatch results (images)}
-    \begin{figure}[t]
-        \centering
-        \includegraphics[width=1\textwidth]{mixall_vizualization.png}
-        \caption{Models were trained on \textbf{all} images. The first two rows contain the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
-        while the supervised baseline predictions are in the fourth.\newline
-        The colors used in the segmentation are as follows: flat (purple), human (red), vehicle (dark blue), construction (dark grey), 
-        object (light gray), nature (green), sky (light blue), and void (black). The predictions on the "void" class are not penalized nor evaluated.}
+        \includegraphics[width=1\textwidth]{mix100_visualization.png}
+        \caption{Models were trained on \textbf{100} images. The first two rows contain the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
+        while the supervised baseline predictions are in the fourth}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Symmetric equilibrium training results}    
+    \frametitle{Symmetric equilibrium training results}
+    {\footnotesize R: There are no “baseline” experiments for symmetric learning. The reviewer proposes possible experiments to conduct.}
     \begin{table}[tbh]
         \begin{tabular}{|c|c|c|c|c|c|}
         \hline
@@ -295,20 +294,30 @@
         \hline
         HVAE & $74.01$ & $86.18$ & $90.23$ & $92.63$ & $93.51$ \\
         \hline
-        Supervised & $74.82$ & $87.73$ & $90.81$ &$44.05^\ast$ &  $43.37^\ast$  \\
+        Supervised & $74.82$ & $87.73$ & $90.81$ &$94.18$& $94.93$ \\
         \hline
         \end{tabular}
-        \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%), $^\ast$ (learning has failed) }
+        \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%) }
         \label{tab:hvae-cityscapes-acc}
     \end{table}
     
     \begin{figure}[t]
         \centering
-        \includegraphics[width=\textwidth]{shbvae_cs_vizualization.png}
+        \includegraphics[width=0.9\textwidth]{shbvae_cs_vizualization.png}
         \caption[Symmetric learning HVAE CityScape results]{The first row contains the original image. The second row is filled with the reconstructed
-        images from encoding the original image into $\mathbf{z}_0$ and decoding. The third and fourth rows contain model and ground truth segmentation, respectively.}
+        images. The third and fourth rows contain model and ground truth segmentation, respectively.}
         \label{fig:hvae-cs}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item The mixmatch can improve the results especially in scenario with low amount of annotated data.
+        \item The HVAE in its current state is not capable of generating the images, which could improve the encoder accuracy 
+        \item Despite its limitations, the HVAE shows promise as a potential approach worth exploring further.
+    
+    \end{itemize}
 \end{frame}
 
     

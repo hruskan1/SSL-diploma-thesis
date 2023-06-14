@@ -1,0 +1,316 @@
+\documentclass[aspectratio=169]{beamer}
+\def\cl#1{\mathcal{#1}}
+\def\bb#1{\mathbb{#1}}
+
+\def\_#1{\protect\mathchoice
+    {\mbox{\boldmath $\displaystyle\bf#1$}}
+    {\mbox{\boldmath $\textstyle\bf#1$}}
+    {\mbox{\boldmath $\scriptstyle\bf#1$}}
+    {\mbox{\boldmath $\scriptscriptstyle\bf#1$}}}
+
+\DeclareMathOperator{\EX}{\mathbb{E}}
+
+\newcommand{\argmax}{\mathop{\rm argmax}}
+\newcommand{\argmin}{\mathop{\rm argmin}}
+\newcommand{\arctg}{\mathop{\rm arctg}}
+\newcommand{\tg}{\mathop{\rm tg}}
+\newcommand{\aff}{\mathop{\rm aff}}
+\newcommand{\conv}{\mathop{\rm conv}}
+\newcommand{\rank}{\mathop{\rm rank}}
+\newcommand{\diag}{\mathop{\rm diag}}
+\newcommand{\sgn}{\mathop{\rm sgn}}
+\newcommand{\Null}{\mathop{\rm null}}
+\newcommand{\Rng}{\mathop{\rm rng}}
+\newcommand{\dist}{\mathop{\rm dist}}
+\renewcommand{\d}[1]{\mbox{\rm d}#1}
+\newcommand{\softmax}{\mathop{\rm softmax}}
+
+\usepackage{amsmath}
+\usepackage{tabularx,booktabs}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% clear the predefined navigation symbols
+\beamertemplatenavigationsymbolsempty
+\setbeamerfont{page number in foot}{size=\Large}
+\setbeamertemplate{footline}[frame number]
+
+% print only the frame number in the footline
+
+
+\title{Semi-Supervised Learning \\for Spatio-Temporal Segmentation of Satellite Images}
+\author{Antonín Hruška}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+    \frametitle{Motivation}
+    ESA project: Enhanced Spatiotemporal Land Change Monitoring Based on Sentinel-2 Time Series and VHR Images
+
+    \textbf{Main motivation:}  Segment time series of satellite imagery.
+    \begin{figure}[b]
+        \centering
+        \includegraphics[width=0.7\linewidth]{satellite_time_series.png}
+    \end{figure}  
+    
+    {\footnotesize\textbf{Challanges:}    
+    \begin{itemize}
+        \item Only 2\% of the data is annotated. The rest is unlabeled. (5/250) 
+        \item Partial occlusion in the data (clouds, snow) = missing measurements 
+        \item No validation data 
+    \end{itemize}
+    \textbf{Proposed solutions:}
+    \begin{itemize}
+        \item Apply Semi supervised learning and generative models 
+        \item Evaluate the algorithms on the CityScape dataset instead of satellite images. 
+    \end{itemize}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Considered SSL methods}
+    \textbf{Semi Supervised learning:}
+    $$
+    \mathcal{D} = \mathcal{X}\,\cup\,\mathcal{U}:\, \mathcal{X} = \{(\mathbf{x}_1,y_1),\dots, (\mathbf{x}_l,y_l)\},\quad \mathcal{U} = \{(\mathbf{x}_{l+1}),\dots,(\mathbf{x}_{u})\},
+    $$
+    where $x_i$ are features and $y_i$ are labels. 
+    \begin{enumerate}
+        \item \textbf{Discriminative model} + MixMatch 
+        \item \textbf{Generative model} (hiearchical variational autoencoder) + symmetric training
+    \end{enumerate}
+    
+    \textbf{Main contributions:} Adapting both methods to the task of semantic segmentation. Implementation and comparison of both methods on CityScape dataset.
+
+\end{frame}
+
+\begin{frame}
+        \frametitle{MixMatch}
+        \textbf{Holistic method} combining the data augmentation, pseudo-labeling, entropy minimization and Mix Up procedure:
+    {\footnotesize
+        \begin{equation*}
+            \begin{gathered}
+                \mathcal{X}^\prime,\mathcal{U}^\prime = \text{MixMatch}(\mathcal{X}, \mathcal{U}, T, K, \alpha)\\
+                \mathcal{L} = \frac{1}{|\mathcal{X}^\prime|}\sum_{x^\prime,p^\prime \in \mathcal{X}^\prime} H(p^\prime,f_\theta(x^\prime))
+                + \lambda_\mathcal{U} \frac{1}{L|\mathcal{U}^\prime|}\sum_{u^\prime,q^\prime \in \mathcal{U}^\prime} ||q^\prime - f_\theta(u^\prime)||_2^2 
+            \end{gathered}
+        \end{equation*}
+    
+        \begin{figure}
+        \centering
+        \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.7\textwidth]{mixmatch_label_guessing.png}
+            \caption{Pseudo labeling}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{\textwidth}
+            \centering
+            \includegraphics[width=0.35\textwidth]{mixup.png}
+            \caption{Mix Up}
+        \end{subfigure}
+        \caption{MixMatch procedure. {\footnotesize \href[]{https://arxiv.org/abs/1905.02249}{\textit{MixMatch: A Holistic Approach to Semi-Supervised Learning}}}}
+        \end{figure}    
+    }
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Symmetric learning for hiearchical variational autoencoders}
+    \textbf{Generative} latent variable \textbf{model} with \textit{decoder} 
+    $$
+    p_{\theta}(x,z) = p_{\theta}(z)p_{\theta}(x\mid z) 
+    $$
+    and the \textit{inference model} (\textit{encoder}):
+    $$
+    q_{\phi}(z|x) \approx p_{\theta}(z|x)
+    $$
+    Standard evidence lower bound (ELBO) objective 
+    $$
+    \EX_{q_{\phi}(z|x)} \Bigl[ \log \frac{p_\theta(x,z)}{q_\phi(z|x)} \Bigr] = \EX_{q_{\phi}(z|x)} \log p_\theta(x) - \mathrm{KL}(q_{\phi}(z|x) || p_{\theta}(z|x)) \to \max_{\theta,\phi}
+    $$
+    is not applicable if latent $z$ contains segmentations. 
+    Symmetric equilibrium training separtes the log-likelihood of both encoder and decoder:
+    \begin{equation*}
+        \begin{aligned}
+        \mathcal{L}_{p}(\theta,\phi) &= \EX_{\pi (x,z)}\bigl[\log p_{\theta}(x,z)\bigr]+
+                        \EX_{\pi(z)}\bigl[\log p_{\theta}(z)\bigr] +
+                        \EX_{\pi(x)}\EX_{q_{\phi}(z|x)}\bigl[\log p_{\theta}(x,z)\bigr] \to \max_{\theta} \\
+        \mathcal{L}_{q}(\theta,\phi) &= \EX_{\pi(x,z)}\bigl[\log q_{\phi}(z | x)\bigr] +
+        \EX_{\pi(z)}\EX_{p_{\theta}(x | z)} \bigl[\log q_{\phi}( z | x)\bigr] \to \max_{\phi}
+        \end{aligned}
+    \end{equation*}
+    The learning corresponds to Nash-equilibrium 2-player game with the above objectives.
+    
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Mixmatch adaptation and methods}
+    \textbf{Experiments settings:}
+    \begin{itemize}
+        \item We use the CityScape dataset to evaluate the methods for semantic segmentation.
+        \item We use plain accuracy and IoU as metrics. 
+        \item Both discriminative model and the encoder of HVAE have U-net shape.
+    \end{itemize}
+
+    \textbf{MixMatch adaptation}
+    \begin{itemize}
+        \item The pseudolabeling procedure requires to apply the augmentation on the segmentation. The augumentation has to be invertible in order to compute 
+    average. 
+        \item We propose to use the affine transformations, which are rich and also invertible.
+    \end{itemize}
+
+    \begin{figure}[b]
+        \centering
+        \includegraphics[width=1\linewidth]{short_pseudolabelling.png}
+    \end{figure} 
+
+        
+        
+\end{frame}
+
+\begin{frame}
+    \frametitle{Hiearchical variational autoencoder adaptation}
+    \begin{itemize}
+        \item binary hiearchical VAE 
+        \begin{align*}
+            \mathbf{z} = (\mathbf{z}_0, \mathbf{z}_1, \dots, \mathbf{z}_8), \quad \mathbf{z}_0 = (\mathbf{s}, \mathbf{l}),\, \mathbf{z}_8 = \mathbf{x}
+        \end{align*}
+        where $s$ is categorical distribution to model segmentation, and $l$ is latent code. 
+    \end{itemize}
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.8\textwidth]{Unet_simpler.pdf}
+    \end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+    \frametitle{Mixmatch results (tables)}
+    \begin{table}[tbh]
+        \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Images [\#]  & 10 ($0.33\%$) & 100 ($3.3\%$) & 500 ($16.8\%$) & 1000 ($33.6\%$)& 2975 ($100\%$) \\
+        \hline
+        Mixmatch & $84.53$ & $90.76$ & $93.42$ & $94.32$ & $94.84$ \\
+        \hline
+        Supervised & $76.85$ & $87.59$ & $93.50$ & $94.71$ & $95.58$ \\
+        \hline
+        \end{tabular}
+        \caption{Mixmatch accuracy rate (\%) on CityScape dataset. The first row contains the number of fully annotated 
+        images avilable during the training. In the last column, the CityScape dataset is replicated and used as labeled and unlabeled dataset.}
+    \end{table}
+    \begin{table}[tbh]
+        \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Images [\#]  & 10 ($0.33\%$) & 100 ($3.3\%$) & 500 ($16.8\%$) & 1000 ($33.6\%$)& 2975 ($100\%$) \\
+        \hline
+        Mixmatch & $48.10$ & $61.98$ & $69.24$ & $71.97$ & $73.08$ \\
+        \hline
+        Supervised & $41.78$ & $54.38$ & $68.25$ & $71.93$ & $73.84$ \\
+        \hline
+        \end{tabular}
+        \caption{Mixmatch average IoU (\%) on CityScape dataset}
+    \end{table}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Mixmatch results (images)}
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=1\textwidth]{mix100_visualization.png}
+        \caption{Images of models, which where trained on \textbf{100} annotated images. The first two rows contain the image and its ground truth segmentation. The MixMatch predictions are shown in the third row, 
+        while the supervised baseline predictions are in the fourth.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Symmetric equilibrium training results}
+    \begin{table}[tbh]
+        \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        Images [\#]  & 10 ($0.33\%$) & 100 ($3.3\%$) & 500 ($16.8\%$) & 1000 ($33.6\%$)& 2975 ($100\%$) \\
+        \hline
+        HVAE & $74.01$ & $86.18$ & $90.23$ & $92.63$ & $93.51$ \\
+        \hline
+        Supervised & $74.82$ & $87.73$ & $90.81$ &$94.18$& $94.93$ \\
+        \hline
+        \end{tabular}
+        \caption[HVAE plain accuracy on CityScape]{HVAE accuracy rate (\%) }
+        \label{tab:hvae-cityscapes-acc}
+    \end{table}
+    
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.80\textwidth]{shbvae_cs_vizualization.png}
+        \caption[Symmetric learning HVAE CityScape results]{The first two rows are filled with the original and reconstructed
+        images. The third and fourth rows contain model and ground truth segmentation.}
+        \label{fig:hvae-cs}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item The mixmatch can improve the results especially in scenario with low amount of annotated data.
+        \item The HVAE in its current state is not capable of generating the images, which could improve the encoder accuracy.
+        \item Despite its limitations, the HVAE shows promise as a potential approach worth exploring further.
+    
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Reviewer's questions (1/2)}
+    {\small
+    Unfortunately, the final architecture used for symmetric learning is not explained to the necessary level of detail.
+Basically, it is only said that both encoder and decoder have a U-Net like architecture. Note however that they
+share parameters, i.e., the encoder uses decoder parts in order to e.g., generate from $q_{\theta,\phi}(z \mid x)$. 
+It is not entirely clear how it works. Are the stochastic variables $z_i$ attached to all resolution levels? Are they 
+attached to both U-Net branches (of decreasing and increasing spatial resolutions)? Is there a skip-connection also 
+between blocks of the original resolution? How many resolution levels there are? So, a more detailed explanation as 
+well as a figure illustrating the architecture and generating / learning process would be highly appreciated.
+
+An important question is the dimensionality of the latent $z$-s, especially for $l$ (which is a part of $z_0$ ). Note that the
+segmentation alone does not include any coloring information, like segment colors (or colors of objects /
+instances), textures, shadows etc. Hence, in order to generate realistically looking images, such information
+should be encoded by the latent variables, in particular by $l$. If its dimension is low, it is obviously not capable to
+represent this information adequately (btw. if so, perhaps it can explain why the reconstructed images are bad).
+If, however the dimension of $l$ is high, one has a gigantic input tensor for the decoder (due to replication of $l$
+along spatial dimensions), which obviously causes certain technical problems.}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Detailed architecture}
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.7\textwidth]{Unet.pdf}
+    \end{figure}
+\end{frame}
+    
+\begin{frame}
+    \frametitle{Reviewer's questions (2/2)}
+    {\small
+    Concerning experiments. It is somewhat surprising that there are no “baseline” experiments for symmetric
+learning like it was done for Mixmatch. Moreover, such baseline experiments could be designed in different ways.
+For example, one could just learn the segmentation model $q_{\theta}(s|x)$ on fully supervised training data of different
+sizes. Next, one can apply the “full” symmetric learning according to eqs. (\ref{eq:hvae_decoder}), (\ref{eq:hvae_encoder}) but again on fully supervised
+training data of different sizes only. Hopefully, comparing these two experiments one can observe some
+improvement, because additional terms in eqs. (\ref{eq:hvae_decoder}), (\ref{eq:hvae_encoder}) should serve as a regularizer for the segmentation
+model, and hence improve generalization capabilities. Finally, comparing the final experiments (which are present
+in the work) with fully supervised symmetric learning, one can draw conclusions about the applicability of the
+symmetric learning for SSL.
+    }
+    \begin{align}
+        \mathcal{L}_{p}(\_\theta,\_\phi) &= 
+            \EX_{\pi(\_x,\_s)}\EX_{q_{\_\theta,\_\phi}(\_z_{>0},\_l \mid \_x, \_s)}\bigl[\log p_{\_\theta}(\_x,\_z)\bigr]+
+            \EX_{\pi(\_x)}\EX_{q_{\_\theta,\_\phi}(\_z \mid \_x)} \bigl[\log p_{\_\theta}(\_x,\_z)\bigr] \label{eq:hvae_decoder}\\
+        \mathcal{L}_{q}(\_\theta,\_\phi) &=
+            \EX_{\pi(\_x,\_s)}\bigl[\log q_{\_\phi}(\_s \mid \_x) \bigr] + 
+            \EX_{\pi(\_s)}\EX_{p(\_l)}\EX_{p_{\_\theta}(\_x,\_z_{>0} \mid \_z_{0})} \bigl[\log q_{\_\theta,\_\phi}(\_z | \_x)\bigr] \label{eq:hvae_encoder}
+    \end{align}
+\end{frame}
+\end{document}
